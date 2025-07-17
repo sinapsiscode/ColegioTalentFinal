@@ -8,6 +8,31 @@ const useAdminDashboardStore = create((set, get) => ({
   actividadReciente: [],
   reportes: {},
   alertasSeguridad: [],
+  configuracionAsistencia: {
+    horaIngresoRegular: '08:00',
+    minutosTolerancia: 15,
+    coordenadasColegio: {
+      latitud: -12.046373,
+      longitud: -77.042754,
+      radio: 100 // metros
+    },
+    diasLaborales: ['lunes', 'martes', 'miercoles', 'jueves', 'viernes'],
+    horariosEspeciales: {
+      'lunes': { inicio: '08:00', fin: '16:00' },
+      'martes': { inicio: '08:00', fin: '16:00' },
+      'miercoles': { inicio: '08:00', fin: '16:00' },
+      'jueves': { inicio: '08:00', fin: '16:00' },
+      'viernes': { inicio: '08:00', fin: '15:00' }
+    },
+    notificaciones: {
+      alertaTardanza: true,
+      alertaFalta: true,
+      reporteDiario: true,
+      reporteSemanal: true
+    },
+    validacionGPS: true,
+    backupAutomatico: true
+  },
   
   cargarDashboard: () => {
     set({ cargando: true })
@@ -317,6 +342,113 @@ const useAdminDashboardStore = create((set, get) => ({
   actualizarConfiguracion: (nuevaConfig) => {
     // Simular actualización de configuración
     console.log('Configuración actualizada:', nuevaConfig)
+  },
+
+  // Métodos específicos para configuración de asistencia
+  obtenerConfiguracionAsistencia: () => {
+    return get().configuracionAsistencia
+  },
+
+  actualizarConfiguracionAsistencia: (nuevaConfig) => {
+    const { configuracionAsistencia } = get()
+    const configActualizada = { ...configuracionAsistencia, ...nuevaConfig }
+    
+    set({ configuracionAsistencia: configActualizada })
+    
+    // Simular guardado en backend
+    setTimeout(() => {
+      console.log('Configuración de asistencia guardada:', configActualizada)
+    }, 500)
+    
+    return configActualizada
+  },
+
+  actualizarHorarioIngreso: (nuevaHora) => {
+    const { configuracionAsistencia } = get()
+    const configActualizada = {
+      ...configuracionAsistencia,
+      horaIngresoRegular: nuevaHora
+    }
+    
+    set({ configuracionAsistencia: configActualizada })
+    return configActualizada
+  },
+
+  actualizarTolerancia: (minutos) => {
+    const { configuracionAsistencia } = get()
+    const configActualizada = {
+      ...configuracionAsistencia,
+      minutosTolerancia: minutos
+    }
+    
+    set({ configuracionAsistencia: configActualizada })
+    return configActualizada
+  },
+
+  actualizarCoordenadasColegio: (coordenadas) => {
+    const { configuracionAsistencia } = get()
+    const configActualizada = {
+      ...configuracionAsistencia,
+      coordenadasColegio: { ...configuracionAsistencia.coordenadasColegio, ...coordenadas }
+    }
+    
+    set({ configuracionAsistencia: configActualizada })
+    return configActualizada
+  },
+
+  toggleValidacionGPS: () => {
+    const { configuracionAsistencia } = get()
+    const configActualizada = {
+      ...configuracionAsistencia,
+      validacionGPS: !configuracionAsistencia.validacionGPS
+    }
+    
+    set({ configuracionAsistencia: configActualizada })
+    return configActualizada
+  },
+
+  actualizarNotificaciones: (tipoNotificacion, estado) => {
+    const { configuracionAsistencia } = get()
+    const configActualizada = {
+      ...configuracionAsistencia,
+      notificaciones: {
+        ...configuracionAsistencia.notificaciones,
+        [tipoNotificacion]: estado
+      }
+    }
+    
+    set({ configuracionAsistencia: configActualizada })
+    return configActualizada
+  },
+
+  validarConfiguracion: () => {
+    const { configuracionAsistencia } = get()
+    const errores = []
+
+    // Validar hora de ingreso
+    if (!configuracionAsistencia.horaIngresoRegular) {
+      errores.push('La hora de ingreso es requerida')
+    }
+
+    // Validar tolerancia
+    if (configuracionAsistencia.minutosTolerancia < 0 || configuracionAsistencia.minutosTolerancia > 60) {
+      errores.push('La tolerancia debe estar entre 0 y 60 minutos')
+    }
+
+    // Validar coordenadas
+    if (!configuracionAsistencia.coordenadasColegio.latitud || !configuracionAsistencia.coordenadasColegio.longitud) {
+      errores.push('Las coordenadas del colegio son requeridas')
+    }
+
+    // Validar radio
+    if (configuracionAsistencia.coordenadasColegio.radio < 10 || configuracionAsistencia.coordenadasColegio.radio > 1000) {
+      errores.push('El radio debe estar entre 10 y 1000 metros')
+    }
+
+    return {
+      esValida: errores.length === 0,
+      errores
+    }
   }
 }))
 

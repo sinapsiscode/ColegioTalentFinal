@@ -15,6 +15,7 @@ import {
 
 import Header from '../../components/common/Header'
 import useScannerStore from '../../stores/scannerStore'
+import useTutorAttendanceStore from '../../stores/tutorAttendanceStore'
 import useAuthStore from '../../stores/authStore'
 
 import QRScanner from '../../components/scanner/QRScanner'
@@ -38,12 +39,15 @@ const Dashboard = () => {
     resetearDia
   } = useScannerStore()
 
+  const { cargarRegistrosAsistencia } = useTutorAttendanceStore()
+
   const [mostrarEscaner, setMostrarEscaner] = useState(true)
   const [ultimaActualizacion, setUltimaActualizacion] = useState(new Date())
 
   // Inicializar datos al montar el componente
   useEffect(() => {
     inicializarDatos()
+    cargarRegistrosAsistencia() // Inicializar datos de tutores también
     
     // Actualizar cada 30 segundos
     const intervalo = setInterval(() => {
@@ -51,7 +55,7 @@ const Dashboard = () => {
     }, 30000)
 
     return () => clearInterval(intervalo)
-  }, [inicializarDatos])
+  }, [inicializarDatos, cargarRegistrosAsistencia])
 
   // Handlers
   const handleScanSuccess = (registro) => {
@@ -261,7 +265,8 @@ const Dashboard = () => {
             {/* Estadísticas */}
             <AttendanceStats 
               estadisticas={estadisticasDelDia} 
-              loading={cargando} 
+              loading={cargando}
+              tipo="scanner"
             />
 
             {/* Lista de registros */}

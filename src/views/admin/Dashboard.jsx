@@ -15,6 +15,8 @@ import {
 
 import Header from '../../components/common/Header'
 import useAdminDashboardStore from '../../stores/adminDashboardStore'
+import useTutorAttendanceStore from '../../stores/tutorAttendanceStore'
+import useAttendanceStore from '../../stores/attendanceStore'
 import useAuthStore from '../../stores/authStore'
 
 import AdminStats from '../../components/admin/AdminStats'
@@ -42,18 +44,73 @@ const Dashboard = () => {
     generarReporte
   } = useAdminDashboardStore()
 
+  // Estadísticas de asistencia de tutores y estudiantes
+  const { 
+    obtenerEstadisticasHoy: obtenerEstadisticasTutores,
+    obtenerTutoresEnColegio,
+    obtenerEstadisticasAsistencia: obtenerEstadisticasAsistenciaTutores
+  } = useTutorAttendanceStore()
+
+  const { 
+    obtenerEstadisticasHoy: obtenerEstadisticasEstudiantes,
+    obtenerEstudiantesEnEscuela
+  } = useAttendanceStore()
+
   // Estados locales
   const [selectedPeriod, setSelectedPeriod] = useState('mes')
   const [showReports, setShowReports] = useState(false)
+  const [estadisticasAsistencia, setEstadisticasAsistencia] = useState(null)
 
   // Cargar dashboard al montar
   useEffect(() => {
     cargarDashboard()
+    cargarEstadisticasAsistencia()
   }, [cargarDashboard])
+
+  // Cargar estadísticas de asistencia consolidadas
+  const cargarEstadisticasAsistencia = () => {
+    try {
+      const estadisticasTutores = obtenerEstadisticasTutores()
+      const estadisticasEstudiantes = obtenerEstadisticasEstudiantes()
+      const tutoresEnColegio = obtenerTutoresEnColegio()
+      const estudiantesEnEscuela = obtenerEstudiantesEnEscuela()
+
+      const estadisticasConsolidadas = {
+        tutores: {
+          total: estadisticasTutores.totalTutores || 0,
+          presentes: estadisticasTutores.entradas || 0,
+          tardanzas: estadisticasTutores.tardanzas || 0,
+          faltas: estadisticasTutores.faltas || 0,
+          porcentajeAsistencia: estadisticasTutores.porcentajeAsistencia || 0,
+          enColegio: tutoresEnColegio.length
+        },
+        estudiantes: {
+          total: estadisticasEstudiantes.totalEstudiantes || 0,
+          presentes: estadisticasEstudiantes.conEntrada || 0,
+          tardanzas: estadisticasEstudiantes.tardanzas || 0,
+          faltas: estadisticasEstudiantes.ausentes || 0,
+          porcentajeAsistencia: estadisticasEstudiantes.porcentajeAsistencia || 0,
+          enEscuela: estudiantesEnEscuela.length
+        },
+        consolidado: {
+          totalPersonas: (estadisticasTutores.totalTutores || 0) + (estadisticasEstudiantes.totalEstudiantes || 0),
+          totalPresentes: (estadisticasTutores.entradas || 0) + (estadisticasEstudiantes.conEntrada || 0),
+          totalTardanzas: (estadisticasTutores.tardanzas || 0) + (estadisticasEstudiantes.tardanzas || 0),
+          totalFaltas: (estadisticasTutores.faltas || 0) + (estadisticasEstudiantes.ausentes || 0),
+          promedioAsistencia: ((estadisticasTutores.porcentajeAsistencia || 0) + (estadisticasEstudiantes.porcentajeAsistencia || 0)) / 2
+        }
+      }
+
+      setEstadisticasAsistencia(estadisticasConsolidadas)
+    } catch (error) {
+      console.error('Error cargando estadísticas de asistencia:', error)
+    }
+  }
 
   // Handlers
   const handleRefresh = () => {
     cargarDashboard()
+    cargarEstadisticasAsistencia()
     showSuccess('Dashboard actualizado', 'Los datos han sido actualizados exitosamente')
   }
 
@@ -168,6 +225,154 @@ const Dashboard = () => {
 
         {/* Estadísticas principales */}
         <AdminStats estadisticas={estadisticasGenerales} loading={cargando} />
+
+        {/* Estadísticas de Asistencia */}
+        {estadisticasAsistencia && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="mb-6"
+          >
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
+                  <FiCalendar className="w-5 h-5 text-talentos-primary" />
+                  <span>Asistencia de Hoy - Resumen General</span>
+                </h3>
+                <button
+                  onClick={cargarEstadisticasAsistencia}
+                  className="text-sm text-talentos-primary hover:text-talentos-secondary transition-colors duration-200"
+                >
+                  <FiRefreshCw className="w-4 h-4 inline mr-1" />
+                  Actualizar
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                {/* Estadísticas de Tutores */}
+                <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                  <h4 className="font-medium text-blue-900 mb-3 flex items-center space-x-2">
+                    <FiUsers className="w-4 h-4" />
+                    <span>Tutores</span>
+                  </h4>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-blue-700">Total:</span>
+                      <span className="font-medium text-blue-900">{estadisticasAsistencia.tutores.total}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-blue-700">Presentes:</span>
+                      <span className="font-medium text-green-600">{estadisticasAsistencia.tutores.presentes}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-blue-700">Tardanzas:</span>
+                      <span className="font-medium text-yellow-600">{estadisticasAsistencia.tutores.tardanzas}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-blue-700">Faltas:</span>
+                      <span className="font-medium text-red-600">{estadisticasAsistencia.tutores.faltas}</span>
+                    </div>
+                    <div className="pt-2 border-t border-blue-200">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-blue-700">Asistencia:</span>
+                        <span className="font-bold text-blue-900">{estadisticasAsistencia.tutores.porcentajeAsistencia.toFixed(1)}%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Estadísticas de Estudiantes */}
+                <div className="bg-green-50 rounded-lg p-4 border border-green-200">
+                  <h4 className="font-medium text-green-900 mb-3 flex items-center space-x-2">
+                    <FiUsers className="w-4 h-4" />
+                    <span>Estudiantes</span>
+                  </h4>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-green-700">Total:</span>
+                      <span className="font-medium text-green-900">{estadisticasAsistencia.estudiantes.total}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-green-700">Presentes:</span>
+                      <span className="font-medium text-green-600">{estadisticasAsistencia.estudiantes.presentes}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-green-700">Tardanzas:</span>
+                      <span className="font-medium text-yellow-600">{estadisticasAsistencia.estudiantes.tardanzas}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-green-700">Faltas:</span>
+                      <span className="font-medium text-red-600">{estadisticasAsistencia.estudiantes.faltas}</span>
+                    </div>
+                    <div className="pt-2 border-t border-green-200">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-green-700">Asistencia:</span>
+                        <span className="font-bold text-green-900">{estadisticasAsistencia.estudiantes.porcentajeAsistencia.toFixed(1)}%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Resumen Consolidado */}
+                <div className="bg-purple-50 rounded-lg p-4 border border-purple-200">
+                  <h4 className="font-medium text-purple-900 mb-3 flex items-center space-x-2">
+                    <FiBarChart className="w-4 h-4" />
+                    <span>Resumen General</span>
+                  </h4>
+                  <div className="space-y-2">
+                    <div className="flex justify-between text-sm">
+                      <span className="text-purple-700">Total personas:</span>
+                      <span className="font-medium text-purple-900">{estadisticasAsistencia.consolidado.totalPersonas}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-purple-700">Presentes:</span>
+                      <span className="font-medium text-green-600">{estadisticasAsistencia.consolidado.totalPresentes}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-purple-700">Tardanzas:</span>
+                      <span className="font-medium text-yellow-600">{estadisticasAsistencia.consolidado.totalTardanzas}</span>
+                    </div>
+                    <div className="flex justify-between text-sm">
+                      <span className="text-purple-700">Faltas:</span>
+                      <span className="font-medium text-red-600">{estadisticasAsistencia.consolidado.totalFaltas}</span>
+                    </div>
+                    <div className="pt-2 border-t border-purple-200">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-purple-700">Promedio:</span>
+                        <span className="font-bold text-purple-900">{estadisticasAsistencia.consolidado.promedioAsistencia.toFixed(1)}%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Acciones rápidas */}
+              <div className="mt-4 pt-4 border-t border-gray-200">
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => window.location.href = '/admin/attendance'}
+                    className="px-3 py-1 bg-blue-100 text-blue-700 rounded-lg text-sm hover:bg-blue-200 transition-colors duration-200"
+                  >
+                    Ver Asistencia Estudiantes
+                  </button>
+                  <button
+                    onClick={() => window.location.href = '/admin/tutor-attendance'}
+                    className="px-3 py-1 bg-green-100 text-green-700 rounded-lg text-sm hover:bg-green-200 transition-colors duration-200"
+                  >
+                    Ver Asistencia Tutores
+                  </button>
+                  <button
+                    onClick={() => window.location.href = '/scanner'}
+                    className="px-3 py-1 bg-purple-100 text-purple-700 rounded-lg text-sm hover:bg-purple-200 transition-colors duration-200"
+                  >
+                    Ir al Escáner
+                  </button>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        )}
 
         {/* Grid principal */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">

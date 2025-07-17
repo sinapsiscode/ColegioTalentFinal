@@ -94,6 +94,98 @@ export const generatePhotocheckQR = async (studentData, options = {}) => {
   }
 }
 
+export const generateTutorQR = async (tutorData) => {
+  try {
+    const qrData = {
+      id: tutorData.id,
+      codigo: tutorData.codigoFotocheck || `T${tutorData.id.toString().padStart(3, '0')}234567890`,
+      nombre: tutorData.nombre,
+      especialidad: tutorData.especialidad,
+      grado: tutorData.grado,
+      tipo: 'tutor',
+      timestamp: new Date().toISOString()
+    }
+
+    // Usar directamente el código de fotocheck para el QR (formato simple)
+    const qrString = qrData.codigo
+    
+    const qrCodeDataURL = await QRCode.toDataURL(qrString, {
+      errorCorrectionLevel: 'M',
+      type: 'image/png',
+      quality: 0.92,
+      margin: 2,
+      color: {
+        dark: '#000000FF',
+        light: '#FFFFFFFF'
+      },
+      width: 200,
+      rendererOpts: {
+        quality: 0.9
+      }
+    })
+
+    return {
+      dataURL: qrCodeDataURL,
+      qrData: qrData,
+      qrString: qrString
+    }
+  } catch (error) {
+    console.error('Error generando código QR de tutor:', error)
+    throw new Error('No se pudo generar el código QR del tutor')
+  }
+}
+
+export const generateTutorPhotocheckQR = async (tutorData, options = {}) => {
+  try {
+    const defaultOptions = {
+      includePhoto: true,
+      includeContactInfo: false,
+      validUntil: null,
+      ...options
+    }
+
+    const qrData = {
+      id: tutorData.id,
+      codigo: tutorData.codigoFotocheck || `T${tutorData.id.toString().padStart(3, '0')}234567890`,
+      nombre: tutorData.nombre,
+      especialidad: tutorData.especialidad,
+      grado: tutorData.grado,
+      telefono: defaultOptions.includeContactInfo ? tutorData.telefono : null,
+      tipo: 'fotocheck_tutor',
+      validUntil: defaultOptions.validUntil,
+      generatedAt: new Date().toISOString(),
+      school: 'Colegio Talentos'
+    }
+
+    // Usar directamente el código de fotocheck para el QR (formato simple)
+    const qrString = qrData.codigo
+    
+    const qrCodeDataURL = await QRCode.toDataURL(qrString, {
+      errorCorrectionLevel: 'H',
+      type: 'image/png',
+      quality: 0.95,
+      margin: 2,
+      color: {
+        dark: '#1a365dFF',
+        light: '#FFFFFFFF'
+      },
+      width: 150,
+      rendererOpts: {
+        quality: 0.95
+      }
+    })
+
+    return {
+      dataURL: qrCodeDataURL,
+      qrData: qrData,
+      qrString: qrString
+    }
+  } catch (error) {
+    console.error('Error generando código QR para fotocheck de tutor:', error)
+    throw new Error('No se pudo generar el código QR para el fotocheck del tutor')
+  }
+}
+
 export const generateBulkQRCodes = async (studentsArray) => {
   try {
     const results = []
@@ -126,6 +218,41 @@ export const generateBulkQRCodes = async (studentsArray) => {
   } catch (error) {
     console.error('Error generando códigos QR en lote:', error)
     throw new Error('No se pudieron generar los códigos QR')
+  }
+}
+
+export const generateBulkTutorQRCodes = async (tutorsArray) => {
+  try {
+    const results = []
+    
+    for (const tutor of tutorsArray) {
+      try {
+        const qrResult = await generateTutorPhotocheckQR(tutor)
+        results.push({
+          tutor: tutor,
+          qr: qrResult,
+          success: true,
+          error: null
+        })
+      } catch (error) {
+        results.push({
+          tutor: tutor,
+          qr: null,
+          success: false,
+          error: error.message
+        })
+      }
+    }
+
+    return {
+      results: results,
+      successful: results.filter(r => r.success).length,
+      failed: results.filter(r => !r.success).length,
+      total: results.length
+    }
+  } catch (error) {
+    console.error('Error generando códigos QR de tutores en lote:', error)
+    throw new Error('No se pudieron generar los códigos QR de tutores')
   }
 }
 
@@ -173,6 +300,20 @@ export const downloadQRCode = (dataURL, filename = 'qr-code.png') => {
 
 export const validateQRData = (qrString) => {
   try {
+    // Verificar si es un código simple (formato T001234567890 o E001234567890)
+    if (typeof qrString === 'string' && qrString.match(/^[TE]\d{12}$/)) {
+      const tipo = qrString.startsWith('T') ? 'tutor' : 'estudiante'
+      return {
+        valid: true,
+        data: {
+          codigo: qrString,
+          tipo: tipo
+        },
+        error: null
+      }
+    }
+
+    // Intentar parsear como JSON para formato completo
     const data = JSON.parse(qrString)
     
     const requiredFields = ['id', 'codigo', 'nombre', 'tipo']
@@ -182,7 +323,7 @@ export const validateQRData = (qrString) => {
       throw new Error(`Campos requeridos faltantes: ${missingFields.join(', ')}`)
     }
 
-    if (!['estudiante', 'fotocheck_estudiante'].includes(data.tipo)) {
+    if (!['estudiante', 'fotocheck_estudiante', 'tutor', 'fotocheck_tutor'].includes(data.tipo)) {
       throw new Error('Tipo de código QR no válido')
     }
 

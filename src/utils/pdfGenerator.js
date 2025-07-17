@@ -2,7 +2,7 @@ import jsPDF from 'jspdf'
 import html2canvas from 'html2canvas'
 
 // Crear PDF profesional sin html2canvas para mejor rendimiento
-export const generatePhotocheckPDFDirect = (student, qrCode) => {
+export const generatePhotocheckPDFDirect = (student, qrCode, type = 'student') => {
   try {
     // Crear PDF en formato A5 (148mm x 210mm)
     const pdf = new jsPDF({
@@ -33,7 +33,8 @@ export const generatePhotocheckPDFDirect = (student, qrCode) => {
     
     pdf.setFontSize(12)
     pdf.setFont('helvetica', 'normal')
-    pdf.text('FOTOCHECK ESTUDIANTIL', pageWidth / 2, margin + 25, { align: 'center' })
+    const subtitleText = type === 'tutor' ? 'FOTOCHECK DOCENTE' : 'FOTOCHECK ESTUDIANTIL'
+    pdf.text(subtitleText, pageWidth / 2, margin + 25, { align: 'center' })
 
     // Logo circular en esquina
     pdf.setFillColor(255, 255, 255)
@@ -63,7 +64,8 @@ export const generatePhotocheckPDFDirect = (student, qrCode) => {
     pdf.setFontSize(7)
     pdf.setFont('helvetica', 'normal')
     pdf.text('FOTO', photoX + photoSize/2, photoY + photoSize/2 - 2, { align: 'center' })
-    pdf.text('ESTUDIANTE', photoX + photoSize/2, photoY + photoSize/2 + 3, { align: 'center' })
+    const photoLabel = type === 'tutor' ? 'DOCENTE' : 'ESTUDIANTE'
+    pdf.text(photoLabel, photoX + photoSize/2, photoY + photoSize/2 + 3, { align: 'center' })
 
     // QR Code (lado derecho de la foto)
     if (qrCode?.dataURL) {
@@ -85,7 +87,8 @@ export const generatePhotocheckPDFDirect = (student, qrCode) => {
         pdf.setTextColor(...grayColor)
         pdf.setFontSize(6)
         pdf.setFont('courier', 'normal')
-        const securityCode = student?.codigoQR || `ST${student?.id?.toString().padStart(6, '0')}`
+        const codePrefix = type === 'tutor' ? 'T' : 'ST'
+        const securityCode = student?.codigoQR || `${codePrefix}${student?.id?.toString().padStart(6, '0')}`
         pdf.text(securityCode, qrX + qrSize/2, qrY + qrSize + 5, { align: 'center' })
       } catch (error) {
         console.warn('Error adding QR code to PDF:', error)
@@ -106,15 +109,29 @@ export const generatePhotocheckPDFDirect = (student, qrCode) => {
     const nombreCompleto = `${student?.nombre || 'NOMBRE'} ${student?.apellidos || 'APELLIDOS'}`
     pdf.text(nombreCompleto, pageWidth / 2, currentY + 16, { align: 'center' })
 
-    // Información académica en grid de 2 columnas
+    // Información académica/profesional en grid de 2 columnas
     currentY += 30
-    const infoData = [
-      ['Grado:', student?.grado || 'N/A'],
-      ['Sección:', student?.seccion || 'N/A'],
-      ['Código:', student?.codigoQR || `ST${student?.id?.toString().padStart(6, '0')}`],
-      ['Emisión:', new Date().toLocaleDateString('es-PE')],
-      ['Válido hasta:', new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toLocaleDateString('es-PE')]
-    ]
+    const codePrefix = type === 'tutor' ? 'T' : 'ST'
+    const defaultCode = `${codePrefix}${student?.id?.toString().padStart(6, '0')}`
+    
+    let infoData
+    if (type === 'tutor') {
+      infoData = [
+        ['Especialidad:', student?.especialidad || 'N/A'],
+        ['Grado/Sección:', `${student?.grado || 'N/A'} - ${student?.seccion || 'N/A'}`],
+        ['Código:', student?.codigoQR || defaultCode],
+        ['Emisión:', new Date().toLocaleDateString('es-PE')],
+        ['Válido hasta:', new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toLocaleDateString('es-PE')]
+      ]
+    } else {
+      infoData = [
+        ['Grado:', student?.grado || 'N/A'],
+        ['Sección:', student?.seccion || 'N/A'],
+        ['Código:', student?.codigoQR || defaultCode],
+        ['Emisión:', new Date().toLocaleDateString('es-PE')],
+        ['Válido hasta:', new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toLocaleDateString('es-PE')]
+      ]
+    }
 
     // Grid de información 2x3
     const gridCols = 2
@@ -223,12 +240,13 @@ export const generatePhotocheckPDF = async (photocheckElement, student) => {
   }
 }
 
-export const downloadPhotocheckPDFDirect = (student, qrCode) => {
+export const downloadPhotocheckPDFDirect = (student, qrCode, type = 'student') => {
   try {
-    const pdf = generatePhotocheckPDFDirect(student, qrCode)
-    const nombre = (student?.nombre || 'estudiante').replace(/\s+/g, '-')
+    const pdf = generatePhotocheckPDFDirect(student, qrCode, type)
+    const nombre = (student?.nombre || (type === 'tutor' ? 'tutor' : 'estudiante')).replace(/\s+/g, '-')
     const apellidos = (student?.apellidos || '').replace(/\s+/g, '-')
-    const filename = `fotocheck-${nombre}-${apellidos}.pdf`
+    const prefix = type === 'tutor' ? 'fotocheck-tutor' : 'fotocheck'
+    const filename = `${prefix}-${nombre}-${apellidos}.pdf`
     
     pdf.save(filename)
     return true
@@ -238,12 +256,13 @@ export const downloadPhotocheckPDFDirect = (student, qrCode) => {
   }
 }
 
-export const downloadPhotocheckPDF = async (photocheckElement, student) => {
+export const downloadPhotocheckPDF = async (photocheckElement, student, type = 'student') => {
   try {
     const pdf = await generatePhotocheckPDF(photocheckElement, student)
-    const nombre = (student?.nombre || 'estudiante').replace(/\s+/g, '-')
+    const nombre = (student?.nombre || (type === 'tutor' ? 'tutor' : 'estudiante')).replace(/\s+/g, '-')
     const apellidos = (student?.apellidos || '').replace(/\s+/g, '-')
-    const filename = `fotocheck-${nombre}-${apellidos}.pdf`
+    const prefix = type === 'tutor' ? 'fotocheck-tutor' : 'fotocheck'
+    const filename = `${prefix}-${nombre}-${apellidos}.pdf`
     
     pdf.save(filename)
     return true

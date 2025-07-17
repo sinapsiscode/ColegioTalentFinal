@@ -24,6 +24,7 @@ const AdminUsers = React.lazy(() => import('./views/admin/Users'))
 const AdminCommuniques = React.lazy(() => import('./views/admin/Communiques'))
 const AdminPayments = React.lazy(() => import('./views/admin/Payments'))
 const AdminPaymentConcepts = React.lazy(() => import('./views/admin/PaymentConcepts'))
+const AdminTutorAttendance = React.lazy(() => import('./views/admin/TutorAttendance'))
 
 const ParentPayments = React.lazy(() => import('./views/parent/Payments'))
 
@@ -182,6 +183,11 @@ function App() {
             <Route path="/admin/payment-concepts" element={
               <PrivateRoute allowedRoles={['admin']}>
                 <AdminPaymentConcepts />
+              </PrivateRoute>
+            } />
+            <Route path="/admin/tutor-attendance" element={
+              <PrivateRoute allowedRoles={['admin']}>
+                <AdminTutorAttendance />
               </PrivateRoute>
             } />
             

@@ -8,21 +8,29 @@ import {
   FiClock,
   FiRefreshCw,
   FiPlus,
-  FiEye
+  FiEye,
+  FiGrid,
+  FiDownload
 } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
+import { format } from 'date-fns'
+import { es } from 'date-fns/locale'
 
 import Header from '../../components/common/Header'
 import useTutorStore from '../../stores/tutorStore'
+import useTutorAttendanceStore from '../../stores/tutorAttendanceStore'
 import useAuthStore from '../../stores/authStore'
 
 import StudentCard from '../../components/tutor/StudentCard'
 import ClassCard from '../../components/tutor/ClassCard'
 import ActivityCard from '../../components/tutor/ActivityCard'
 import TutorStats from '../../components/tutor/TutorStats'
+import TutorAttendanceCard from '../../components/tutor/TutorAttendanceCard'
 import LoadingSpinner from '../../components/common/LoadingSpinner'
 import AnimatedButton from '../../components/common/AnimatedButton'
-import { showSuccess, showError, showInput } from '../../utils/sweetAlert'
+import TutorPhotocheckTemplate from '../../components/admin/TutorPhotocheckTemplate'
+import { showSuccess, showError, showInput, showInfo } from '../../utils/sweetAlert'
+import { generateTutorPhotocheckQR, downloadQRCode } from '../../utils/qrGenerator'
 
 const Dashboard = () => {
   const navigate = useNavigate()
@@ -44,13 +52,19 @@ const Dashboard = () => {
     obtenerProximasClases
   } = useTutorStore()
 
+  const { obtenerRegistroHoy, cargarRegistrosAsistencia } = useTutorAttendanceStore()
+
   const [filtroEstudiantes, setFiltroEstudiantes] = useState('todos')
   const [mostrarTodasActividades, setMostrarTodasActividades] = useState(false)
+  const [qrGenerado, setQrGenerado] = useState(null)
+  const [mostrarQR, setMostrarQR] = useState(false)
+  const [mostrarFotocheck, setMostrarFotocheck] = useState(false)
 
   // Cargar datos al montar
   useEffect(() => {
     cargarDashboard()
-  }, [cargarDashboard])
+    cargarRegistrosAsistencia() // Inicializar datos de asistencia de tutores
+  }, [cargarDashboard, cargarRegistrosAsistencia])
 
   // Handlers
   const handleViewStudentDetails = (estudiante) => {
@@ -103,6 +117,110 @@ const Dashboard = () => {
   const handleRefresh = () => {
     cargarDashboard()
     showSuccess('Dashboard actualizado', 'Los datos han sido actualizados')
+  }
+
+  const handleGenerarQR = async () => {
+    try {
+      const qrResult = await generateTutorPhotocheckQR(tutor)
+      setQrGenerado(qrResult)
+      setMostrarQR(true)
+      showSuccess('QR Generado', 'Tu código QR de fotocheck ha sido generado exitosamente')
+    } catch (error) {
+      showError('Error', 'No se pudo generar el código QR: ' + error.message)
+    }
+  }
+
+  const handleVerFotocheck = async () => {
+    try {
+      if (!qrGenerado) {
+        const qrResult = await generateTutorPhotocheckQR(tutor)
+        setQrGenerado(qrResult)
+      }
+      setMostrarFotocheck(true)
+    } catch (error) {
+      showError('Error', 'No se pudo generar el código QR para el fotocheck: ' + error.message)
+    }
+  }
+
+  const handleDescargarQR = () => {
+    if (qrGenerado) {
+      downloadQRCode(qrGenerado.dataURL, `fotocheck-${tutor.nombre.replace(/\s+/g, '_')}.png`)
+      showSuccess('QR Descargado', 'El código QR ha sido descargado exitosamente')
+    }
+  }
+
+  const handleVerAsistencia = () => {
+    const registroHoy = obtenerRegistroHoy(tutor.id)
+    
+    if (registroHoy) {
+      const detalles = []
+      
+      // ESTADO ACTUAL
+      detalles.push("═══════════════════════════════")
+      detalles.push("📋  MI REGISTRO DE HOY")
+      detalles.push("═══════════════════════════════")
+      detalles.push(`Fecha:         ${format(new Date(registroHoy.fecha), 'dd/MM/yyyy', { locale: es })}`)
+      detalles.push(`Estado:        ${registroHoy.estado.charAt(0).toUpperCase() + registroHoy.estado.slice(1)}`)
+      detalles.push("")
+      
+      // HORARIOS
+      detalles.push("═══════════════════════════════")
+      detalles.push("🕐  HORARIOS")
+      detalles.push("═══════════════════════════════")
+      
+      if (registroHoy.horaEntrada) {
+        detalles.push(`Entrada:       ${format(new Date(registroHoy.horaEntrada), 'HH:mm')} hrs`)
+      } else {
+        detalles.push(`Entrada:       No registrada`)
+      }
+      
+      if (registroHoy.horaSalida) {
+        detalles.push(`Salida:        ${format(new Date(registroHoy.horaSalida), 'HH:mm')} hrs`)
+      } else if (registroHoy.horaEntrada) {
+        detalles.push(`Salida:        ⏳ Pendiente`)
+      } else {
+        detalles.push(`Salida:        No registrada`)
+      }
+      
+      // VERIFICACIÓN
+      if (registroHoy.coordenadasEntrada) {
+        detalles.push("")
+        detalles.push("═══════════════════════════════")
+        detalles.push("📍  VERIFICACIÓN")
+        detalles.push("═══════════════════════════════")
+        detalles.push(`Ubicación:     ✅ Verificada`)
+        detalles.push(`Precisión:     ${registroHoy.coordenadasEntrada.precision.toFixed(0)} metros`)
+      }
+      
+      // OBSERVACIONES
+      if (registroHoy.observaciones) {
+        detalles.push("")
+        detalles.push("═══════════════════════════════")
+        detalles.push("📝  OBSERVACIONES")
+        detalles.push("═══════════════════════════════")
+        detalles.push(registroHoy.observaciones)
+      }
+
+      const mensaje = detalles.join('\n')
+      showInfo('📊 Mi Asistencia de Hoy', mensaje)
+    } else {
+      const mensaje = [
+        "═══════════════════════════════",
+        "❌  SIN REGISTRO",
+        "═══════════════════════════════",
+        "",
+        "No has marcado asistencia hoy.",
+        "",
+        "Para registrar tu asistencia:",
+        "• Genera tu código QR",
+        "• Escanealo en la entrada del colegio",
+        "• El sistema verificará tu ubicación",
+        "",
+        "¡Recuerda llegar a tiempo! ⏰"
+      ].join('\n')
+      
+      showInfo('📱 Asistencia Pendiente', mensaje)
+    }
   }
 
   // Filtrar estudiantes
@@ -170,6 +288,125 @@ const Dashboard = () => {
 
         {/* Estadísticas */}
         <TutorStats estadisticas={estadisticas} loading={cargando} />
+
+        {/* Sección de Asistencia y QR */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+          {/* Mi Asistencia Hoy */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
+          >
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
+              <FiClock className="w-5 h-5 text-talentos-primary" />
+              <span>Mi Asistencia de Hoy</span>
+            </h3>
+            
+            <TutorAttendanceCard 
+              registro={obtenerRegistroHoy(tutor.id)}
+              onClick={handleVerAsistencia}
+            />
+          </motion.div>
+
+          {/* Mi Fotocheck Digital */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="bg-white rounded-lg shadow-sm border border-gray-200 p-6"
+          >
+            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
+              <FiGrid className="w-5 h-5 text-talentos-primary" />
+              <span>Mi Fotocheck Digital</span>
+            </h3>
+            
+            {!mostrarQR ? (
+              <div className="space-y-4">
+                <div className="flex flex-wrap gap-3">
+                  <AnimatedButton
+                    variant="primary"
+                    icon={FiGrid}
+                    onClick={handleGenerarQR}
+                    size="sm"
+                  >
+                    Generar mi QR
+                  </AnimatedButton>
+                  
+                  {qrGenerado && (
+                    <>
+                      <AnimatedButton
+                        variant="outline"
+                        icon={FiDownload}
+                        onClick={handleDescargarQR}
+                        size="sm"
+                      >
+                        Descargar QR
+                      </AnimatedButton>
+                      
+                      <AnimatedButton
+                        variant="secondary"
+                        icon={FiEye}
+                        onClick={handleVerFotocheck}
+                        size="sm"
+                      >
+                        Ver Fotocheck
+                      </AnimatedButton>
+                    </>
+                  )}
+                </div>
+                
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                  <h4 className="font-medium text-blue-900 mb-2">Instrucciones:</h4>
+                  <ul className="text-sm text-blue-800 space-y-1">
+                    <li>• Genera tu código QR de fotocheck</li>
+                    <li>• Descárgalo e imprímelo en tu credencial</li>
+                    <li>• Escanéalo en la entrada y salida del colegio</li>
+                    <li>• El sistema registrará tu ubicación automáticamente</li>
+                  </ul>
+                </div>
+              </div>
+            ) : (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="flex flex-col items-center space-y-4"
+              >
+                <div className="bg-white border-2 border-gray-200 rounded-lg p-4 shadow-sm">
+                  <img
+                    src={qrGenerado.dataURL}
+                    alt="QR Code del Tutor"
+                    className="w-40 h-40"
+                  />
+                </div>
+                
+                <div className="text-center">
+                  <p className="text-sm font-medium text-gray-900">{tutor.nombre}</p>
+                  <p className="text-xs text-gray-600">{tutor.especialidad} - {tutor.grado}</p>
+                  <p className="text-xs text-gray-500 mt-1">Código: {qrGenerado.qrData.codigo}</p>
+                </div>
+                
+                <div className="flex gap-2">
+                  <AnimatedButton
+                    variant="outline"
+                    icon={FiDownload}
+                    onClick={handleDescargarQR}
+                    size="sm"
+                  >
+                    Descargar
+                  </AnimatedButton>
+                  
+                  <button
+                    onClick={() => setMostrarQR(false)}
+                    className="text-sm text-gray-500 hover:text-gray-700 transition-colors duration-200 px-3 py-1"
+                  >
+                    Ocultar
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </motion.div>
+        </div>
 
         {/* Contenido principal */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mt-8">
@@ -365,15 +602,25 @@ const Dashboard = () => {
             
             <AnimatedButton
               variant="outline"
-              icon={FiPlus}
-              onClick={() => showSuccess('Próximamente', 'Función en desarrollo')}
+              icon={FiGrid}
+              onClick={handleVerFotocheck}
               className="justify-center"
             >
-              Nueva Actividad
+              Mi Fotocheck
             </AnimatedButton>
           </div>
         </motion.div>
       </main>
+
+      {/* Modal de Fotocheck */}
+      {mostrarFotocheck && (
+        <TutorPhotocheckTemplate
+          tutor={tutor}
+          qrCode={qrGenerado}
+          onClose={() => setMostrarFotocheck(false)}
+          isVisible={mostrarFotocheck}
+        />
+      )}
     </div>
   )
 }

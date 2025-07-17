@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 
 const FilterDropdown = ({
   label,
-  options,
+  options = [],
   selectedValue,
   onSelect,
   className = ""

@@ -13,7 +13,8 @@ import {
   FiBarChart,
   FiSettings,
   FiDollarSign,
-  FiList
+  FiList,
+  FiClock
 } from 'react-icons/fi'
 import useAuthStore from '../../stores/authStore'
 import useNotificationsStore from '../../stores/notificationsStore'
@@ -59,6 +60,7 @@ const Header = () => {
           { path: '/admin/dashboard', icon: FiHome, label: 'Dashboard' },
           { path: '/admin/reports', icon: FiBarChart, label: 'Reportes' },
           { path: '/admin/users', icon: FiUsers, label: 'Usuarios' },
+          { path: '/admin/tutor-attendance', icon: FiClock, label: 'Asistencia Tutores' },
           { path: '/admin/communiques', icon: FiFileText, label: 'Comunicados' },
           { path: '/admin/payments', icon: FiDollarSign, label: 'Pagos' },
           { path: '/admin/payment-concepts', icon: FiList, label: 'Conceptos' }

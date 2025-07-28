@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { DatabaseQueries } from '../data/databaseSchema'
 
 const useAdminDashboardStore = create((set, get) => ({
   cargando: false,
@@ -38,66 +39,118 @@ const useAdminDashboardStore = create((set, get) => ({
     set({ cargando: true })
     
     setTimeout(() => {
-      const estadisticasGenerales = {
-        totalUsuarios: 347,
-        usuariosActivos: 289,
-        totalEstudiantes: 285,
-        totalProfesores: 18,
-        totalPadres: 510,
-        comunicadosEnviados: 47,
-        comunicadosHoy: 8,
-        promedioCalificaciones: 16.8,
-        asistenciaPromedio: 94.2,
-        satisfaccionPadres: 4.6
+      try {
+        // Obtener datos dinámicos reales de la base de datos
+        console.log('🔍 AdminDashboard: Cargando datos...')
+        const todosLosUsuarios = DatabaseQueries.getAllUsers()
+        const todosLosEstudiantes = DatabaseQueries.getAllStudents()
+        const todasLasRelaciones = DatabaseQueries.getAllParentStudentRelationships()
+        
+        console.log('📊 AdminDashboard datos:', {
+          usuarios: todosLosUsuarios.length,
+          estudiantes: todosLosEstudiantes.length,
+          relaciones: todasLasRelaciones.length
+        })
+      
+      // Calcular estadísticas dinámicamente
+      const usuariosPorRol = todosLosUsuarios.reduce((acc, user) => {
+        acc[user.rol] = (acc[user.rol] || 0) + 1
+        return acc
+      }, {})
+      
+      const usuariosActivos = todosLosUsuarios.filter(user => 
+        user.estado === 'activo' && 
+        user.ultimoAcceso && 
+        new Date(user.ultimoAcceso) > new Date(Date.now() - 7 * 24 * 60 * 60 * 1000) // últimos 7 días
+      ).length
+      
+      // Estadísticas de asistencia simuladas (evitamos dependencias circulares)
+      const estadisticasAsistenciaEstudiantes = {
+        porcentajeAsistencia: 92.5,
+        conEntrada: Math.floor(todosLosEstudiantes.length * 0.925),
+        ausentes: Math.floor(todosLosEstudiantes.length * 0.075)
       }
       
-      const usuariosActivos = [
-        {
-          id: 1,
-          nombre: 'María García',
-          tipo: 'profesor',
-          grado: '5to A',
-          estado: 'activo',
-          ultimaActividad: new Date(Date.now() - 15 * 60 * 1000),
-          comunicadosEnviados: 12
-        },
-        {
-          id: 2,
-          nombre: 'Roberto Silva',
-          tipo: 'profesor',
-          grado: 'Educación Física',
-          estado: 'activo',
-          ultimaActividad: new Date(Date.now() - 32 * 60 * 1000),
-          comunicadosEnviados: 8
-        },
-        {
-          id: 3,
-          nombre: 'Ana Torres',
-          tipo: 'padre',
-          estudiante: 'Isabella Santos',
-          estado: 'activo',
-          ultimaActividad: new Date(Date.now() - 45 * 60 * 1000),
-          mensajesLeidos: 15
-        },
-        {
-          id: 4,
-          nombre: 'Carlos Mendoza',
-          tipo: 'padre',
-          estudiante: 'Diego Vargas',
-          estado: 'activo',
-          ultimaActividad: new Date(Date.now() - 2 * 60 * 60 * 1000),
-          mensajesLeidos: 8
-        },
-        {
-          id: 5,
-          nombre: 'Patricia López',
-          tipo: 'administrativo',
-          cargo: 'Secretaria Académica',
-          estado: 'activo',
-          ultimaActividad: new Date(Date.now() - 20 * 60 * 1000),
-          tareasPendientes: 5
-        }
-      ]
+      const estadisticasTutores = {
+        porcentajeAsistencia: 96.2,
+        entradas: Math.floor(usuariosPorRol.tutor * 0.962),
+        faltas: Math.floor(usuariosPorRol.tutor * 0.038)
+      }
+      
+      const promedioAsistenciaGeneral = (
+        estadisticasAsistenciaEstudiantes.porcentajeAsistencia + 
+        estadisticasTutores.porcentajeAsistencia
+      ) / 2
+      
+      const estadisticasGenerales = {
+        totalUsuarios: todosLosUsuarios.length,
+        usuariosActivos: usuariosActivos,
+        totalEstudiantes: todosLosEstudiantes.length,
+        totalProfesores: usuariosPorRol.tutor || 0,
+        totalPadres: usuariosPorRol.padre || 0,
+        totalAdministrativos: (usuariosPorRol.admin || 0) + (usuariosPorRol.entrada || 0),
+        comunicadosEnviados: 47, // TODO: Implementar contador dinámico
+        comunicadosHoy: 8, // TODO: Implementar contador dinámico
+        promedioCalificaciones: 16.8, // TODO: Calcular desde notas reales
+        asistenciaPromedio: Math.round(promedioAsistenciaGeneral * 10) / 10,
+        satisfaccionPadres: 4.6, // TODO: Implementar sistema de satisfacción
+        relacionesPadreHijo: todasLasRelaciones.length,
+        estudiantesSinPadres: todosLosEstudiantes.filter(estudiante => 
+          !todasLasRelaciones.some(rel => rel.student_id === estudiante.id)
+        ).length
+      }
+      
+      // Obtener usuarios más activos basado en datos reales
+      const usuariosRecentementeActivos = todosLosUsuarios
+        .filter(user => user.estado === 'activo')
+        .map(user => {
+          // Simular última actividad basada en datos del usuario
+          const horasDesdeUltimaActividad = Math.floor(Math.random() * 48) // Entre 0 y 48 horas
+          const ultimaActividad = new Date(Date.now() - horasDesdeUltimaActividad * 60 * 60 * 1000)
+          
+          const baseUser = {
+            id: user.id,
+            nombre: user.nombre,
+            tipo: user.rol,
+            estado: user.estado,
+            ultimaActividad,
+            email: user.email
+          }
+          
+          // Agregar información específica por rol
+          if (user.rol === 'tutor') {
+            const estudiantesAsignados = DatabaseQueries.getStudentsByTeacherId(user.id)
+            return {
+              ...baseUser,
+              grado: estudiantesAsignados.length > 0 ? estudiantesAsignados[0].grado : 'Sin asignar',
+              estudiantesAsignados: estudiantesAsignados.length,
+              comunicadosEnviados: Math.floor(Math.random() * 20) + 5
+            }
+          } else if (user.rol === 'padre') {
+            const hijosAsignados = DatabaseQueries.getChildrenByParentId(user.id)
+            return {
+              ...baseUser,
+              hijos: hijosAsignados.map(h => h.nombre).join(', ') || 'Sin hijos asignados',
+              cantidadHijos: hijosAsignados.length,
+              mensajesLeidos: Math.floor(Math.random() * 30) + 5
+            }
+          } else if (user.rol === 'admin') {
+            return {
+              ...baseUser,
+              cargo: 'Administrador',
+              tareasPendientes: Math.floor(Math.random() * 10) + 1,
+              reportesGenerados: Math.floor(Math.random() * 15) + 5
+            }
+          } else {
+            return {
+              ...baseUser,
+              cargo: 'Personal de Entrada',
+              escaneosDiarios: Math.floor(Math.random() * 100) + 50
+            }
+          }
+        })
+        .sort((a, b) => b.ultimaActividad - a.ultimaActividad)
+        .slice(0, 8) // Top 8 usuarios más activos
       
       const comunicadosRecientes = [
         {
@@ -157,81 +210,80 @@ const useAdminDashboardStore = create((set, get) => ({
         }
       ]
       
-      const actividadReciente = [
+      // Generar actividad reciente basada en usuarios reales
+      const actividadReciente = []
+      let actividadId = 1
+      
+      // Actividades de tutores
+      todosLosUsuarios.filter(u => u.rol === 'tutor').slice(0, 2).forEach(tutor => {
+        const estudiantesAsignados = DatabaseQueries.getStudentsByTeacherId(tutor.id)
+        if (estudiantesAsignados.length > 0) {
+          actividadReciente.push({
+            id: actividadId++,
+            usuario: tutor.nombre,
+            accion: 'revisó asistencia',
+            detalle: `${estudiantesAsignados[0].grado} - ${estudiantesAsignados.length} estudiantes`,
+            fecha: new Date(Date.now() - Math.floor(Math.random() * 4) * 60 * 60 * 1000),
+            tipo: 'asistencia'
+          })
+        }
+      })
+      
+      // Actividades de padres
+      todosLosUsuarios.filter(u => u.rol === 'padre').slice(0, 2).forEach(padre => {
+        const hijos = DatabaseQueries.getChildrenByParentId(padre.id)
+        if (hijos.length > 0) {
+          actividadReciente.push({
+            id: actividadId++,
+            usuario: padre.nombre,
+            accion: 'consultó notas',
+            detalle: `Revisó calificaciones de ${hijos[0].nombre}`,
+            fecha: new Date(Date.now() - Math.floor(Math.random() * 6) * 60 * 60 * 1000),
+            tipo: 'consulta'
+          })
+        }
+      })
+      
+      // Actividades del sistema
+      actividadReciente.push(
         {
-          id: 1,
-          usuario: 'María García',
-          accion: 'envió comunicado',
-          detalle: 'Cronograma de Evaluaciones - III Bimestre',
-          fecha: new Date(Date.now() - 2 * 60 * 60 * 1000),
-          tipo: 'comunicado'
-        },
-        {
-          id: 2,
-          usuario: 'Roberto Silva',
-          accion: 'actualizó calificaciones',
-          detalle: '5to Grado A - Educación Física',
-          fecha: new Date(Date.now() - 3 * 60 * 60 * 1000),
-          tipo: 'calificacion'
-        },
-        {
-          id: 3,
-          usuario: 'Ana Torres',
-          accion: 'respondió mensaje',
-          detalle: 'Consulta sobre tarea de matemáticas',
-          fecha: new Date(Date.now() - 4 * 60 * 60 * 1000),
-          tipo: 'mensaje'
-        },
-        {
-          id: 4,
-          usuario: 'Administración',
-          accion: 'programó reunión',
-          detalle: 'Coordinación Académica - Viernes 2 PM',
-          fecha: new Date(Date.now() - 5 * 60 * 60 * 1000),
-          tipo: 'reunion'
-        },
-        {
-          id: 5,
+          id: actividadId++,
           usuario: 'Sistema',
           accion: 'backup automático',
-          detalle: 'Respaldo de datos completado exitosamente',
+          detalle: `${todosLosUsuarios.length} usuarios y ${todosLosEstudiantes.length} estudiantes respaldados`,
           fecha: new Date(Date.now() - 6 * 60 * 60 * 1000),
           tipo: 'sistema'
         },
         {
-          id: 6,
-          usuario: 'José López',
-          accion: 'creó proyecto',
-          detalle: 'Lectura Crítica - 4to Grado',
-          fecha: new Date(Date.now() - 8 * 60 * 60 * 1000),
-          tipo: 'proyecto'
-        },
-        {
-          id: 7,
-          usuario: 'Patricia López',
-          accion: 'registró asistencia',
-          detalle: '5to Grado A - 23 de 24 estudiantes',
-          fecha: new Date(Date.now() - 24 * 60 * 60 * 1000),
-          tipo: 'asistencia'
+          id: actividadId++,
+          usuario: 'Sistema',
+          accion: 'sincronización',
+          detalle: `${todasLasRelaciones.length} relaciones padre-hijo actualizadas`,
+          fecha: new Date(Date.now() - 12 * 60 * 60 * 1000),
+          tipo: 'sistema'
         }
-      ]
+      )
+      
+      // Ordenar por fecha más reciente
+      actividadReciente.sort((a, b) => b.fecha - a.fecha)
       
       const reportes = {
         rendimientoAcademico: {
-          promedioGeneral: 16.8,
+          promedioGeneral: 16.8, // TODO: Calcular desde notas reales
           mejorGrado: '5to A',
           promedioMejorGrado: 17.4,
-          estudiantesDestacados: 45,
-          estudiantesEnRiesgo: 12,
+          estudiantesDestacados: Math.floor(todosLosEstudiantes.length * 0.15), // 15% destacados
+          estudiantesEnRiesgo: Math.floor(todosLosEstudiantes.length * 0.05), // 5% en riesgo
           materiasMejorRendimiento: ['Matemáticas', 'Comunicación'],
           materiasMenorRendimiento: ['Ciencias', 'Inglés']
         },
         asistencia: {
-          promedioGeneral: 94.2,
-          mejorAsistencia: '3er A',
-          porcentajeMejor: 98.1,
-          ausentismoAlto: ['1er B', '2do C'],
-          tendencia: 'estable'
+          promedioGeneral: Math.round(promedioAsistenciaGeneral * 10) / 10,
+          estudiantesPresentes: estadisticasAsistenciaEstudiantes.conEntrada,
+          estudiantesAusentes: estadisticasAsistenciaEstudiantes.ausentes,
+          tutoresPresentes: estadisticasTutores.entradas,
+          tutoresAusentes: estadisticasTutores.faltas,
+          tendencia: promedioAsistenciaGeneral > 90 ? 'excelente' : promedioAsistenciaGeneral > 80 ? 'buena' : 'requiere_atencion'
         },
         comunicaciones: {
           totalEnviados: 47,
@@ -277,13 +329,40 @@ const useAdminDashboardStore = create((set, get) => ({
       
       set({
         estadisticasGenerales,
-        usuariosActivos,
+        usuariosActivos: usuariosRecentementeActivos,
         comunicadosRecientes,
         actividadReciente,
         reportes,
         alertasSeguridad,
         cargando: false
       })
+      
+      } catch (error) {
+        console.error('❌ Error al cargar admin dashboard:', error)
+        set({
+          cargando: false,
+          estadisticasGenerales: {
+            totalUsuarios: 0,
+            usuariosActivos: 0,
+            totalEstudiantes: 0,
+            totalProfesores: 0,
+            totalPadres: 0,
+            totalAdministrativos: 0,
+            comunicadosEnviados: 0,
+            comunicadosHoy: 0,
+            promedioCalificaciones: 0,
+            asistenciaPromedio: 0,
+            satisfaccionPadres: 0,
+            relacionesPadreHijo: 0,
+            estudiantesSinPadres: 0
+          },
+          usuariosActivos: [],
+          comunicadosRecientes: [],
+          actividadReciente: [],
+          reportes: {},
+          alertasSeguridad: []
+        })
+      }
     }, 800)
   },
   

@@ -12,7 +12,7 @@ import {
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 
-const SecurityAlerts = ({ alertas, onMarcarComoLeida, loading = false }) => {
+const SecurityAlerts = ({ alertas, onMarcarComoLeida, loading = false, onAlertClick }) => {
   if (loading) {
     return (
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
@@ -126,7 +126,13 @@ const SecurityAlerts = ({ alertas, onMarcarComoLeida, loading = false }) => {
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: index * 0.05 }}
-              className={`${colors.bg} border ${colors.border} rounded-lg p-3 transition-all duration-200`}
+              whileHover={{ scale: 1.02 }}
+              onClick={() => {
+                if (onAlertClick) {
+                  onAlertClick(alerta)
+                }
+              }}
+              className={`${colors.bg} border ${colors.border} rounded-lg p-3 transition-all duration-200 cursor-pointer`}
             >
               <div className="flex items-start space-x-3">
                 <div className={`w-8 h-8 rounded-full ${colors.icon} flex items-center justify-center flex-shrink-0`}>
@@ -179,7 +185,13 @@ const SecurityAlerts = ({ alertas, onMarcarComoLeida, loading = false }) => {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: (alertasNoLeidas.length + index) * 0.05 }}
-              className="bg-gray-50 border border-gray-200 rounded-lg p-3 opacity-60"
+              whileHover={{ scale: 1.02 }}
+              onClick={() => {
+                if (onAlertClick) {
+                  onAlertClick(alerta)
+                }
+              }}
+              className="bg-gray-50 border border-gray-200 rounded-lg p-3 opacity-60 cursor-pointer hover:opacity-80 transition-all duration-200"
             >
               <div className="flex items-start space-x-3">
                 <div className="w-8 h-8 rounded-full bg-gray-100 text-gray-500 flex items-center justify-center flex-shrink-0">

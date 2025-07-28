@@ -1,0 +1,51 @@
+nombre,apellidos,codigo,grado,seccion,fecha_nacimiento,dni,telefono,direccion,nombrePadre,telefonoPadre,emailPadre,observaciones
+Ana Sofia,Rodriguez Martinez,EST00001,1ro Primaria,A,2017-03-15,87654321,987123456,Av. Los Olivos 123 - Lima,Carlos Rodriguez,987654321,carlos.rodriguez@email.com,Estudiante muy participativa
+Luis Fernando,Gonzalez Torres,EST00002,1ro Primaria,A,2017-05-22,87654322,987123457,Jr. Las Flores 456 - Lima,Maria Gonzalez,987654322,maria.gonzalez@email.com,Necesita refuerzo en matematicas
+Isabella Maria,Santos Vargas,EST00003,1ro Primaria,B,2017-01-08,87654323,987123458,Calle Los Pinos 789 - Lima,Pedro Santos,987654323,pedro.santos@email.com,Excelente rendimiento academico
+Diego Alexander,Vargas Mendoza,EST00004,1ro Primaria,B,2017-07-14,87654324,987123459,Av. Universitaria 321 - Lima,Ana Vargas,987654324,ana.vargas@email.com,Muy creativo en actividades artisticas
+Camila Andrea,Lopez Fernandez,EST00005,1ro Primaria,A,2017-04-12,87654325,987123460,Jr. San Martin 654 - Lima,Jorge Lopez,987654325,jorge.lopez@email.com,Destacada en ciencias naturales
+Sebastian Jose,Morales Rivera,EST00006,2do Primaria,A,2016-09-03,87654326,987123461,Calle Libertad 987 - Lima,Rosa Morales,987654326,rosa.morales@email.com,Requiere apoyo en comprension lectora
+Valentina Nicole,Herrera Castro,EST00007,2do Primaria,A,2016-11-28,87654327,987123462,Av. Brasil 147 - Lima,Luis Herrera,987654327,luis.herrera@email.com,Excelente en educacion fisica
+Mateo Alejandro,Cruz Jimenez,EST00008,2do Primaria,B,2016-06-19,87654328,987123463,Jr. Tacna 258 - Lima,Carmen Cruz,987654328,carmen.cruz@email.com,Lider natural del grupo
+Sofia Gabriela,Ramirez Gutierrez,EST00009,2do Primaria,B,2016-08-07,87654329,987123464,Calle Arequipa 369 - Lima,Miguel Ramirez,987654329,miguel.ramirez@email.com,Talento especial para musica
+Nicolas David,Flores Pena,EST00010,2do Primaria,A,2016-12-16,87654330,987123465,Av. Colonial 471 - Lima,Patricia Flores,987654330,patricia.flores@email.com,Muy responsable y puntual
+Emma Valentina,Torres Silva,EST00011,3ro Primaria,A,2015-02-25,87654331,987123466,Jr. Huancayo 582 - Lima,Roberto Torres,987654331,roberto.torres@email.com,Destacada en matematicas
+Joaquin Matias,Garcia Ramos,EST00012,3ro Primaria,A,2015-10-11,87654332,987123467,Calle Cusco 693 - Lima,Elena Garcia,987654332,elena.garcia@email.com,Excelente companero de clase
+Antonella Sofia,Mendez Vega,EST00013,3ro Primaria,B,2015-05-30,87654333,987123468,Av. Javier Prado 714 - Lima,Fernando Mendez,987654333,fernando.mendez@email.com,Muy organizada y estudiosa
+Thiago Sebastian,Paredes Luna,EST00014,3ro Primaria,B,2015-09-18,87654334,987123469,Jr. Miraflores 825 - Lima,Claudia Paredes,987654334,claudia.paredes@email.com,Destacado en ciencias sociales
+Zoe Adriana,Castillo Rojas,EST00015,3ro Primaria,A,2015-01-04,87654335,987123470,Calle San Borja 936 - Lima,Daniel Castillo,987654335,daniel.castillo@email.com,Excelente en idiomas
+Gael Eduardo,Ruiz Moreno,EST00016,4to Primaria,A,2014-07-23,87654336,987123471,Av. Petit Thouars 147 - Lima,Veronica Ruiz,987654336,veronica.ruiz@email.com,Muy participativo en deportes
+Martina Isabel,Ortega Campos,EST00017,4to Primaria,A,2014-03-09,87654337,987123472,Jr. La Mar 258 - Lima,Andres Ortega,987654337,andres.ortega@email.com,Lider academica del salon
+Benjamin Alejandro,Guerrero Soto,EST00018,4to Primaria,B,2014-11-27,87654338,987123473,Calle Angamos 369 - Lima,Isabel Guerrero,987654338,isabel.guerrero@email.com,Excelente en tecnologia
+Renata Camila,Aguilar Diaz,EST00019,4to Primaria,B,2014-06-14,87654339,987123474,Av. Salaverry 471 - Lima,Mario Aguilar,987654339,mario.aguilar@email.com,Muy creativa y artistica
+Ian Maximiliano,Romero Chavez,EST00020,4to Primaria,A,2014-08-02,87654340,987123475,Jr. Quilca 582 - Lima,Lucia Romero,987654340,lucia.romero@email.com,Destacado en matematicas avanzadas
+Aitana Sophia,Medina Alvarez,EST00021,5to Primaria,A,2013-04-20,87654341,987123476,Calle Camana 693 - Lima,Raul Medina,987654341,raul.medina@email.com,Excelente liderazgo y organizacion
+Liam Alexander,Navarro Iglesias,EST00022,5to Primaria,A,2013-12-08,87654342,987123477,Av. Wilson 714 - Lima,Silvia Navarro,987654342,silvia.navarro@email.com,Muy buen companero de equipo
+Mia Fernanda,Vega Herrera,EST00023,5to Primaria,B,2013-07-25,87654343,987123478,Jr. Azangaro 825 - Lima,Cesar Vega,987654343,cesar.vega@email.com,Destacada en ciencias naturales
+Enzo Gabriel,Delgado Morales,EST00024,5to Primaria,B,2013-09-13,87654344,987123479,Calle Lampa 936 - Lima,Martha Delgado,987654344,martha.delgado@email.com,Excelente en educacion fisica
+Ariana Victoria,Jimenez Espinoza,EST00025,5to Primaria,A,2013-02-06,87654345,987123480,Av. Grau 147 - Lima,Oscar Jimenez,987654345,oscar.jimenez@email.com,Muy sociable y colaborativa
+Matias Santiago,Reyes Sandoval,EST00026,6to Primaria,A,2012-10-24,87654346,987123481,Jr. Ica 258 - Lima,Pilar Reyes,987654346,pilar.reyes@email.com,Preparandose para secundaria
+Luna Isabella,Cordoba Maldonado,EST00027,6to Primaria,A,2012-05-11,87654347,987123482,Calle Junin 369 - Lima,Hector Cordoba,987654347,hector.cordoba@email.com,Muy responsable y madura
+Adrian Emilio,Salazar Ponce,EST00028,6to Primaria,B,2012-01-29,87654348,987123483,Av. Tacna 471 - Lima,Gloria Salazar,987654348,gloria.salazar@email.com,Destacado en artes y creatividad
+Bianca Alejandra,Vargas Quispe,EST00029,6to Primaria,B,2012-07-17,87654349,987123484,Jr. Ayacucho 582 - Lima,Ricardo Vargas,987654349,ricardo.vargas@email.com,Excelente en comunicacion oral
+Thiago Andres,Mendoza Falcon,EST00030,6to Primaria,A,2012-03-05,87654350,987123485,Calle Huallaga 693 - Lima,Beatriz Mendoza,987654350,beatriz.mendoza@email.com,Lider estudiantil natural
+Samantha Nicole,Castro Cabrera,EST00031,1ro Secundaria,A,2011-11-22,87654351,987123486,Av. Abancay 714 - Lima,Manuel Castro,987654351,manuel.castro@email.com,Adaptandose bien a secundaria
+Maximiliano Jose,Ramos Heredia,EST00032,1ro Secundaria,A,2011-08-10,87654352,987123487,Jr. Callao 825 - Lima,Teresa Ramos,987654352,teresa.ramos@email.com,Excelente en ciencias exactas
+Danna Paola,Fernandez Aquino,EST00033,1ro Secundaria,B,2011-04-28,87654353,987123488,Calle Puno 936 - Lima,Julio Fernandez,987654353,julio.fernandez@email.com,Muy organizada y metodica
+Santiago Miguel,Herrera Cordova,EST00034,1ro Secundaria,B,2011-12-15,87654354,987123489,Av. Garcilaso 147 - Lima,Monica Herrera,987654354,monica.herrera@email.com,Destacado en deportes y valores
+Alexa Valentina,Torres Gutierrez,EST00035,1ro Secundaria,A,2011-06-03,87654355,987123490,Jr. Cusco 258 - Lima,Felipe Torres,987654355,felipe.torres@email.com,Excelente rendimiento academico
+Dylan Alejandro,Garcia Montoya,EST00036,2do Secundaria,A,2010-09-21,87654356,987123491,Calle Loreto 369 - Lima,Carla Garcia,987654356,carla.garcia@email.com,Liderazgo y responsabilidad
+Renata Sofia,Martinez Flores,EST00037,2do Secundaria,A,2010-05-09,87654357,987123492,Av. 28 de Julio 471 - Lima,Alberto Martinez,987654357,alberto.martinez@email.com,Muy analitica y reflexiva
+Leonardo David,Gonzalez Cruz,EST00038,2do Secundaria,B,2010-01-26,87654358,987123493,Jr. Bolivar 582 - Lima,Diana Gonzalez,987654358,diana.gonzalez@email.com,Desarrollando pensamiento critico
+Catalina Maria,Rodriguez Silva,EST00039,2do Secundaria,B,2010-10-14,87654359,987123494,Calle Ucayali 693 - Lima,Sergio Rodriguez,987654359,sergio.rodriguez@email.com,Destacada en matematicas avanzadas
+Emiliano Jose,Lopez Vargas,EST00040,2do Secundaria,A,2010-07-02,87654360,987123495,Av. Venezuela 714 - Lima,Adriana Lopez,987654360,adriana.lopez@email.com,Muy colaborativo en proyectos
+Valeria Andrea,Morales Santos,EST00041,3ro Secundaria,A,2009-03-20,87654361,987123496,Jr. Carabaya 825 - Lima,Rodrigo Morales,987654361,rodrigo.morales@email.com,Preparandose para especializacion
+Iker Sebastian,Herrera Mendez,EST00042,3ro Secundaria,A,2009-11-07,87654362,987123497,Calle Conde Superunda 936 - Lima,Vanessa Herrera,987654362,vanessa.herrera@email.com,Destacado en ciencias aplicadas
+Amelia Isabella,Castro Torres,EST00043,3ro Secundaria,B,2009-06-25,87654363,987123498,Av. Emancipacion 147 - Lima,Eduardo Castro,987654363,eduardo.castro@email.com,Muy responsable y constante
+Luca Matteo,Ramirez Garcia,EST00044,3ro Secundaria,B,2009-02-12,87654364,987123499,Jr. Ancash 258 - Lima,Paola Ramirez,987654364,paola.ramirez@email.com,Excelente en tecnologia digital
+Salome Victoria,Flores Rodriguez,EST00045,4to Secundaria,A,2008-09-30,87654365,987123500,Calle Miro Quesada 369 - Lima,German Flores,987654365,german.flores@email.com,Lider estudiantil comprometida
+Bastian Andres,Mendoza Lopez,EST00046,4to Secundaria,A,2008-05-18,87654366,987123501,Av. Alfonso Ugarte 471 - Lima,Liliana Mendoza,987654366,liliana.mendoza@email.com,Muy participativo en debates
+Antonella Camila,Vargas Martinez,EST00047,4to Secundaria,B,2008-12-05,87654367,987123502,Jr. Huanta 582 - Lima,Francisco Vargas,987654367,francisco.vargas@email.com,Destacada academicamente
+Gian Marco,Guerrero Fernandez,EST00048,4to Secundaria,B,2008-08-23,87654368,987123503,Calle Baquijano 693 - Lima,Rosa Guerrero,987654368,rosa.guerrero@email.com,Excelente en educacion fisica
+Micaela Sofia,Aguilar Herrera,EST00049,5to Secundaria,A,2007-04-11,87654369,987123504,Av. Manco Capac 714 - Lima,Ivan Aguilar,987654369,ivan.aguilar@email.com,Preparandose para universidad
+Gabriel Alexander,Romero Castro,EST00050,5to Secundaria,A,2007-12-29,87654370,987123505,Jr. Andahuaylas 825 - Lima,Cecilia Romero,987654370,cecilia.romero@email.com,Liderazgo y vision de futuro

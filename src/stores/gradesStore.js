@@ -1,4 +1,6 @@
 import { create } from 'zustand'
+import useAuthStore from './authStore'
+import { DatabaseQueries } from '../data/databaseSchema'
 
 const useGradesStore = create((set, get) => ({
   calificaciones: [],
@@ -15,6 +17,15 @@ const useGradesStore = create((set, get) => ({
     set({ cargando: true })
     
     setTimeout(() => {
+      // FILTRAR CALIFICACIONES POR ROL Y USUARIO
+      const authStore = useAuthStore.getState()
+      const { usuario, rol } = authStore
+      
+      if (!usuario) {
+        set({ calificaciones: [], materias: [], bimestres: [], cargando: false })
+        return
+      }
+      
       const materias = [
         { id: 1, nombre: 'Matemáticas', profesor: 'María García', color: 'bg-blue-500' },
         { id: 2, nombre: 'Comunicación', profesor: 'José López', color: 'bg-green-500' },
@@ -33,11 +44,25 @@ const useGradesStore = create((set, get) => ({
         { id: 4, nombre: 'IV Bimestre', fechaInicio: '2024-10-16', fechaFin: '2024-12-20', activo: false, finalizado: false }
       ]
 
-      // Estudiantes de la familia (Carlos Rodríguez tiene 2 hijos)
-      const estudiantes = [
-        { id: 1, nombre: 'Ana Sofía Rodríguez', grado: '5to Grado', seccion: 'A' },
-        { id: 2, nombre: 'Luis Miguel Rodríguez', grado: '3er Grado', seccion: 'B' }
-      ]
+      // OBTENER ESTUDIANTES SEGÚN ROL
+      let estudiantes = []
+      
+      if (rol === 'padre') {
+        // Padre solo ve calificaciones de sus hijos
+        estudiantes = DatabaseQueries.getChildrenByParentId(usuario.id)
+      } else if (rol === 'tutor') {
+        // Tutor solo ve calificaciones de sus estudiantes asignados
+        estudiantes = DatabaseQueries.getStudentsByTeacherId(usuario.id)
+      } else if (rol === 'admin') {
+        // Admin ve todos los estudiantes
+        estudiantes = DatabaseQueries.getAllStudents()
+      }
+      
+      // Si no hay estudiantes autorizados, no mostrar calificaciones
+      if (estudiantes.length === 0) {
+        set({ calificaciones: [], materias, bimestres, cargando: false })
+        return
+      }
 
       const calificaciones = []
 
@@ -269,6 +294,19 @@ const useGradesStore = create((set, get) => ({
     }
   },
 
+  // Obtener promedio general de un estudiante específico
+  obtenerPromedioEstudiante: (estudianteId) => {
+    const { calificaciones } = get()
+    const calificacionesEstudiante = calificaciones.filter(cal => cal.estudianteId === estudianteId)
+    
+    if (calificacionesEstudiante.length === 0) {
+      return null // Sin calificaciones asignadas
+    }
+    
+    const promedioTotal = calificacionesEstudiante.reduce((sum, cal) => sum + cal.promedio, 0) / calificacionesEstudiante.length
+    return Math.round(promedioTotal * 100) / 100
+  },
+
   obtenerRankingMaterias: (estudianteId) => {
     const { calificaciones, materias } = get()
     const bimestreActual = 3 // III Bimestre activo
@@ -290,6 +328,302 @@ const useGradesStore = create((set, get) => ({
     }).sort((a, b) => b.promedio - a.promedio)
 
     return ranking
+  },
+
+  // Función requerida por Students.jsx
+  getGradesByStudent: (estudianteId) => {
+    const { calificaciones } = get()
+    // Comparar IDs como strings para evitar problemas de tipos
+    return calificaciones.filter(cal => String(cal.estudianteId) === String(estudianteId))
+  },
+
+  // Obtener calificaciones por materia
+  getGradesBySubject: (subject) => {
+    const { calificaciones } = get()
+    return calificaciones.filter(cal => cal.materia === subject)
+  },
+
+  // Obtener estadísticas de calificaciones
+  getGradeStats: () => {
+    const { calificaciones } = get()
+    const totalGrades = calificaciones.length
+    const averageGrade = totalGrades > 0 
+      ? calificaciones.reduce((sum, cal) => sum + (cal.promedio || 0), 0) / totalGrades
+      : 0
+    
+    return {
+      total: totalGrades,
+      average: averageGrade,
+      approved: calificaciones.filter(cal => cal.promedio >= 13).length,
+      failed: calificaciones.filter(cal => cal.promedio < 13).length
+    }
+  },
+
+  // Crear nueva calificación
+  crearCalificacion: async (calificacionData) => {
+    const { calificaciones } = get()
+    
+    // Generar ID único
+    const nuevaCalificacion = {
+      id: `cal_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+      ...calificacionData,
+      fechaCreacion: new Date().toISOString(),
+      fechaActualizacion: new Date().toISOString()
+    }
+    
+    // Agregar a las calificaciones existentes
+    set({ calificaciones: [...calificaciones, nuevaCalificacion] })
+    
+    // En producción, aquí se guardaría en la base de datos
+    return nuevaCalificacion
+  },
+
+  // Actualizar calificación existente
+  actualizarCalificacion: async (calificacionId, actualizaciones) => {
+    const { calificaciones } = get()
+    
+    const calificacionesActualizadas = calificaciones.map(cal => {
+      if (cal.id === calificacionId) {
+        return {
+          ...cal,
+          ...actualizaciones,
+          fechaActualizacion: new Date().toISOString()
+        }
+      }
+      return cal
+    })
+    
+    set({ calificaciones: calificacionesActualizadas })
+    
+    // En producción, aquí se actualizaría en la base de datos
+    return calificacionesActualizadas.find(cal => cal.id === calificacionId)
+  },
+
+  // Eliminar calificación
+  eliminarCalificacion: async (calificacionId) => {
+    const { calificaciones } = get()
+    
+    const calificacionesFiltradas = calificaciones.filter(cal => cal.id !== calificacionId)
+    set({ calificaciones: calificacionesFiltradas })
+    
+    // En producción, aquí se eliminaría de la base de datos
+    return true
+  },
+
+  // Obtener calificaciones por estudiante y materia
+  obtenerCalificacionesPorEstudianteMateria: (estudianteId, materia) => {
+    const { calificaciones } = get()
+    return calificaciones.filter(cal => 
+      cal.estudianteId === estudianteId && 
+      cal.materia === materia
+    )
+  },
+
+  // Exportar calificaciones a Excel
+  exportarCalificaciones: async (formato = 'excel') => {
+    const { calificaciones } = get()
+    
+    try {
+      // Importar dinámicamente el exportador
+      const { ExcelExporter } = await import('../utils/excelExporter')
+      
+      // Preparar datos con información completa
+      const datosCompletos = calificaciones.map(cal => ({
+        ...cal,
+        nombreEstudiante: cal.estudiante,
+        tipoEvaluacion: cal.evaluaciones?.[0]?.tipo || 'Evaluación',
+        descripcion: cal.evaluaciones?.[0]?.descripcion || 'Sin descripción',
+        nota: cal.evaluaciones?.[0]?.nota || cal.promedio,
+        peso: cal.evaluaciones?.[0]?.peso || 1,
+        fecha: cal.evaluaciones?.[0]?.fecha || cal.fecha || new Date().toISOString(),
+        observaciones: cal.observaciones || 'Sin observaciones'
+      }))
+      
+      // Exportar con formato real
+      const resultado = ExcelExporter.exportarCalificaciones(datosCompletos)
+      
+      if (resultado.success) {
+        return resultado
+      } else {
+        throw new Error(resultado.error)
+      }
+      
+    } catch (error) {
+      console.error('Error en exportación:', error)
+      return {
+        success: false,
+        error: error.message || 'Error al exportar calificaciones',
+        mensaje: 'No se pudo completar la exportación'
+      }
+    }
+  },
+
+  // Obtener calificaciones por bimestre para el nuevo dashboard
+  obtenerCalificacionesPorBimestre: (estudianteId, bimestre) => {
+    const { calificaciones, materias } = get()
+    
+    // Mapear ID de bimestre a número
+    const bimestreMap = {
+      'bim1': 1,
+      'bim2': 2,
+      'bim3': 3,
+      'bim4': 4,
+      'final': 'final'
+    }
+    
+    const bimestreId = bimestreMap[bimestre]
+    
+    if (bimestreId === 'final') {
+      // Para nota final, retornar estructura especial
+      return materias.map(materia => ({
+        materia: materia.id === 1 ? 'MAT' : 
+                materia.id === 2 ? 'COM' :
+                materia.id === 3 ? 'CYT' :
+                materia.id === 4 ? 'PS' :
+                materia.id === 5 ? 'ART' :
+                materia.id === 6 ? 'EF' :
+                materia.id === 7 ? 'ING' : 'REL',
+        materiaNombre: materia.nombre,
+        nota: 0, // Se calculará con calcularNotaFinal
+        esFinal: true
+      }))
+    }
+    
+    // Para bimestres normales
+    const calificacionesBimestre = calificaciones.filter(cal => 
+      cal.estudianteId === estudianteId && 
+      cal.bimestreId === bimestreId
+    )
+    
+    return calificacionesBimestre.map(cal => ({
+      materia: cal.materiaId === 1 ? 'MAT' : 
+              cal.materiaId === 2 ? 'COM' :
+              cal.materiaId === 3 ? 'CYT' :
+              cal.materiaId === 4 ? 'PS' :
+              cal.materiaId === 5 ? 'ART' :
+              cal.materiaId === 6 ? 'EF' :
+              cal.materiaId === 7 ? 'ING' : 'REL',
+      materiaNombre: cal.materia,
+      nota: cal.promedio,
+      bimestre: cal.bimestre,
+      evaluaciones: cal.evaluaciones
+    }))
+  },
+
+  // Calcular promedio general por bimestre
+  calcularPromedioGeneral: (estudianteId, bimestre) => {
+    const notas = get().obtenerCalificacionesPorBimestre(estudianteId, bimestre)
+    if (notas.length === 0) return 0
+    
+    const notasValidas = notas.filter(n => n.nota > 0)
+    if (notasValidas.length === 0) return 0
+    
+    const suma = notasValidas.reduce((acc, n) => acc + n.nota, 0)
+    return Math.round((suma / notasValidas.length) * 10) / 10
+  },
+
+  // Calcular nota final de una materia
+  calcularNotaFinal: (estudianteId, materiaCode) => {
+    const { calificaciones } = get()
+    
+    // Mapear código de materia a ID
+    const materiaMap = {
+      'MAT': 1, 'COM': 2, 'CYT': 3, 'PS': 4,
+      'ART': 5, 'EF': 6, 'ING': 7, 'REL': 8
+    }
+    
+    const materiaId = materiaMap[materiaCode]
+    if (!materiaId) return 0
+    
+    // Obtener notas de todos los bimestres para esta materia
+    const notasBimestres = calificaciones
+      .filter(cal => 
+        cal.estudianteId === estudianteId && 
+        cal.materiaId === materiaId
+      )
+      .sort((a, b) => a.bimestreId - b.bimestreId)
+    
+    if (notasBimestres.length === 0) return 0
+    
+    // Calcular promedio simple de los bimestres
+    const suma = notasBimestres.reduce((acc, cal) => acc + cal.promedio, 0)
+    return Math.round((suma / notasBimestres.length) * 10) / 10
+  },
+
+  // Registrar una nueva nota
+  registrarNota: async (notaData) => {
+    const { calificaciones } = get()
+    
+    // Mapear código de materia a ID
+    const materiaMap = {
+      'MAT': 1, 'COM': 2, 'CYT': 3, 'PS': 4,
+      'ART': 5, 'EF': 6, 'ING': 7, 'REL': 8
+    }
+    
+    // Mapear bimestre a ID
+    const bimestreMap = {
+      'bim1': 1, 'bim2': 2, 'bim3': 3, 'bim4': 4
+    }
+    
+    const materiaId = materiaMap[notaData.materia]
+    const bimestreId = bimestreMap[notaData.bimestre]
+    
+    // Buscar si ya existe una calificación para este estudiante/materia/bimestre
+    const calificacionExistente = calificaciones.find(cal =>
+      cal.estudianteId === notaData.estudianteId &&
+      cal.materiaId === materiaId &&
+      cal.bimestreId === bimestreId
+    )
+    
+    if (calificacionExistente) {
+      // Actualizar la calificación existente
+      return await get().actualizarCalificacion(calificacionExistente.id, {
+        promedio: notaData.nota,
+        fechaActualizacion: notaData.fecha || new Date(),
+        evaluaciones: [{
+          id: `eval_${Date.now()}`,
+          tipo: 'Manual',
+          descripcion: 'Nota registrada por profesor',
+          nota: notaData.nota,
+          fecha: notaData.fecha || new Date(),
+          peso: 1
+        }]
+      })
+    } else {
+      // Crear nueva calificación
+      const materias = get().materias
+      const bimestres = get().bimestres
+      const materia = materias.find(m => m.id === materiaId)
+      const bimestre = bimestres.find(b => b.id === bimestreId)
+      
+      const estudiante = DatabaseQueries.getAllStudents().find(e => e.id === notaData.estudianteId)
+      
+      return await get().crearCalificacion({
+        estudianteId: notaData.estudianteId,
+        estudiante: estudiante?.nombre || 'Estudiante',
+        grado: estudiante?.grado || '',
+        seccion: estudiante?.seccion || '',
+        materiaId: materiaId,
+        materia: materia?.nombre || '',
+        profesor: materia?.profesor || '',
+        bimestreId: bimestreId,
+        bimestre: bimestre?.nombre || '',
+        evaluaciones: [{
+          id: `eval_${Date.now()}`,
+          tipo: 'Manual',
+          descripcion: 'Nota registrada por profesor',
+          nota: notaData.nota,
+          fecha: notaData.fecha || new Date(),
+          peso: 1
+        }],
+        promedio: notaData.nota,
+        estado: notaData.nota >= 13 ? 'aprobado' : 'desaprobado',
+        observaciones: notaData.nota >= 17 ? 'Excelente rendimiento' : 
+                      notaData.nota >= 15 ? 'Buen rendimiento' :
+                      notaData.nota >= 13 ? 'Rendimiento regular' : 'Necesita refuerzo',
+        fechaActualizacion: notaData.fecha || new Date()
+      })
+    }
   }
 }))
 

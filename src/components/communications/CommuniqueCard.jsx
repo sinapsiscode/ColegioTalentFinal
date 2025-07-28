@@ -61,15 +61,15 @@ const CommuniqueCard = ({ comunicado, onMarkAsRead, onMarkAsUnread, onViewDetail
         !comunicado.leido ? 'border-l-4 border-l-talentos-primary' : 'border-gray-200'
       }`}
     >
-      <div className="p-6">
+      <div className="p-3 sm:p-4 md:p-6">
         {/* Header */}
-        <div className="flex items-start justify-between mb-4">
-          <div className="flex-1">
+        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between mb-3 sm:mb-4 space-y-2 sm:space-y-0">
+          <div className="flex-1 min-w-0">
             <div className="flex items-center space-x-2 mb-2">
               {!comunicado.leido && (
-                <div className="w-2 h-2 bg-talentos-primary rounded-full"></div>
+                <div className="w-2 h-2 bg-talentos-primary rounded-full flex-shrink-0"></div>
               )}
-              <h3 className={`text-lg font-semibold ${
+              <h3 className={`text-base sm:text-lg font-semibold truncate ${
                 !comunicado.leido ? 'text-gray-900' : 'text-gray-700'
               }`}>
                 {comunicado.titulo}
@@ -77,10 +77,10 @@ const CommuniqueCard = ({ comunicado, onMarkAsRead, onMarkAsUnread, onViewDetail
             </div>
             
             {/* Metadata */}
-            <div className="flex flex-wrap items-center gap-4 text-sm text-gray-600">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs sm:text-sm text-gray-600">
               <div className="flex items-center space-x-1">
-                <FiUser className="w-4 h-4" />
-                <span>{comunicado.autor}</span>
+                <FiUser className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="truncate max-w-[120px] sm:max-w-none">{comunicado.autor}</span>
               </div>
               
               <div className="flex items-center space-x-1">
@@ -132,29 +132,30 @@ const CommuniqueCard = ({ comunicado, onMarkAsRead, onMarkAsUnread, onViewDetail
         )}
 
         {/* Category and actions */}
-        <div className="flex items-center justify-between">
-          <span className={`px-3 py-1 rounded-full text-xs font-medium ${getCategoryColor(comunicado.categoria)}`}>
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-2 sm:space-y-0">
+          <span className={`px-2 py-1 rounded-full text-xs font-medium self-start ${getCategoryColor(comunicado.categoria)}`}>
             {comunicado.categoria.charAt(0).toUpperCase() + comunicado.categoria.slice(1)}
           </span>
           
-          <div className="flex items-center space-x-2">
-            <motion.button
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={() => comunicado.leido ? onMarkAsUnread(comunicado.id) : onMarkAsRead(comunicado.id)}
-              className="p-2 text-gray-600 hover:text-talentos-primary transition-colors duration-200"
-              title={comunicado.leido ? 'Marcar como no leído' : 'Marcar como leído'}
-            >
-              {comunicado.leido ? <FiEyeOff className="w-4 h-4" /> : <FiEye className="w-4 h-4" />}
-            </motion.button>
-            
+          <div className="flex items-center space-x-1 sm:space-x-2">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => onViewDetails(comunicado)}
-              className="px-4 py-2 bg-talentos-primary text-white text-sm font-medium rounded-lg hover:bg-talentos-secondary transition-colors duration-200"
+              onClick={() => comunicado.leido ? onMarkAsUnread(comunicado.id) : onMarkAsRead(comunicado.id)}
+              className="p-1.5 sm:p-2 text-gray-600 hover:text-talentos-primary transition-colors duration-200 rounded-md hover:bg-gray-100 flex-shrink-0"
+              title={comunicado.leido ? 'Marcar como no leído' : 'Marcar como leído'}
             >
-              Ver completo
+              {comunicado.leido ? <FiEyeOff className="w-3 h-3 sm:w-4 sm:h-4" /> : <FiEye className="w-3 h-3 sm:w-4 sm:h-4" />}
+            </motion.button>
+            
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => onViewDetails(comunicado)}
+              className="px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-talentos-primary text-white text-xs sm:text-sm font-medium rounded-md sm:rounded-lg hover:bg-talentos-secondary transition-colors duration-200 whitespace-nowrap flex-shrink-0"
+            >
+              <span className="hidden sm:inline">Ver completo</span>
+              <span className="sm:hidden">Ver</span>
             </motion.button>
           </div>
         </div>

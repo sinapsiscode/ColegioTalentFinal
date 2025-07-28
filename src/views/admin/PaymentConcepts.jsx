@@ -155,10 +155,10 @@ const PaymentConcepts = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      <div className="p-6 space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-800">Gestión de Conceptos de Pago</h1>
-        <div className="flex gap-3">
+      <div className="py-4 sm:py-6 px-4 sm:px-6 space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 sm:gap-0">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Gestión de Conceptos de Pago</h1>
+        <div className="flex flex-wrap gap-2 sm:gap-3">
           <AnimatedButton
             onClick={exportToCSV}
             className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
@@ -176,7 +176,7 @@ const PaymentConcepts = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <AnimatedCard className="bg-blue-50 border-l-4 border-blue-500">
           <div className="flex items-center justify-between">
             <div>
@@ -214,11 +214,11 @@ const PaymentConcepts = () => {
         </AnimatedCard>
       </div>
 
-      <AnimatedCard>
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-semibold text-gray-800">Lista de Conceptos</h2>
+      <AnimatedCard className="p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-4 sm:mb-6 gap-4 sm:gap-0">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-800">Lista de Conceptos</h2>
           
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-2 sm:gap-3">
             <FilterDropdown
               label="Categoría"
               value={filtros.categoria}
@@ -257,13 +257,13 @@ const PaymentConcepts = () => {
           <table className="w-full table-auto">
             <thead>
               <tr className="bg-gray-50">
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Nombre</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Categoría</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Monto</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Tipo</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Vencimiento</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Estado</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Acciones</th>
+                <th className="px-3 sm:px-4 py-3 sm:py-4 text-left text-sm font-medium text-gray-600">Nombre</th>
+                <th className="px-3 sm:px-4 py-3 sm:py-4 text-left text-sm font-medium text-gray-600">Categoría</th>
+                <th className="px-3 sm:px-4 py-3 sm:py-4 text-left text-sm font-medium text-gray-600">Monto</th>
+                <th className="px-3 sm:px-4 py-3 sm:py-4 text-left text-sm font-medium text-gray-600">Tipo</th>
+                <th className="px-3 sm:px-4 py-3 sm:py-4 text-left text-sm font-medium text-gray-600">Vencimiento</th>
+                <th className="px-3 sm:px-4 py-3 sm:py-4 text-left text-sm font-medium text-gray-600">Estado</th>
+                <th className="px-3 sm:px-4 py-3 sm:py-4 text-left text-sm font-medium text-gray-600">Acciones</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -274,32 +274,32 @@ const PaymentConcepts = () => {
                   animate={{ opacity: 1 }}
                   className="hover:bg-gray-50"
                 >
-                  <td className="px-4 py-3 text-sm font-medium text-gray-800">{concepto.nombre}</td>
-                  <td className="px-4 py-3">
+                  <td className="px-3 sm:px-4 py-3 text-sm font-medium text-gray-800">{concepto.nombre}</td>
+                  <td className="px-3 sm:px-4 py-3">
                     <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-${getCategoriaColor(concepto.categoria)}-100 text-${getCategoriaColor(concepto.categoria)}-800`}>
                       {getCategoriaLabel(concepto.categoria)}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-sm font-medium text-gray-800">S/. {concepto.monto.toFixed(2)}</td>
-                  <td className="px-4 py-3">
+                  <td className="px-3 sm:px-4 py-3 text-sm font-medium text-gray-800">S/. {concepto.monto.toFixed(2)}</td>
+                  <td className="px-3 sm:px-4 py-3">
                     <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                       concepto.obligatorio ? 'bg-red-100 text-red-800' : 'bg-gray-100 text-gray-800'
                     }`}>
                       {concepto.obligatorio ? 'Obligatorio' : 'Opcional'}
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-600">
+                  <td className="px-3 sm:px-4 py-3 text-sm text-gray-600">
                     {concepto.fechaVencimiento ? new Date(concepto.fechaVencimiento).toLocaleDateString() : '-'}
                   </td>
-                  <td className="px-4 py-3">
+                  <td className="px-3 sm:px-4 py-3">
                     <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                       concepto.activo ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
                     }`}>
                       {concepto.activo ? 'Activo' : 'Inactivo'}
                     </span>
                   </td>
-                  <td className="px-4 py-3">
-                    <div className="flex gap-2">
+                  <td className="px-3 sm:px-4 py-3">
+                    <div className="flex flex-col sm:flex-row gap-1 sm:gap-2">
                       <button
                         onClick={() => handleEdit(concepto)}
                         className="text-blue-600 hover:text-blue-800 p-1"
@@ -333,17 +333,17 @@ const PaymentConcepts = () => {
       </AnimatedCard>
 
       {showModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-white rounded-lg p-6 w-full max-w-md mx-4"
+            className="bg-white rounded-lg p-4 sm:p-6 w-full max-w-md"
           >
             <h3 className="text-lg font-semibold mb-4">
               {editingConcept ? 'Editar Concepto' : 'Nuevo Concepto'}
             </h3>
             
-            <div className="space-y-4">
+            <div className="space-y-4 sm:space-y-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Nombre</label>
                 <input
@@ -415,7 +415,7 @@ const PaymentConcepts = () => {
               </div>
             </div>
 
-            <div className="flex gap-3 mt-6">
+            <div className="flex flex-col sm:flex-row gap-3 mt-6">
               <button
                 onClick={() => {
                   setShowModal(false)

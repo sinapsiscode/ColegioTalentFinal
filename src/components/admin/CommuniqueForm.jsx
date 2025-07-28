@@ -205,20 +205,20 @@ const CommuniqueForm = ({ isOpen, onClose, onSave, comunicado = null, configurac
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+        className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto"
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">
+            <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">
               {comunicado ? 'Editar Comunicado' : 'Nuevo Comunicado'}
             </h2>
-            <p className="text-gray-600 mt-1">
+            <p className="text-sm sm:text-base text-gray-600 mt-1">
               {comunicado ? 'Modifica el comunicado existente' : 'Crea un nuevo comunicado para la comunidad educativa'}
             </p>
           </div>
@@ -233,22 +233,22 @@ const CommuniqueForm = ({ isOpen, onClose, onSave, comunicado = null, configurac
         </div>
 
         {/* Form */}
-        <form onSubmit={(e) => handleSubmit(e, isDraft)} className="p-6 space-y-6">
+        <form onSubmit={(e) => handleSubmit(e, isDraft)} className="p-4 sm:p-6 space-y-4 sm:space-y-6">
           {/* Información básica */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center space-x-2">
               <FiFileText className="w-5 h-5 text-blue-600" />
               <span>Información Básica</span>
             </h3>
             
             <div className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Título *</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Título *</label>
                 <input
                   type="text"
                   value={formData.titulo}
                   onChange={(e) => handleInputChange('titulo', e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent ${
+                  className={`w-full px-3 py-2 text-sm sm:text-base border rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent ${
                     errors.titulo ? 'border-red-300' : 'border-gray-300'
                   }`}
                   placeholder="Ej: Cronograma de Evaluaciones II Bimestre"
@@ -257,12 +257,12 @@ const CommuniqueForm = ({ isOpen, onClose, onSave, comunicado = null, configurac
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Contenido *</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Contenido *</label>
                 <textarea
                   value={formData.contenido}
                   onChange={(e) => handleInputChange('contenido', e.target.value)}
-                  rows={8}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent ${
+                  rows={6}
+                  className={`w-full px-3 py-2 text-sm sm:text-base border rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent ${
                     errors.contenido ? 'border-red-300' : 'border-gray-300'
                   }`}
                   placeholder="Escribe aquí el contenido del comunicado..."
@@ -279,18 +279,18 @@ const CommuniqueForm = ({ isOpen, onClose, onSave, comunicado = null, configurac
 
           {/* Configuración */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center space-x-2">
               <FiSettings className="w-5 h-5 text-purple-600" />
               <span>Configuración</span>
             </h3>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Categoría</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Categoría</label>
                 <select
                   value={formData.categoria}
                   onChange={(e) => handleInputChange('categoria', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent"
+                  className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent"
                 >
                   {Object.entries(configuraciones?.categorias || {}).map(([key, label]) => (
                     <option key={key} value={key}>{label}</option>
@@ -299,11 +299,11 @@ const CommuniqueForm = ({ isOpen, onClose, onSave, comunicado = null, configurac
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Prioridad</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Prioridad</label>
                 <select
                   value={formData.prioridad}
                   onChange={(e) => handleInputChange('prioridad', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent"
+                  className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent"
                 >
                   {Object.entries(configuraciones?.prioridades || {}).map(([key, label]) => (
                     <option key={key} value={key}>{label}</option>
@@ -312,11 +312,11 @@ const CommuniqueForm = ({ isOpen, onClose, onSave, comunicado = null, configurac
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Audiencia</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Audiencia</label>
                 <select
                   value={formData.audiencia}
                   onChange={(e) => handleAudienceChange(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent"
+                  className="w-full px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent"
                 >
                   {Object.entries(configuraciones?.audiencias || {}).map(([key, config]) => (
                     <option key={key} value={key}>{config.label}</option>
@@ -329,12 +329,12 @@ const CommuniqueForm = ({ isOpen, onClose, onSave, comunicado = null, configurac
           {/* Dirigido a y Grados */}
           {(formData.audiencia === 'estudiantes' || formData.audiencia === 'padres' || formData.audiencia === 'estudiantes_padres') && (
             <div>
-              <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center space-x-2">
                 <FiUsers className="w-5 h-5 text-green-600" />
                 <span>Grados Específicos</span>
               </h3>
               
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
                 {configuraciones?.grados?.filter(g => g !== 'todos').map(grado => (
                   <div key={grado} className="flex items-center space-x-2">
                     <input
@@ -344,7 +344,7 @@ const CommuniqueForm = ({ isOpen, onClose, onSave, comunicado = null, configurac
                       onChange={() => toggleGrado(grado)}
                       className="w-4 h-4 text-talentos-primary focus:ring-talentos-primary border-gray-300 rounded"
                     />
-                    <label htmlFor={`grado-${grado}`} className="text-sm text-gray-700 cursor-pointer">
+                    <label htmlFor={`grado-${grado}`} className="text-xs sm:text-sm text-gray-700 cursor-pointer">
                       {grado}
                     </label>
                   </div>
@@ -356,14 +356,14 @@ const CommuniqueForm = ({ isOpen, onClose, onSave, comunicado = null, configurac
 
           {/* Fechas */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center space-x-2">
               <FiCalendar className="w-5 h-5 text-orange-600" />
               <span>Programación</span>
             </h3>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Fecha y Hora de Publicación *</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Fecha y Hora de Publicación *</label>
                 <input
                   type="datetime-local"
                   value={formData.fechaPublicacion}
@@ -376,7 +376,7 @@ const CommuniqueForm = ({ isOpen, onClose, onSave, comunicado = null, configurac
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Fecha de Vencimiento (Opcional)</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">Fecha de Vencimiento (Opcional)</label>
                 <input
                   type="date"
                   value={formData.fechaVencimiento}
@@ -398,7 +398,7 @@ const CommuniqueForm = ({ isOpen, onClose, onSave, comunicado = null, configurac
                   onChange={(e) => handleInputChange('confirmacionLectura', e.target.checked)}
                   className="w-4 h-4 text-talentos-primary focus:ring-talentos-primary border-gray-300 rounded"
                 />
-                <label htmlFor="confirmacionLectura" className="text-sm text-gray-700 cursor-pointer">
+                <label htmlFor="confirmacionLectura" className="text-xs sm:text-sm text-gray-700 cursor-pointer">
                   Solicitar confirmación de lectura
                 </label>
               </div>
@@ -407,19 +407,19 @@ const CommuniqueForm = ({ isOpen, onClose, onSave, comunicado = null, configurac
 
           {/* Etiquetas */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center space-x-2">
               <FiTag className="w-5 h-5 text-indigo-600" />
               <span>Etiquetas</span>
             </h3>
             
-            <div className="flex items-center space-x-2 mb-3">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-2 mb-3">
               <input
                 type="text"
                 name="newTag"
                 value={newTag}
                 onChange={(e) => setNewTag(e.target.value)}
                 onKeyDown={handleKeyDown}
-                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent"
+                className="flex-1 px-3 py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent min-h-[44px] sm:min-h-auto"
                 placeholder="Agregar etiqueta..."
               />
               <AnimatedButton
@@ -428,16 +428,17 @@ const CommuniqueForm = ({ isOpen, onClose, onSave, comunicado = null, configurac
                 size="sm"
                 onClick={addTag}
                 disabled={!newTag.trim()}
+                className="min-h-[44px] sm:min-h-auto"
               >
                 Agregar
               </AnimatedButton>
             </div>
             
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-1 sm:gap-2">
               {formData.etiquetas.map((tag, index) => (
                 <span
                   key={index}
-                  className="inline-flex items-center px-3 py-1 bg-gray-100 text-gray-700 text-sm rounded-full"
+                  className="inline-flex items-center px-2 sm:px-3 py-1 bg-gray-100 text-gray-700 text-xs sm:text-sm rounded-full"
                 >
                   #{tag}
                   <button
@@ -454,12 +455,12 @@ const CommuniqueForm = ({ isOpen, onClose, onSave, comunicado = null, configurac
 
           {/* Adjuntos */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center space-x-2">
               <FiPaperclip className="w-5 h-5 text-gray-600" />
               <span>Archivos Adjuntos</span>
             </h3>
             
-            <div className="border-2 border-dashed border-gray-300 rounded-lg p-4">
+            <div className="border-2 border-dashed border-gray-300 rounded-lg p-3 sm:p-4">
               <input
                 type="file"
                 multiple
@@ -472,22 +473,22 @@ const CommuniqueForm = ({ isOpen, onClose, onSave, comunicado = null, configurac
                 className="cursor-pointer flex flex-col items-center justify-center"
               >
                 <FiPaperclip className="w-8 h-8 text-gray-400 mb-2" />
-                <p className="text-sm text-gray-600">
+                <p className="text-xs sm:text-sm text-gray-600">
                   Haz clic para seleccionar archivos o arrastra aquí
                 </p>
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 mt-1 hidden sm:block">
                   PDF, DOC, DOCX, JPG, PNG (máx. 10MB cada uno)
                 </p>
               </label>
             </div>
             
             {formData.adjuntos.length > 0 && (
-              <div className="mt-4 space-y-2">
+              <div className="mt-3 sm:mt-4 space-y-2">
                 {formData.adjuntos.map((archivo, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                  <div key={index} className="flex items-center justify-between p-2 sm:p-3 bg-gray-50 rounded-lg">
                     <div className="flex items-center space-x-2">
                       <FiFileText className="w-4 h-4 text-gray-500" />
-                      <span className="text-sm text-gray-700">{archivo.nombre}</span>
+                      <span className="text-xs sm:text-sm text-gray-700 truncate max-w-[150px] sm:max-w-none">{archivo.nombre}</span>
                       <span className="text-xs text-gray-500">({archivo.tamaño})</span>
                     </div>
                     <button
@@ -505,23 +506,25 @@ const CommuniqueForm = ({ isOpen, onClose, onSave, comunicado = null, configurac
         </form>
 
         {/* Footer */}
-        <div className="flex items-center justify-between p-6 border-t border-gray-200">
-          <div className="flex items-center space-x-3">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between p-4 sm:p-6 border-t border-gray-200 space-y-3 sm:space-y-0">
+          <div className="flex items-center space-x-2 sm:space-x-3 order-2 sm:order-1">
             <AnimatedButton
               variant="outline"
               onClick={onClose}
               disabled={loading}
+              className="min-h-[44px] sm:min-h-auto"
             >
               Cancelar
             </AnimatedButton>
           </div>
           
-          <div className="flex items-center space-x-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 order-1 sm:order-2">
             <AnimatedButton
               variant="outline"
               icon={FiSave}
               onClick={(e) => handleSubmit(e, true)}
               disabled={loading}
+              className="min-h-[44px] sm:min-h-auto"
             >
               {loading ? 'Guardando...' : 'Guardar Borrador'}
             </AnimatedButton>
@@ -531,6 +534,7 @@ const CommuniqueForm = ({ isOpen, onClose, onSave, comunicado = null, configurac
               icon={FiSend}
               onClick={(e) => handleSubmit(e, false)}
               disabled={loading}
+              className="min-h-[44px] sm:min-h-auto"
             >
               {loading ? 'Publicando...' : 'Publicar Ahora'}
             </AnimatedButton>

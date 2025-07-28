@@ -118,10 +118,10 @@ const CommuniqueCard = ({
       className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden transition-all duration-200"
     >
       {/* Header */}
-      <div className="p-4 border-b border-gray-100">
-        <div className="flex items-start justify-between">
+      <div className="p-4 sm:p-6 border-b border-gray-100">
+        <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3 sm:gap-4">
           <div className="flex-1 min-w-0">
-            <div className="flex items-center space-x-2 mb-2">
+            <div className="flex flex-wrap items-center gap-2 mb-2">
               <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${categoriaConfig.bg} ${categoriaConfig.color}`}>
                 {categoriaConfig.label}
               </span>
@@ -136,77 +136,77 @@ const CommuniqueCard = ({
               </span>
             </div>
             
-            <h3 className="text-lg font-semibold text-gray-900 truncate">
+            <h3 className="text-lg sm:text-xl font-semibold text-gray-900 truncate">
               {comunicado.titulo}
             </h3>
             
-            <div className="flex items-center text-sm text-gray-600 mt-1">
-              <FiUser className="w-4 h-4 mr-1" />
+            <div className="flex flex-wrap items-center text-xs sm:text-sm text-gray-600 mt-1 gap-1">
+              <FiUser className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
               <span>{comunicado.autor}</span>
               <span className="mx-2">•</span>
-              <FiCalendar className="w-4 h-4 mr-1" />
+              <FiCalendar className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
               <span>{formatearFecha(comunicado.fecha)}</span>
             </div>
           </div>
 
-          <div className="flex items-center space-x-1">
+          <div className="flex items-center space-x-1 flex-shrink-0">
             <motion.button
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
               onClick={() => onViewDetails(comunicado)}
-              className="p-1 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+              className="p-1 sm:p-2 text-gray-400 hover:text-gray-600 transition-colors duration-200 touch-manipulation"
               title="Ver detalles"
             >
-              <FiMoreVertical className="w-4 h-4" />
+              <FiMoreVertical className="w-4 h-4 sm:w-5 sm:h-5" />
             </motion.button>
           </div>
         </div>
       </div>
 
       {/* Content */}
-      <div className="p-4">
-        <p className="text-gray-700 text-sm leading-relaxed mb-4">
+      <div className="p-4 sm:p-6">
+        <p className="text-gray-700 text-sm sm:text-base leading-relaxed mb-4">
           {truncarTexto(comunicado.contenido)}
         </p>
 
         {/* Audiencia */}
-        <div className="flex items-center text-sm text-gray-600 mb-3">
-          <span className="font-medium">Dirigido a:</span>
-          <span className="ml-2">{comunicado.dirigidoA?.join(', ')}</span>
+        <div className="flex flex-col sm:flex-row sm:items-center text-xs sm:text-sm text-gray-600 mb-3 gap-1">
+          <span className="font-medium flex-shrink-0">Dirigido a:</span>
+          <span className="sm:ml-2">{comunicado.dirigidoA?.join(', ')}</span>
         </div>
 
         {/* Adjuntos */}
         {comunicado.adjuntos && comunicado.adjuntos.length > 0 && (
-          <div className="flex items-center text-sm text-gray-600 mb-3">
-            <FiFileText className="w-4 h-4 mr-1" />
+          <div className="flex items-center text-xs sm:text-sm text-gray-600 mb-3">
+            <FiFileText className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
             <span>{comunicado.adjuntos.length} archivo{comunicado.adjuntos.length > 1 ? 's' : ''} adjunto{comunicado.adjuntos.length > 1 ? 's' : ''}</span>
           </div>
         )}
 
         {/* Estadísticas */}
-        <div className="flex items-center justify-between text-sm text-gray-600 mb-4">
-          <div className="flex items-center space-x-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between text-xs sm:text-sm text-gray-600 mb-4 gap-2">
+          <div className="flex items-center space-x-3 sm:space-x-4">
             <div className="flex items-center">
-              <FiEye className="w-4 h-4 mr-1" />
+              <FiEye className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
               <span>{comunicado.vistas || 0}</span>
             </div>
             {comunicado.respuestas && (
               <div className="flex items-center">
-                <FiMessageSquare className="w-4 h-4 mr-1" />
+                <FiMessageSquare className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                 <span>{comunicado.respuestas}</span>
               </div>
             )}
             {comunicado.confirmacionLectura && (
               <div className="flex items-center">
-                <FiCheckCircle className="w-4 h-4 mr-1" />
+                <FiCheckCircle className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                 <span>{comunicado.lecturas || 0} leídos</span>
               </div>
             )}
           </div>
           
           {comunicado.fechaVencimiento && (
-            <div className="flex items-center text-xs">
-              <FiClock className="w-3 h-3 mr-1" />
+            <div className="flex items-center text-xs sm:text-sm">
+              <FiClock className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
               <span>Vence: {formatearFecha(comunicado.fechaVencimiento)}</span>
             </div>
           )}
@@ -214,7 +214,7 @@ const CommuniqueCard = ({
 
         {/* Etiquetas */}
         {comunicado.etiquetas && comunicado.etiquetas.length > 0 && (
-          <div className="flex flex-wrap gap-1 mb-4">
+          <div className="flex flex-wrap gap-1 sm:gap-2 mb-4">
             {comunicado.etiquetas.slice(0, 3).map((etiqueta, index) => (
               <span
                 key={index}
@@ -233,8 +233,8 @@ const CommuniqueCard = ({
       </div>
 
       {/* Actions */}
-      <div className="px-4 py-3 bg-gray-50 border-t border-gray-100">
-        <div className="flex items-center justify-between">
+      <div className="px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 border-t border-gray-100">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-0">
           <div className="flex items-center space-x-2">
             {comunicado.estado === 'borrador' && (
               <motion.button
@@ -268,7 +268,7 @@ const CommuniqueCard = ({
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => onEdit(comunicado)}
-              className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors duration-200"
+              className="p-2 text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-md transition-colors duration-200 touch-manipulation"
               title="Editar comunicado"
             >
               <FiEdit3 className="w-4 h-4" />
@@ -278,7 +278,7 @@ const CommuniqueCard = ({
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => onDelete(comunicado)}
-              className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors duration-200"
+              className="p-2 text-gray-600 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors duration-200 touch-manipulation"
               title="Eliminar comunicado"
             >
               <FiTrash2 className="w-4 h-4" />

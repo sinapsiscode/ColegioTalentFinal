@@ -17,13 +17,13 @@ import {
 const AttendanceStats = ({ estadisticas, loading = false }) => {
   if (loading) {
     return (
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4 mb-6">
         {[...Array(4)].map((_, index) => (
-          <div key={index} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+          <div key={index} className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4">
             <div className="animate-pulse">
-              <div className="w-8 h-8 bg-gray-200 rounded mb-3"></div>
-              <div className="h-4 bg-gray-200 rounded mb-2"></div>
-              <div className="h-6 bg-gray-200 rounded"></div>
+              <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gray-200 rounded mb-2 sm:mb-3"></div>
+              <div className="h-3 sm:h-4 bg-gray-200 rounded mb-1 sm:mb-2"></div>
+              <div className="h-4 sm:h-6 bg-gray-200 rounded"></div>
             </div>
           </div>
         ))}
@@ -74,7 +74,7 @@ const AttendanceStats = ({ estadisticas, loading = false }) => {
   return (
     <div className="space-y-6">
       {/* Main stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
         {statsCards.map((stat, index) => (
           <motion.div
             key={stat.title}
@@ -82,16 +82,16 @@ const AttendanceStats = ({ estadisticas, loading = false }) => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.1 }}
             whileHover={{ y: -2 }}
-            className={`${stat.bgColor} rounded-lg shadow-sm border border-gray-200 p-4 transition-all duration-200`}
+            className={`${stat.bgColor} rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 transition-all duration-200`}
           >
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm font-medium text-gray-700 mb-1">{stat.title}</p>
-                <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-                <p className="text-xs text-gray-600 mt-1">{stat.change}</p>
+            <div className="flex items-start justify-between">
+              <div className="flex-1 min-w-0 pr-2">
+                <p className="text-xs sm:text-sm font-medium text-gray-700 mb-1 truncate">{stat.title}</p>
+                <p className="text-lg sm:text-2xl font-bold text-gray-900">{stat.value}</p>
+                <p className="text-xs text-gray-600 mt-1 hidden sm:block">{stat.change}</p>
               </div>
-              <div className={`w-12 h-12 ${stat.color} rounded-lg flex items-center justify-center`}>
-                <stat.icon className="w-6 h-6" />
+              <div className={`w-8 h-8 sm:w-12 sm:h-12 ${stat.color} rounded-lg flex items-center justify-center flex-shrink-0`}>
+                <stat.icon className="w-4 h-4 sm:w-6 sm:h-6" />
               </div>
             </div>
           </motion.div>

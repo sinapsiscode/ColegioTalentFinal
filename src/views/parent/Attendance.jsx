@@ -15,6 +15,7 @@ import { es } from 'date-fns/locale'
 import Header from '../../components/common/Header'
 import useAuthStore from '../../stores/authStore'
 import useAttendanceStore from '../../stores/attendanceStore'
+import useStudentsStore from '../../stores/studentsStore'
 import { alumnosMock } from '../../data/mockData'
 
 import AttendanceStats from '../../components/attendance/AttendanceStats'
@@ -27,6 +28,8 @@ import SearchInput from '../../components/common/SearchInput'
 import Pagination from '../../components/common/Pagination'
 import LoadingSpinner from '../../components/common/LoadingSpinner'
 import { showSuccess, showError } from '../../utils/sweetAlert'
+import { generateAttendanceReportPDF } from '../../utils/pdfGenerator'
+import { compareIds } from '../../utils/searchHelpers'
 
 const Attendance = () => {
   const { studentId } = useParams()
@@ -41,7 +44,7 @@ const Attendance = () => {
   } = useAttendanceStore()
 
   // Estados locales
-  const [selectedStudent, setSelectedStudent] = useState(studentId ? parseInt(studentId) : null)
+  const [selectedStudent, setSelectedStudent] = useState(studentId || null)
   const [dateRange, setDateRange] = useState('month')
   const [statusFilter, setStatusFilter] = useState('all')
   const [searchTerm, setSearchTerm] = useState('')
@@ -49,8 +52,22 @@ const Attendance = () => {
   const [itemsPerPage] = useState(10)
   const [viewMode, setViewMode] = useState('list') // list, calendar
 
-  // Obtener hijos del padre
-  const hijosDelPadre = alumnosMock.filter(alumno => alumno.padre === usuario?.nombre)
+  // Obtener hijos del padre usando la función del store (arquitectura profesional)
+  const { obtenerAlumnosPorPadreId } = useStudentsStore()
+  const hijosDelPadreRaw = usuario?.id ? obtenerAlumnosPorPadreId(usuario.id) : []
+  
+  // Agregar nombreCompleto a cada hijo para compatibilidad con AttendanceFilter
+  const hijosDelPadre = hijosDelPadreRaw.map(hijo => ({
+    ...hijo,
+    nombreCompleto: `${hijo.nombre} ${hijo.apellidos}`
+  }))
+  
+  console.log('🎯 ATTENDANCE DEBUG:', {
+    usuario: usuario?.nombre,
+    usuarioId: usuario?.id,
+    hijosDelPadreRaw: hijosDelPadreRaw.length,
+    hijosDelPadre: hijosDelPadre.map(h => ({ id: h.id, nombre: h.nombreCompleto }))
+  })
 
   // Efecto para cargar datos
   useEffect(() => {
@@ -65,7 +82,7 @@ const Attendance = () => {
   }, [selectedStudent, hijosDelPadre])
 
   // Obtener alumno seleccionado
-  const alumnoSeleccionado = hijosDelPadre.find(hijo => hijo.id === selectedStudent)
+  const alumnoSeleccionado = hijosDelPadre.find(hijo => compareIds(hijo.id, selectedStudent))
 
   // Calcular rango de fechas
   const calculateDateRange = (range) => {
@@ -125,7 +142,8 @@ const Attendance = () => {
 
   // Handlers
   const handleStudentChange = (studentId) => {
-    setSelectedStudent(parseInt(studentId))
+    // Mantener el tipo original del studentId
+    setSelectedStudent(studentId)
     setCurrentPage(1)
     navigate(`/parent/attendance/${studentId}`)
   }
@@ -135,19 +153,39 @@ const Attendance = () => {
     showSuccess('Datos actualizados', 'La información de asistencia ha sido actualizada')
   }
 
-  const handleExport = () => {
+  const handleExport = async () => {
     if (!alumnoSeleccionado) return
     
-    // Simular exportación
-    const data = {
-      alumno: alumnoSeleccionado.nombreCompleto,
-      periodo: dateRange,
-      registros: registrosFiltrados,
-      estadisticas
+    try {
+      // Preparar datos para el PDF
+      const periodText = {
+        'today': 'Hoy',
+        'week': 'Esta semana',
+        'month': 'Este mes',
+        'last7': 'Últimos 7 días',
+        'last30': 'Últimos 30 días',
+        'all': 'Todo el año'
+      }[dateRange] || dateRange
+      
+      const data = {
+        student: {
+          nombre: alumnoSeleccionado.nombre,
+          apellidos: alumnoSeleccionado.apellidos,
+          grado: alumnoSeleccionado.grado,
+          seccion: alumnoSeleccionado.seccion
+        },
+        records: registrosFiltrados,
+        statistics: estadisticas,
+        period: periodText
+      }
+      
+      // Generar PDF
+      await generateAttendanceReportPDF(data)
+      showSuccess('Exportación exitosa', 'El reporte de asistencia ha sido descargado correctamente')
+    } catch (error) {
+      console.error('Error al exportar:', error)
+      showError('Error', 'No se pudo generar el reporte de asistencia')
     }
-    
-    console.log('Exportando datos de asistencia:', data)
-    showSuccess('Exportación exitosa', 'Los datos han sido exportados correctamente')
   }
 
   const handleViewModeChange = (mode) => {
@@ -188,9 +226,9 @@ const Attendance = () => {
     <div className="min-h-screen bg-gray-50">
       <Header />
       
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         {/* Header de la página */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-8 space-y-4 sm:space-y-0">
           <div className="flex items-center space-x-4">
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -202,20 +240,20 @@ const Attendance = () => {
             </motion.button>
             
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Asistencia</h1>
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Asistencia</h1>
               {alumnoSeleccionado && (
-                <p className="text-gray-600 mt-1">
+                <p className="text-sm sm:text-base text-gray-600 mt-1">
                   {alumnoSeleccionado.nombreCompleto} - {alumnoSeleccionado.grado}
                 </p>
               )}
             </div>
           </div>
           
-          <div className="flex items-center space-x-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-3 sm:space-y-0 sm:space-x-3">
             <div className="flex bg-gray-100 rounded-lg p-1">
               <button
                 onClick={() => handleViewModeChange('list')}
-                className={`px-3 py-1 rounded-md text-sm font-medium transition-colors duration-200 ${
+                className={`flex-1 sm:flex-none px-3 py-1 rounded-md text-sm font-medium transition-colors duration-200 ${
                   viewMode === 'list' 
                     ? 'bg-white text-talentos-primary shadow-sm' 
                     : 'text-gray-600 hover:text-gray-900'
@@ -225,7 +263,7 @@ const Attendance = () => {
               </button>
               <button
                 onClick={() => handleViewModeChange('calendar')}
-                className={`px-3 py-1 rounded-md text-sm font-medium transition-colors duration-200 ${
+                className={`flex-1 sm:flex-none px-3 py-1 rounded-md text-sm font-medium transition-colors duration-200 ${
                   viewMode === 'calendar' 
                     ? 'bg-white text-talentos-primary shadow-sm' 
                     : 'text-gray-600 hover:text-gray-900'
@@ -278,31 +316,31 @@ const Attendance = () => {
         ) : (
           <>
             {/* Barra de búsqueda */}
-            <div className="mb-6">
+            <div className="mb-4 sm:mb-6">
               <SearchInput
                 value={searchTerm}
                 onChange={setSearchTerm}
                 onClear={() => setSearchTerm('')}
                 placeholder="Buscar por fecha, estado u observaciones..."
-                className="max-w-md"
+                className="w-full sm:max-w-md"
               />
             </div>
 
             {/* Lista de registros */}
             {registrosPaginados.length === 0 ? (
               <AnimatedCard>
-                <div className="text-center py-12">
+                <div className="text-center py-8 sm:py-12">
                   <FiCalendar className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                  <h3 className="text-lg font-medium text-gray-900 mb-2">
+                  <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">
                     No hay registros de asistencia
                   </h3>
-                  <p className="text-gray-600">
+                  <p className="text-sm sm:text-base text-gray-600">
                     No se encontraron registros para los filtros seleccionados.
                   </p>
                 </div>
               </AnimatedCard>
             ) : (
-              <div className="space-y-4">
+              <div className="space-y-3 sm:space-y-4">
                 {registrosPaginados.map((registro, index) => (
                   <AttendanceCard
                     key={registro.id}
@@ -318,7 +356,7 @@ const Attendance = () => {
 
             {/* Paginación */}
             {totalPages > 1 && (
-              <div className="mt-8">
+              <div className="mt-6 sm:mt-8">
                 <Pagination
                   currentPage={currentPage}
                   totalPages={totalPages}
@@ -336,26 +374,26 @@ const Attendance = () => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="mt-8"
+          className="mt-6 sm:mt-8"
         >
           <AnimatedCard>
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-4 sm:space-y-0">
               <div>
-                <h3 className="text-lg font-semibold text-gray-900 mb-2">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2">
                   Resumen de Asistencia
                 </h3>
-                <p className="text-gray-600">
+                <p className="text-sm sm:text-base text-gray-600">
                   Porcentaje de asistencia: <span className="font-semibold text-talentos-primary">
                     {estadisticas.porcentajeAsistencia}%
                   </span>
                 </p>
               </div>
-              <div className="flex items-center space-x-2">
-                <FiTrendingUp className={`w-6 h-6 ${
+              <div className="flex items-center justify-center sm:justify-end space-x-2">
+                <FiTrendingUp className={`w-5 h-5 sm:w-6 sm:h-6 ${
                   estadisticas.porcentajeAsistencia >= 90 ? 'text-green-600' :
                   estadisticas.porcentajeAsistencia >= 80 ? 'text-yellow-600' : 'text-red-600'
                 }`} />
-                <span className={`text-2xl font-bold ${
+                <span className={`text-xl sm:text-2xl font-bold ${
                   estadisticas.porcentajeAsistencia >= 90 ? 'text-green-600' :
                   estadisticas.porcentajeAsistencia >= 80 ? 'text-yellow-600' : 'text-red-600'
                 }`}>

@@ -14,7 +14,8 @@
       "Bash(npm uninstall:*)",
       "Bash(npm start)",
       "Bash(rg:*)",
-      "Bash(sed:*)"
+      "Bash(sed:*)",
+      "Bash(cp:*)"
     ],
     "deny": []
   }

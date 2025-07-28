@@ -8,11 +8,32 @@ export default {
     extend: {
       colors: {
         talentos: {
-          primary: '#1e40af',
-          secondary: '#3b82f6',
-          accent: '#60a5fa',
-          dark: '#1e3a8a',
-          light: '#dbeafe'
+          // Paleta principal más moderna y accesible
+          primary: '#2563eb',      // Azul medio con buen contraste
+          secondary: '#1d4ed8',    // Azul más oscuro para elementos importantes
+          accent: '#3b82f6',       // Azul claro para acentos
+          dark: '#1e293b',         // Gris oscuro para texto
+          light: '#f1f5f9',        // Gris muy claro para fondos
+          
+          // Nuevos colores para mejor UX
+          success: '#059669',      // Verde para éxito
+          warning: '#d97706',      // Naranja para advertencias  
+          error: '#dc2626',        // Rojo para errores
+          info: '#0284c7',         // Azul claro para información
+          
+          // Grises profesionales
+          gray: {
+            50: '#f8fafc',
+            100: '#f1f5f9',
+            200: '#e2e8f0',
+            300: '#cbd5e1',
+            400: '#94a3b8',
+            500: '#64748b',
+            600: '#475569',
+            700: '#334155',
+            800: '#1e293b',
+            900: '#0f172a'
+          }
         }
       },
       fontFamily: {

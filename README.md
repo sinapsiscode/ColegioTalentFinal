@@ -62,9 +62,17 @@ El proyecto estará disponible en: `http://localhost:3000`
 La aplicación incluye usuarios de demostración para cada rol:
 
 ### Padres de Familia
-- **Email**: `padre1@email.com`
+- **Email**: `carlos.rodriguez@email.com`
 - **Contraseña**: `123456`
 - **Descripción**: Carlos Rodríguez - Padre de Ana y Luis
+
+- **Email**: `miguel.martinez@email.com`
+- **Contraseña**: `123456`
+- **Descripción**: Miguel Martinez - Padre de Sofia
+
+- **Email**: `ana.silva@email.com`
+- **Contraseña**: `123456`
+- **Descripción**: Ana Silva - Madre de Pedro
 
 ### Tutores
 - **Email**: `tutor1@email.com`

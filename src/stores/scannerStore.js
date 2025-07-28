@@ -2,6 +2,8 @@ import { create } from 'zustand'
 import useAttendanceStore from './attendanceStore'
 import useTutorAttendanceStore from './tutorAttendanceStore'
 import { alumnosMock } from '../data/mockData'
+import { DatabaseQueries } from '../data/databaseSchema'
+import { decodeQRData, validateQRCode } from '../utils/uniqueCodeGenerator'
 
 const useScannerStore = create((set, get) => ({
   // Estados principales
@@ -117,8 +119,12 @@ const useScannerStore = create((set, get) => ({
   validarUbicacionEnColegio: async () => {
     const { configuracionEscaner, calcularDistancia } = get()
     
-    if (!configuracionEscaner.validacionGPS) {
-      return { valida: true, mensaje: 'Validación GPS deshabilitada' }
+    // MODO DESARROLLO: GPS siempre válido para testing
+    if (!configuracionEscaner.validacionGPS || import.meta.env.VITE_NODE_ENV === 'development') {
+      if (import.meta.env.DEV) {
+        console.log('🔧 GPS: Modo desarrollo - validación omitida')
+      }
+      return { valida: true, mensaje: 'Validación GPS deshabilitada (desarrollo)' }
     }
 
     try {
@@ -160,67 +166,110 @@ const useScannerStore = create((set, get) => ({
     }
   },
 
-  // Inicializar datos del día
+  // Inicializar datos del día con información dinámica real
   inicializarDatos: () => {
     set({ cargando: true })
     
     setTimeout(() => {
+      // Obtener datos de la base de datos
+      const todosLosEstudiantes = DatabaseQueries.getAllStudents()
+      const todosLosTutores = DatabaseQueries.getAllUsers().filter(u => u.rol === 'tutor')
+      
       // Obtener estadísticas desde attendanceStore
-      const { obtenerEstadisticasHoy, obtenerEstudiantesEnEscuela } = useAttendanceStore.getState()
+      const { obtenerEstadisticasHoy, obtenerEstudiantesEnEscuela, registrosAsistencia: registrosEst } = useAttendanceStore.getState()
       const estadisticasAttendance = obtenerEstadisticasHoy()
       const estudiantesEnEscuela = obtenerEstudiantesEnEscuela()
 
       // Obtener estadísticas desde tutorAttendanceStore
-      const { obtenerEstadisticasHoy: obtenerEstadisticasTutores, obtenerTutoresEnColegio } = useTutorAttendanceStore.getState()
+      const { obtenerEstadisticasHoy: obtenerEstadisticasTutores, obtenerTutoresEnColegio, registrosAsistencia: registrosTut } = useTutorAttendanceStore.getState()
       const estadisticasTutores = obtenerEstadisticasTutores()
       const tutoresEnColegio = obtenerTutoresEnColegio()
 
-      // Convertir estudiantes en escuela para el formato del scanner
-      const estudiantesPresentes = estudiantesEnEscuela.map(reg => {
-        const alumno = alumnosMock.find(a => a.id === reg.alumnoId)
-        return {
-          id: alumno.id,
-          codigo: `E00${alumno.id}234567890`,
-          nombre: alumno.nombreCompleto,
-          grado: alumno.grado,
-          seccion: alumno.seccion,
-          fotoUrl: alumno.foto || '/images/default-avatar.jpg'
-        }
-      })
+      // Combinar todos los registros para una vista completa
+      const todosLosRegistros = [
+        ...(registrosEst || []).map(reg => ({
+          ...reg,
+          tipoPersona: 'estudiante',
+          estudiante: todosLosEstudiantes.find(est => est.id === reg.estudianteId) || 
+                     { nombre: 'Estudiante No Encontrado', codigo: reg.estudianteId },
+          usuario: 'Sistema Scanner',
+          metodo: 'qr',
+          ubicacion: 'Puerta Principal'
+        })),
+        ...(registrosTut || []).map(reg => ({
+          ...reg,
+          tipoPersona: 'tutor',
+          estudiante: { // Mantener compatibilidad con UI usando campo 'estudiante'
+            nombre: todosLosTutores.find(t => t.id === reg.tutorId)?.nombre || 'Tutor No Encontrado',
+            codigo: reg.tutorId,
+            grado: 'Personal Docente'
+          },
+          usuario: 'Sistema Scanner',
+          metodo: 'qr',
+          ubicacion: 'Puerta Principal'
+        }))
+      ].sort((a, b) => new Date(b.fecha) - new Date(a.fecha))
 
+      // Convertir estudiantes presentes con información enriquecida
+      const estudiantesPresentes = estudiantesEnEscuela.map(reg => {
+        const estudiante = todosLosEstudiantes.find(a => a.id === reg.alumnoId)
+        if (!estudiante) return null
+        
+        return {
+          id: estudiante.id,
+          codigo: estudiante.codigo || `EST${String(estudiante.id).padStart(5, '0')}`,
+          nombre: `${estudiante.nombre} ${estudiante.apellidos || ''}`.trim(),
+          grado: estudiante.grado,
+          seccion: estudiante.seccion,
+          fotoUrl: estudiante.avatar || `/avatar-student${(estudiante.id % 6) + 1}.jpg`
+        }
+      }).filter(Boolean)
+
+      // Estadísticas más detalladas y dinámicas
       const estadisticas = {
-        totalEscaneos: estadisticasAttendance.conEntrada + estadisticasAttendance.conSalida + estadisticasTutores.entradas + estadisticasTutores.salidas,
-        estudiantes: estadisticasAttendance.conEntrada,
-        tutores: estadisticasTutores.entradas,
-        profesores: 0,
-        personal: 0,
-        visitantes: 0,
-        entradas: estadisticasAttendance.conEntrada + estadisticasTutores.entradas,
-        salidas: estadisticasAttendance.conSalida + estadisticasTutores.salidas,
-        primeraEntrada: null,
-        ultimaEntrada: null
+        totalEscaneos: todosLosRegistros.length,
+        estudiantes: estadisticasAttendance.conEntrada || 0,
+        tutores: estadisticasTutores.entradas || 0,
+        profesores: estadisticasTutores.entradas || 0, // Tutores = Profesores
+        personal: (estadisticasTutores.entradas || 0), 
+        visitantes: 0, // TODO: Implementar sistema de visitantes
+        entradas: (estadisticasAttendance.conEntrada || 0) + (estadisticasTutores.entradas || 0),
+        salidas: (estadisticasAttendance.conSalida || 0) + (estadisticasTutores.salidas || 0),
+        totalPersonasRegistradas: todosLosEstudiantes.length + todosLosTutores.length,
+        porcentajeAsistenciaEstudiantes: todosLosEstudiantes.length > 0 ? 
+          Math.round(((estadisticasAttendance.conEntrada || 0) / todosLosEstudiantes.length) * 100) : 0,
+        porcentajeAsistenciaTutores: todosLosTutores.length > 0 ? 
+          Math.round(((estadisticasTutores.entradas || 0) / todosLosTutores.length) * 100) : 0,
+        primeraEntrada: todosLosRegistros.filter(r => r.tipo === 'entrada').length > 0 ? 
+          new Date(Math.min(...todosLosRegistros.filter(r => r.tipo === 'entrada').map(r => new Date(r.fecha)))) : null,
+        ultimaEntrada: todosLosRegistros.filter(r => r.tipo === 'entrada').length > 0 ? 
+          new Date(Math.max(...todosLosRegistros.filter(r => r.tipo === 'entrada').map(r => new Date(r.fecha)))) : null
       }
 
       set({
-        registrosAsistencia: [],
+        registrosAsistencia: todosLosRegistros,
         estudiantesPresentes,
-        estudiantesAusentes: [],
+        estudiantesAusentes: [], // TODO: Calcular estudiantes ausentes
         estadisticasDelDia: estadisticas,
         cargando: false
       })
-    }, 1000)
+    }, 800) // Reducir tiempo de carga
   },
 
   // Iniciar escáner
   iniciarEscaner: () => {
     set({ escaneando: true, errorEscaner: null })
-    console.log('Escáner QR iniciado')
+    if (import.meta.env.DEV) {
+      console.log('Escáner QR iniciado')
+    }
   },
 
   // Detener escáner
   detenerEscaner: () => {
     set({ escaneando: false })
-    console.log('Escáner QR detenido')
+    if (import.meta.env.DEV) {
+      console.log('Escáner QR detenido')
+    }
   },
 
   // Procesar código QR escaneado
@@ -266,7 +315,11 @@ const useScannerStore = create((set, get) => ({
 
           const alumnoId = codigoToId[codigoQR]
           if (!alumnoId) {
-            throw new Error('Código QR no válido o estudiante/tutor no encontrado')
+            if (import.meta.env.DEV) {
+              console.log('❌ Código QR no encontrado:', codigoQR)
+              console.log('✅ Códigos válidos:', Object.keys(codigoToId))
+            }
+            throw new Error(`Código QR no válido: ${codigoQR}. Códigos válidos: ${Object.keys(codigoToId).join(', ')}`)
           }
 
           const estudiante = alumnosMock.find(a => a.id === alumnoId)
@@ -324,6 +377,27 @@ const useScannerStore = create((set, get) => ({
             distanciaColegio: validacionUbicacion.distancia
           }
 
+          // 🔔 NOTIFICACIÓN AUTOMÁTICA A PADRES
+          try {
+            const useNotificationsStore = await import('../stores/notificationsStore')
+            const notificationsStore = useNotificationsStore.default.getState()
+            
+            // Notificar asistencia en tiempo real
+            notificationsStore.notificarAsistenciaEnTiempoReal(
+              estudiante.id,
+              tipoRegistro,
+              'Puerta Principal'
+            )
+            
+            if (import.meta.env.DEV) {
+              console.log(`🔔 Notificación enviada a padres de ${estudiante.nombreCompleto}`)
+            }
+          } catch (error) {
+            if (import.meta.env.DEV) {
+              console.warn('No se pudo enviar notificación:', error)
+            }
+          }
+
           // Actualizar registros del scanner
           const { registrosAsistencia } = get()
           const nuevosRegistros = [...registrosAsistencia, nuevoRegistro]
@@ -367,7 +441,9 @@ const useScannerStore = create((set, get) => ({
 
           // Reproducir sonido y vibración si están activados
           if (configuracionEscaner.sonidoActivado) {
-            console.log('🔊 Sonido de éxito')
+            if (import.meta.env.DEV) {
+              console.log('🔊 Sonido de éxito')
+            }
           }
 
           if (configuracionEscaner.vibracionActivada && navigator.vibrate) {

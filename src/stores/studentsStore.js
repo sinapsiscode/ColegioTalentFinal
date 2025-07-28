@@ -1,4 +1,6 @@
 import { create } from 'zustand'
+import { DatabaseQueries } from '../data/databaseSchema'
+import useAuthStore from './authStore'
 
 const useStudentsStore = create((set, get) => ({
   alumnos: [],
@@ -6,6 +8,34 @@ const useStudentsStore = create((set, get) => ({
   error: null,
   
   cargarAlumnos: () => {
+    set({ cargando: true })
+    
+    setTimeout(() => {
+      // FILTRAR POR ROL DEL USUARIO
+      const authStore = useAuthStore.getState()
+      const { usuario, rol } = authStore
+      
+      let alumnos = []
+      
+      if (rol === 'padre' && usuario) {
+        // Padre solo ve sus hijos
+        alumnos = DatabaseQueries.getChildrenByParentId(usuario.id)
+      } else if (rol === 'tutor' && usuario) {
+        // Tutor solo ve sus estudiantes asignados
+        alumnos = DatabaseQueries.getStudentsByTeacherId(usuario.id)
+      } else if (rol === 'admin') {
+        // Admin ve todos
+        alumnos = DatabaseQueries.getAllStudents()
+      }
+      
+      set({ 
+        alumnos, 
+        cargando: false 
+      })
+    }, 500)
+  },
+
+  cargarAlumnosLegacy: () => {
     set({ cargando: true })
     
     setTimeout(() => {
@@ -105,6 +135,20 @@ const useStudentsStore = create((set, get) => ({
     const { alumnos } = get()
     return alumnos.filter(alumno => alumno.padre === nombrePadre)
   },
+
+  // Nueva función para obtener alumnos por ID del padre (arquitectura profesional)
+  obtenerAlumnosPorPadreId: (padreUserId) => {
+    return DatabaseQueries.getChildrenByParentId(padreUserId)
+  },
+
+  // Función legacy - mantener por compatibilidad
+  obtenerAlumnosPorEmailPadre: (emailPadre) => {
+    // Convertir email a user ID primero
+    const padre = DatabaseQueries.getUserByEmail(emailPadre)
+    if (!padre) return []
+    
+    return DatabaseQueries.getChildrenByParentId(padre.id)
+  },
   
   buscarAlumnos: (termino) => {
     const { alumnos } = get()
@@ -116,6 +160,33 @@ const useStudentsStore = create((set, get) => ({
       alumno.grado.toLowerCase().includes(terminoLower) ||
       alumno.seccion.toLowerCase().includes(terminoLower)
     )
+  },
+
+  // Exportar estudiantes a Excel
+  exportarEstudiantes: async (formato = 'excel') => {
+    const { alumnos } = get()
+    
+    try {
+      // Importar dinámicamente el exportador
+      const { ExcelExporter } = await import('../utils/excelExporter')
+      
+      // Exportar con formato real
+      const resultado = ExcelExporter.exportarEstudiantes(alumnos)
+      
+      if (resultado.success) {
+        return resultado
+      } else {
+        throw new Error(resultado.error)
+      }
+      
+    } catch (error) {
+      console.error('Error en exportación:', error)
+      return {
+        success: false,
+        error: error.message || 'Error al exportar estudiantes',
+        mensaje: 'No se pudo completar la exportación'
+      }
+    }
   }
 }))
 

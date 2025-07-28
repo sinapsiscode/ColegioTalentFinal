@@ -11,7 +11,7 @@ import {
   FiActivity
 } from 'react-icons/fi'
 
-const TutorStats = ({ estadisticas, loading = false }) => {
+const TutorStats = ({ estadisticas, loading = false, onStatClick }) => {
   if (loading) {
     return (
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
@@ -100,7 +100,12 @@ const TutorStats = ({ estadisticas, loading = false }) => {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
               whileHover={{ y: -2 }}
-              className={`${stat.bgColor} rounded-lg shadow-sm border border-gray-200 p-4 transition-all duration-200`}
+              onClick={() => {
+                if (onStatClick) {
+                  onStatClick(stat.title)
+                }
+              }}
+              className={`${stat.bgColor} rounded-lg shadow-sm border border-gray-200 p-4 transition-all duration-200 cursor-pointer hover:shadow-md`}
             >
               <div className="flex items-center justify-between">
                 <div>
@@ -131,7 +136,13 @@ const TutorStats = ({ estadisticas, loading = false }) => {
         <motion.div
           initial={{ opacity: 0, x: -20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="bg-white rounded-lg shadow-sm border border-gray-200 p-4"
+          whileHover={{ scale: 1.02 }}
+          onClick={() => {
+            if (onStatClick) {
+              onStatClick('estudiantes-detalle')
+            }
+          }}
+          className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 cursor-pointer hover:shadow-md transition-all duration-200"
         >
           <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center space-x-2">
             <FiUsers className="w-5 h-5 text-blue-600" />
@@ -176,7 +187,13 @@ const TutorStats = ({ estadisticas, loading = false }) => {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="bg-white rounded-lg shadow-sm border border-gray-200 p-4"
+          whileHover={{ scale: 1.02 }}
+          onClick={() => {
+            if (onStatClick) {
+              onStatClick('clases-detalle')
+            }
+          }}
+          className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 cursor-pointer hover:shadow-md transition-all duration-200"
         >
           <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center space-x-2">
             <FiBookOpen className="w-5 h-5 text-green-600" />
@@ -221,7 +238,13 @@ const TutorStats = ({ estadisticas, loading = false }) => {
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
           transition={{ delay: 0.2 }}
-          className="bg-white rounded-lg shadow-sm border border-gray-200 p-4"
+          whileHover={{ scale: 1.02 }}
+          onClick={() => {
+            if (onStatClick) {
+              onStatClick('actividades-detalle')
+            }
+          }}
+          className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 cursor-pointer hover:shadow-md transition-all duration-200"
         >
           <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center space-x-2">
             <FiCheckCircle className="w-5 h-5 text-purple-600" />

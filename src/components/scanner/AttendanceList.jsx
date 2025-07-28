@@ -16,7 +16,8 @@ import {
   FiDownload,
   FiRefreshCw,
   FiChevronLeft,
-  FiChevronRight
+  FiChevronRight,
+  FiActivity
 } from 'react-icons/fi'
 
 const AttendanceList = ({ 
@@ -35,11 +36,14 @@ const AttendanceList = ({
 
   // Filtrar registros
   const registrosFiltrados = registros.filter(registro => {
+    // Verificar que el registro y sus propiedades existan
+    if (!registro || !registro.estudiante) return false
+    
     const cumpleTipo = filtroTipo === 'todos' || registro.tipo === filtroTipo
     const cumpleBusqueda = searchTerm === '' || 
-      registro.estudiante.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      registro.estudiante.grado.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      registro.estudiante.codigo.includes(searchTerm)
+      (registro.estudiante.nombre && registro.estudiante.nombre.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (registro.estudiante.grado && registro.estudiante.grado.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (registro.estudiante.codigo && registro.estudiante.codigo.includes(searchTerm))
     
     return cumpleTipo && cumpleBusqueda
   })
@@ -58,20 +62,24 @@ const AttendanceList = ({
   }
 
   const getTipoIcon = (tipo) => {
+    if (!tipo) return FiActivity
     return tipo === 'entrada' ? FiLogIn : FiLogOut
   }
 
   const getTipoColor = (tipo) => {
+    if (!tipo) return 'bg-gray-100 text-gray-800'
     return tipo === 'entrada' 
       ? 'bg-green-100 text-green-800' 
       : 'bg-orange-100 text-orange-800'
   }
 
   const getMetodoLabel = (metodo) => {
+    if (!metodo) return 'N/A'
     return metodo === 'qr' ? 'QR' : 'Manual'
   }
 
   const getMetodoColor = (metodo) => {
+    if (!metodo) return 'bg-gray-100 text-gray-800'
     return metodo === 'qr' 
       ? 'bg-blue-100 text-blue-800' 
       : 'bg-gray-100 text-gray-800'
@@ -80,17 +88,17 @@ const AttendanceList = ({
   if (loading) {
     return (
       <div className="bg-white rounded-lg shadow-sm border border-gray-200">
-        <div className="p-4 border-b border-gray-200">
-          <div className="h-6 bg-gray-200 rounded animate-pulse"></div>
+        <div className="p-3 sm:p-4 border-b border-gray-200">
+          <div className="h-5 sm:h-6 bg-gray-200 rounded animate-pulse"></div>
         </div>
-        <div className="p-4 space-y-4">
+        <div className="p-3 sm:p-4 space-y-3 sm:space-y-4">
           {[...Array(5)].map((_, index) => (
             <div key={index} className="animate-pulse">
-              <div className="flex items-center space-x-4">
-                <div className="w-12 h-12 bg-gray-200 rounded-full"></div>
-                <div className="flex-1">
-                  <div className="h-4 bg-gray-200 rounded mb-2"></div>
-                  <div className="h-3 bg-gray-200 rounded w-3/4"></div>
+              <div className="flex items-center space-x-3 sm:space-x-4">
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gray-200 rounded-full flex-shrink-0"></div>
+                <div className="flex-1 min-w-0">
+                  <div className="h-3 sm:h-4 bg-gray-200 rounded mb-1 sm:mb-2"></div>
+                  <div className="h-2 sm:h-3 bg-gray-200 rounded w-3/4"></div>
                 </div>
               </div>
             </div>
@@ -103,10 +111,10 @@ const AttendanceList = ({
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200">
       {/* Header */}
-      <div className="p-4 border-b border-gray-200">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg font-semibold text-gray-900">Registros de Asistencia</h3>
-          <div className="flex items-center space-x-2">
+      <div className="p-3 sm:p-4 border-b border-gray-200">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-3 sm:mb-4 space-y-2 sm:space-y-0">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900">Registros de Asistencia</h3>
+          <div className="flex items-center space-x-1 sm:space-x-2">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -208,8 +216,8 @@ const AttendanceList = ({
                       <div className="relative">
                         <div className="w-12 h-12 bg-gray-200 rounded-full overflow-hidden">
                           <img
-                            src={registro.estudiante.fotoUrl}
-                            alt={registro.estudiante.nombre}
+                            src={registro.estudiante?.fotoUrl || ''}
+                            alt={registro.estudiante?.nombre || 'Estudiante'}
                             className="w-full h-full object-cover"
                             onError={(e) => {
                               e.target.style.display = 'none'
@@ -217,7 +225,7 @@ const AttendanceList = ({
                             }}
                           />
                           <div className="w-full h-full bg-gray-300 flex items-center justify-center text-gray-600 text-lg font-medium hidden">
-                            {registro.estudiante.nombre.charAt(0)}
+                            {registro.estudiante?.nombre ? registro.estudiante.nombre.charAt(0) : '?'}
                           </div>
                         </div>
                         <div className={`absolute -bottom-1 -right-1 w-5 h-5 ${getTipoColor(registro.tipo)} rounded-full flex items-center justify-center`}>
@@ -228,12 +236,12 @@ const AttendanceList = ({
                       {/* Información del estudiante */}
                       <div className="flex-1">
                         <h4 className="text-sm font-medium text-gray-900">
-                          {registro.estudiante.nombre}
+                          {registro.estudiante?.nombre || 'Estudiante desconocido'}
                         </h4>
                         <div className="flex items-center space-x-3 text-xs text-gray-600 mt-1">
-                          <span>{registro.estudiante.grado}</span>
+                          <span>{registro.estudiante?.grado || 'Sin grado'}</span>
                           <span>•</span>
-                          <span>Código: {registro.estudiante.codigo}</span>
+                          <span>Código: {registro.estudiante?.codigo || 'Sin código'}</span>
                         </div>
                       </div>
 
@@ -242,7 +250,7 @@ const AttendanceList = ({
                         <div className="flex items-center space-x-2 mb-1">
                           <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getTipoColor(registro.tipo)}`}>
                             <TipoIcon className="w-3 h-3 mr-1" />
-                            {registro.tipo.charAt(0).toUpperCase() + registro.tipo.slice(1)}
+                            {registro.tipo ? registro.tipo.charAt(0).toUpperCase() + registro.tipo.slice(1) : 'N/A'}
                           </span>
                           
                           <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getMetodoColor(registro.metodo)}`}>

@@ -38,12 +38,12 @@ const QRScanner = ({ onScanSuccess, onScanError }) => {
 
   // Simular entrada de QR para demostración
   const codigosEjemplo = [
-    'E001234567890',
-    'E006789012345',
-    'E002345678901',
-    'E003456789012',
-    'E004567890123',
-    'E005678901234'
+    'E001234567890',  // Ana Sofía Rodríguez
+    'E002345678901',  // Luis Miguel Rodríguez  
+    'E003456789012',  // Sofia Martinez
+    'E004567890123',  // Pedro Silva
+    'E005678901234',  // Isabella García
+    'E006789012345'   // Estudiante 6
   ]
 
   useEffect(() => {
@@ -187,38 +187,38 @@ const QRScanner = ({ onScanSuccess, onScanError }) => {
   return (
     <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-200">
-        <div className="flex items-center space-x-2">
-          <FiCamera className="w-5 h-5 text-talentos-primary" />
-          <h3 className="text-lg font-semibold text-gray-900">Escáner QR</h3>
+      <div className="flex items-center justify-between p-3 sm:p-4 border-b border-gray-200">
+        <div className="flex items-center space-x-2 min-w-0 flex-1">
+          <FiCamera className="w-4 h-4 sm:w-5 sm:h-5 text-talentos-primary flex-shrink-0" />
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900 truncate">Escáner QR</h3>
           {escaneando && (
             <motion.div
               animate={{ scale: [1, 1.1, 1] }}
               transition={{ repeat: Infinity, duration: 1 }}
-              className="w-3 h-3 bg-green-500 rounded-full"
+              className="w-2 h-2 sm:w-3 sm:h-3 bg-green-500 rounded-full flex-shrink-0"
             />
           )}
         </div>
         
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-1 sm:space-x-2 flex-shrink-0">
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => setShowSettings(!showSettings)}
-            className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+            className="p-1.5 sm:p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors duration-200"
             title="Configuración"
           >
-            <FiSettings className="w-4 h-4" />
+            <FiSettings className="w-3 h-3 sm:w-4 sm:h-4" />
           </motion.button>
           
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={toggleFullscreen}
-            className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors duration-200"
+            className="p-1.5 sm:p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors duration-200 hidden sm:block"
             title={isFullscreen ? "Minimizar" : "Pantalla completa"}
           >
-            {isFullscreen ? <FiMinimize className="w-4 h-4" /> : <FiMaximize className="w-4 h-4" />}
+            {isFullscreen ? <FiMinimize className="w-3 h-3 sm:w-4 sm:h-4" /> : <FiMaximize className="w-3 h-3 sm:w-4 sm:h-4" />}
           </motion.button>
         </div>
       </div>
@@ -232,8 +232,8 @@ const QRScanner = ({ onScanSuccess, onScanError }) => {
             exit={{ height: 0, opacity: 0 }}
             className="border-b border-gray-200 bg-gray-50"
           >
-            <div className="p-4 space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="p-3 sm:p-4 space-y-3 sm:space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Modo de operación
@@ -241,7 +241,7 @@ const QRScanner = ({ onScanSuccess, onScanError }) => {
                   <select
                     value={configuracionEscaner.modoOperacion}
                     onChange={(e) => updateSetting('modoOperacion', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent"
+                    className="w-full px-2 py-1.5 sm:px-3 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent"
                   >
                     <option value="entrada">Solo Entrada</option>
                     <option value="salida">Solo Salida</option>
@@ -257,7 +257,7 @@ const QRScanner = ({ onScanSuccess, onScanError }) => {
                     type="number"
                     value={configuracionEscaner.tiempoEspera}
                     onChange={(e) => updateSetting('tiempoEspera', parseInt(e.target.value))}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent"
+                    className="w-full px-2 py-1.5 sm:px-3 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent"
                     min="1000"
                     max="10000"
                     step="500"
@@ -265,15 +265,15 @@ const QRScanner = ({ onScanSuccess, onScanError }) => {
                 </div>
               </div>
               
-              <div className="flex items-center space-x-6">
+              <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
                 <label className="flex items-center space-x-2 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={configuracionEscaner.sonidoActivado}
                     onChange={(e) => updateSetting('sonidoActivado', e.target.checked)}
-                    className="w-4 h-4 text-talentos-primary focus:ring-talentos-primary border-gray-300 rounded"
+                    className="w-3 h-3 sm:w-4 sm:h-4 text-talentos-primary focus:ring-talentos-primary border-gray-300 rounded"
                   />
-                  <span className="text-sm text-gray-700">Sonido activado</span>
+                  <span className="text-xs sm:text-sm text-gray-700">Sonido</span>
                 </label>
                 
                 <label className="flex items-center space-x-2 cursor-pointer">
@@ -281,9 +281,9 @@ const QRScanner = ({ onScanSuccess, onScanError }) => {
                     type="checkbox"
                     checked={configuracionEscaner.vibracionActivada}
                     onChange={(e) => updateSetting('vibracionActivada', e.target.checked)}
-                    className="w-4 h-4 text-talentos-primary focus:ring-talentos-primary border-gray-300 rounded"
+                    className="w-3 h-3 sm:w-4 sm:h-4 text-talentos-primary focus:ring-talentos-primary border-gray-300 rounded"
                   />
-                  <span className="text-sm text-gray-700">Vibración activada</span>
+                  <span className="text-xs sm:text-sm text-gray-700">Vibración</span>
                 </label>
                 
                 <label className="flex items-center space-x-2 cursor-pointer">
@@ -291,9 +291,9 @@ const QRScanner = ({ onScanSuccess, onScanError }) => {
                     type="checkbox"
                     checked={configuracionEscaner.autoRegistro}
                     onChange={(e) => updateSetting('autoRegistro', e.target.checked)}
-                    className="w-4 h-4 text-talentos-primary focus:ring-talentos-primary border-gray-300 rounded"
+                    className="w-3 h-3 sm:w-4 sm:h-4 text-talentos-primary focus:ring-talentos-primary border-gray-300 rounded"
                   />
-                  <span className="text-sm text-gray-700">Auto registro</span>
+                  <span className="text-xs sm:text-sm text-gray-700">Auto registro</span>
                 </label>
               </div>
             </div>
@@ -302,7 +302,7 @@ const QRScanner = ({ onScanSuccess, onScanError }) => {
       </AnimatePresence>
 
       {/* Scanner View */}
-      <div className={`relative ${isFullscreen ? 'h-96' : 'h-64'}`}>
+      <div className={`relative ${isFullscreen ? 'h-80 sm:h-96' : 'h-48 sm:h-64'}`}>
         <canvas
           ref={canvasRef}
           width={600}
@@ -317,30 +317,32 @@ const QRScanner = ({ onScanSuccess, onScanError }) => {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={handleStartScanning}
-              className="bg-talentos-primary text-white px-6 py-3 rounded-lg flex items-center space-x-2 shadow-lg"
+              className="bg-talentos-primary text-white px-4 py-2 sm:px-6 sm:py-3 rounded-lg flex items-center space-x-2 shadow-lg text-sm sm:text-base"
             >
-              <FiPlay className="w-5 h-5" />
-              <span>Iniciar Escáner</span>
+              <FiPlay className="w-4 h-4 sm:w-5 sm:h-5" />
+              <span className="hidden sm:inline">Iniciar Escáner</span>
+              <span className="sm:hidden">Iniciar</span>
             </motion.button>
           ) : (
-            <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex items-center space-x-3">
+            <div className="absolute bottom-2 sm:bottom-4 left-1/2 transform -translate-x-1/2 flex items-center space-x-2 sm:space-x-3">
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={handleSimulateScan}
-                className="bg-green-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2"
+                className="bg-green-600 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm"
               >
-                <FiCheckCircle className="w-4 h-4" />
-                <span>Simular Escaneo</span>
+                <FiCheckCircle className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden sm:inline">Simular Escaneo</span>
+                <span className="sm:hidden">Simular</span>
               </motion.button>
               
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={handleStopScanning}
-                className="bg-red-600 text-white px-4 py-2 rounded-lg flex items-center space-x-2"
+                className="bg-red-600 text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm"
               >
-                <FiStopCircle className="w-4 h-4" />
+                <FiStopCircle className="w-3 h-3 sm:w-4 sm:h-4" />
                 <span>Detener</span>
               </motion.button>
             </div>
@@ -372,15 +374,16 @@ const QRScanner = ({ onScanSuccess, onScanError }) => {
       </div>
 
       {/* Manual Input */}
-      <div className="p-4 border-t border-gray-200 bg-gray-50">
-        <div className="flex items-center space-x-3">
+      <div className="p-3 sm:p-4 border-t border-gray-200 bg-gray-50">
+        <div className="flex items-center space-x-2 sm:space-x-3">
           <div className="flex-1">
             <input
               type="text"
               value={manualCode}
               onChange={(e) => setManualCode(e.target.value)}
-              placeholder="Ingresa código QR manualmente..."
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent"
+              placeholder="Código QR..."
+              className="w-full px-2 py-1.5 sm:px-3 sm:py-2 text-sm sm:text-base border border-gray-300 rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent"
+              aria-label="Código QR manual"
               onKeyPress={(e) => e.key === 'Enter' && handleManualInput()}
             />
           </div>
@@ -389,35 +392,59 @@ const QRScanner = ({ onScanSuccess, onScanError }) => {
             whileTap={{ scale: 0.95 }}
             onClick={handleManualInput}
             disabled={!manualCode.trim()}
-            className="bg-talentos-primary text-white px-4 py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+            className="bg-talentos-primary text-white px-3 py-1.5 sm:px-4 sm:py-2 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base flex-shrink-0"
           >
             Procesar
           </motion.button>
         </div>
         
-        <div className="mt-3 flex flex-wrap gap-2">
-          <span className="text-xs text-gray-600">Códigos de ejemplo:</span>
-          {codigosEjemplo.slice(0, 3).map((codigo) => (
-            <button
-              key={codigo}
-              onClick={() => setManualCode(codigo)}
-              className="text-xs bg-gray-200 text-gray-700 px-2 py-1 rounded hover:bg-gray-300 transition-colors duration-200"
+        <div className="mt-2 sm:mt-3 space-y-2">
+          <div className="flex flex-wrap gap-1 sm:gap-2">
+            <span className="text-xs text-gray-600">Ejemplos:</span>
+            {codigosEjemplo.slice(0, 3).map((codigo) => (
+              <button
+                key={codigo}
+                onClick={() => setManualCode(codigo)}
+                className="text-xs bg-gray-200 text-gray-700 px-1.5 py-0.5 sm:px-2 sm:py-1 rounded hover:bg-gray-300 transition-colors duration-200"
+              >
+                {codigo.slice(-4)}
+              </button>
+            ))}
+          </div>
+          
+          {/* BOTONES DE PRUEBA GRANDES */}
+          <div className="flex flex-col sm:flex-row gap-2">
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => procesarEscaneo('E001234567890')}
+              className="flex-1 bg-green-500 text-white px-3 py-2 sm:px-4 rounded-lg font-medium hover:bg-green-600 transition-colors duration-200 text-sm"
             >
-              {codigo}
-            </button>
-          ))}
+              <span className="hidden sm:inline">🚀 Probar Ana (Entrada)</span>
+              <span className="sm:hidden">🚀 Ana</span>
+            </motion.button>
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => procesarEscaneo('E002345678901')}
+              className="flex-1 bg-blue-500 text-white px-3 py-2 sm:px-4 rounded-lg font-medium hover:bg-blue-600 transition-colors duration-200 text-sm"
+            >
+              <span className="hidden sm:inline">🎯 Probar Luis (Entrada)</span>
+              <span className="sm:hidden">🎯 Luis</span>
+            </motion.button>
+          </div>
         </div>
       </div>
 
       {/* Status info */}
-      <div className="p-3 bg-gray-50 border-t border-gray-200">
-        <div className="flex items-center justify-between text-sm text-gray-600">
-          <div className="flex items-center space-x-4">
-            <span>Modo: {configuracionEscaner.modoOperacion}</span>
-            <span>•</span>
-            <span>Espera: {configuracionEscaner.tiempoEspera}ms</span>
+      <div className="p-2 sm:p-3 bg-gray-50 border-t border-gray-200">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between text-xs sm:text-sm text-gray-600 space-y-1 sm:space-y-0">
+          <div className="flex items-center space-x-2 sm:space-x-4">
+            <span className="truncate">Modo: {configuracionEscaner.modoOperacion}</span>
+            <span className="hidden sm:inline">•</span>
+            <span className="hidden sm:inline">Espera: {configuracionEscaner.tiempoEspera}ms</span>
           </div>
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-1 sm:space-x-2">
             {configuracionEscaner.sonidoActivado && <span>🔊</span>}
             {configuracionEscaner.vibracionActivada && <span>📳</span>}
             {configuracionEscaner.autoRegistro && <span>⚡</span>}

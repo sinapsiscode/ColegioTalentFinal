@@ -190,8 +190,9 @@ const Messages = () => {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header de la página - solo visible en móvil cuando no hay chat abierto o en desktop */}
         {(!showMobileChat || window.innerWidth >= 1024) && (
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center space-x-4">
+          <div className="mb-6">
+            {/* Título y navegación */}
+            <div className="flex items-center space-x-3 mb-4">
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
@@ -201,32 +202,31 @@ const Messages = () => {
                 <FiArrowLeft className="w-5 h-5" />
               </motion.button>
               
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">Mensajes del Tutor</h1>
-                <p className="text-gray-600 mt-1">
+              <div className="flex-1">
+                <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">Mensajes del Tutor</h1>
+                <p className="text-sm text-gray-600 mt-1">
                   Comunicación con padres, administración y colegas
                 </p>
               </div>
             </div>
             
-            <div className="flex items-center space-x-3">
-              <AnimatedButton
-                variant="outline"
-                icon={FiRefreshCw}
+            {/* Botones de acción */}
+            <div className="flex justify-end space-x-2">
+              <button
                 onClick={handleRefresh}
-                size="sm"
+                className="p-2 text-gray-600 hover:text-talentos-primary hover:bg-gray-100 rounded-lg transition-colors"
+                title="Actualizar mensajes"
               >
-                Actualizar
-              </AnimatedButton>
+                <FiRefreshCw className="w-5 h-5" />
+              </button>
               
-              <AnimatedButton
-                variant="primary"
-                icon={FiPlus}
+              <button
                 onClick={handleNewMessage}
-                size="sm"
+                className="flex items-center space-x-2 px-3 py-2 bg-talentos-primary text-white rounded-lg hover:bg-talentos-secondary transition-colors text-sm font-medium"
               >
-                Nueva Conversación
-              </AnimatedButton>
+                <FiPlus className="w-4 h-4" />
+                <span>Nueva Conversación</span>
+              </button>
             </div>
           </div>
         )}

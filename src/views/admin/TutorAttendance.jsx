@@ -233,17 +233,17 @@ const TutorAttendance = () => {
     <div className="min-h-screen bg-gray-50">
       <Header />
       
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="py-4 sm:py-8 px-4 sm:px-6 lg:px-8 mx-auto max-w-7xl">
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-8 gap-4 sm:gap-0">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Asistencia de Tutores</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Asistencia de Tutores</h1>
             <p className="text-gray-600 mt-1">
               Control y seguimiento de asistencia del personal docente
             </p>
           </div>
           
-          <div className="flex items-center space-x-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <AnimatedButton
               variant="outline"
               icon={FiRefreshCw}
@@ -292,7 +292,7 @@ const TutorAttendance = () => {
           >
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Configuración de Asistencia</h3>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Hora de Ingreso Regular
@@ -342,9 +342,9 @@ const TutorAttendance = () => {
         )}
 
         {/* Controles */}
-        <div className="mb-6 bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="flex items-center space-x-4">
+        <div className="mb-4 sm:mb-6 bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+            <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => setVistaActual('calendario')}
@@ -371,12 +371,12 @@ const TutorAttendance = () => {
                 </button>
               </div>
               
-              <div className="flex items-center space-x-4">
+              <div className="flex flex-col sm:flex-row sm:items-center space-y-4 sm:space-y-0 sm:space-x-4">
                 <div className="flex items-center space-x-2">
                   <label className="text-sm font-medium text-gray-700 whitespace-nowrap">
                     Tutor:
                   </label>
-                  <div className="min-w-64">
+                  <div className="w-full sm:min-w-64">
                     <FilterDropdown
                       selectedValue={tutorSeleccionado || 'todos'}
                       onSelect={handleTutorChange}
@@ -411,7 +411,7 @@ const TutorAttendance = () => {
               </div>
             </div>
             
-            <div className="flex items-center space-x-4">
+            <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
               <div className="flex items-center space-x-2 text-sm text-gray-600">
                 <FiUsers className="w-4 h-4" />
                 <span>{tutoresPresentes.length} tutores presentes</span>
@@ -430,7 +430,7 @@ const TutorAttendance = () => {
         </div>
 
         {/* Estadísticas */}
-        <div className="mb-6">
+        <div className="mb-4 sm:mb-6">
           <AttendanceStats 
             estadisticas={estadisticasActuales} 
             loading={cargando}
@@ -441,7 +441,7 @@ const TutorAttendance = () => {
         {/* Contenido Principal */}
         <div className="bg-white rounded-lg shadow-sm border border-gray-200">
           {vistaActual === 'calendario' ? (
-            <div className="p-6">
+            <div className="p-4 sm:p-6">
               <AttendanceCalendar
                 registros={datosCalendario}
                 onDateSelect={setFechaSeleccionada}
@@ -452,10 +452,10 @@ const TutorAttendance = () => {
               />
             </div>
           ) : (
-            <div className="p-6">
+            <div className="p-4 sm:p-6">
               <div className="space-y-4">
                 {registrosFiltrados.length === 0 ? (
-                  <div className="text-center py-12">
+                  <div className="text-center py-8 sm:py-12">
                     <FiUsers className="w-12 h-12 text-gray-400 mx-auto mb-4" />
                     <p className="text-gray-600">No se encontraron registros de asistencia</p>
                   </div>
@@ -469,10 +469,12 @@ const TutorAttendance = () => {
                           key={registro.id}
                           initial={{ opacity: 0, y: 20 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className="flex items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+                          whileHover={{ scale: 1.01 }}
+                          onClick={() => handleVerDetalle(registro)}
+                          className="flex flex-col sm:flex-row sm:items-center justify-between p-4 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200 gap-4 sm:gap-0 cursor-pointer"
                         >
                           <div className="flex items-center space-x-4">
-                            <div className="w-10 h-10 bg-gray-200 rounded-full overflow-hidden">
+                            <div className="w-10 h-10 bg-gray-200 rounded-full overflow-hidden flex-shrink-0">
                               <img
                                 src={tutor.foto}
                                 alt={tutor.nombre}
@@ -493,8 +495,8 @@ const TutorAttendance = () => {
                             </div>
                           </div>
                           
-                          <div className="flex items-center space-x-4">
-                            <div className="text-right">
+                          <div className="flex flex-col sm:flex-row sm:items-center space-y-2 sm:space-y-0 sm:space-x-4">
+                            <div className="text-left sm:text-right">
                               <p className="text-sm text-gray-900">
                                 {format(new Date(registro.fecha), 'dd/MM/yyyy', { locale: es })}
                               </p>
@@ -518,7 +520,10 @@ const TutorAttendance = () => {
                               </span>
                               
                               <button
-                                onClick={() => handleVerDetalle(registro)}
+                                onClick={(e) => {
+                                  e.stopPropagation()
+                                  handleVerDetalle(registro)
+                                }}
                                 className="p-2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
                               >
                                 <FiEye className="w-4 h-4" />

@@ -59,8 +59,9 @@ const ClassCard = ({ clase, onStartClass, onViewDetails }) => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -2 }}
-      className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 transition-all duration-200 hover:shadow-md"
+      whileHover={{ y: -2, scale: 1.01 }}
+      onClick={() => onViewDetails(clase)}
+      className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 transition-all duration-200 hover:shadow-md cursor-pointer"
     >
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
@@ -137,7 +138,10 @@ const ClassCard = ({ clase, onStartClass, onViewDetails }) => {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => onStartClass(clase)}
+            onClick={(e) => {
+              e.stopPropagation()
+              onStartClass(clase)
+            }}
             className="flex-1 flex items-center justify-center space-x-1 px-3 py-2 bg-green-600 text-white text-sm font-medium rounded-lg hover:bg-green-700 transition-colors duration-200"
           >
             <FiPlay className="w-3 h-3" />
@@ -149,7 +153,10 @@ const ClassCard = ({ clase, onStartClass, onViewDetails }) => {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => onViewDetails(clase)}
+            onClick={(e) => {
+              e.stopPropagation()
+              onViewDetails(clase)
+            }}
             className="flex-1 flex items-center justify-center space-x-1 px-3 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors duration-200"
           >
             <FiPlay className="w-3 h-3" />
@@ -161,7 +168,10 @@ const ClassCard = ({ clase, onStartClass, onViewDetails }) => {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => onViewDetails(clase)}
+            onClick={(e) => {
+              e.stopPropagation()
+              onViewDetails(clase)
+            }}
             className="flex-1 flex items-center justify-center space-x-1 px-3 py-2 bg-gray-600 text-white text-sm font-medium rounded-lg hover:bg-gray-700 transition-colors duration-200"
           >
             <FiCheck className="w-3 h-3" />

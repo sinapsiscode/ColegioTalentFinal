@@ -26,6 +26,7 @@ import AnimatedButton from '../../components/common/AnimatedButton'
 import LoadingSpinner from '../../components/common/LoadingSpinner'
 import FilterDropdown from '../../components/common/FilterDropdown'
 import { showSuccess, showError, showConfirm } from '../../utils/sweetAlert'
+import { exportForParents } from '../../utils/exportUtilsSimple'
 
 const Communiques = () => {
   const navigate = useNavigate()
@@ -107,8 +108,36 @@ const Communiques = () => {
     showSuccess('Imprimir', 'Función de impresión próximamente disponible')
   }
 
-  const handleExportAll = () => {
-    showSuccess('Exportar', 'Función de exportación próximamente disponible')
+  const handleExportAll = async () => {
+    if (comunicadosFiltrados.length === 0) {
+      showError('Sin Datos', 'No hay comunicados para exportar')
+      return
+    }
+
+    try {
+      // Preparar datos para exportación (padres solo reciben PDF)
+      const exportData = comunicadosFiltrados.map(comunicado => ({
+        'Título': comunicado.titulo,
+        'Fecha': comunicado.fecha,
+        'Categoría': comunicado.categoria,
+        'Estado': comunicado.leido ? 'Leído' : 'No leído',
+        'Contenido': comunicado.contenido ? comunicado.contenido.substring(0, 100) + '...' : 'Sin contenido'
+      }))
+
+      const result = await exportForParents(exportData, {
+        title: `Comunicados - ${usuario?.nombre || 'Padre de Familia'}`,
+        filename: 'comunicados_recibidos'
+      })
+
+      if (result.success) {
+        showSuccess('PDF Descargado', result.message)
+      } else {
+        showError('Error de Exportación', result.error)
+      }
+    } catch (error) {
+      console.error('Error al exportar:', error)
+      showError('Error', 'Error inesperado durante la exportación')
+    }
   }
 
   // Opciones de filtro
@@ -143,8 +172,8 @@ const Communiques = () => {
     return (
       <div className="min-h-screen bg-gray-50">
         <Header />
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex items-center justify-center min-h-96">
+        <main className="max-w-7xl mx-auto py-4 sm:py-8 px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-center min-h-64 sm:min-h-96">
             <LoadingSpinner size="xl" />
           </div>
         </main>
@@ -156,9 +185,9 @@ const Communiques = () => {
     <div className="min-h-screen bg-gray-50">
       <Header />
       
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto py-4 sm:py-8 px-4 sm:px-6 lg:px-8">
         {/* Header de la página */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 space-y-4 sm:space-y-0">
           <div className="flex items-center space-x-4">
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -170,14 +199,14 @@ const Communiques = () => {
             </motion.button>
             
             <div>
-              <h1 className="text-3xl font-bold text-gray-900">Comunicados</h1>
-              <p className="text-gray-600 mt-1">
+              <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Comunicados</h1>
+              <p className="text-gray-600 mt-1 text-sm sm:text-base">
                 Mantente informado sobre las novedades del colegio
               </p>
             </div>
           </div>
           
-          <div className="flex items-center space-x-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center space-y-2 sm:space-y-0 sm:space-x-3 w-full sm:w-auto">
             <div className="flex items-center bg-white rounded-lg border border-gray-200 p-1">
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -208,23 +237,27 @@ const Communiques = () => {
               </motion.button>
             </div>
             
-            <AnimatedButton
-              variant="outline"
-              icon={FiRefreshCw}
-              onClick={handleRefresh}
-              size="sm"
-            >
-              Actualizar
-            </AnimatedButton>
-            
-            <AnimatedButton
-              variant="primary"
-              icon={FiDownload}
-              onClick={handleExportAll}
-              size="sm"
-            >
-              Exportar
-            </AnimatedButton>
+            <div className="flex space-x-2 sm:space-x-3">
+              <AnimatedButton
+                variant="outline"
+                icon={FiRefreshCw}
+                onClick={handleRefresh}
+                size="sm"
+              >
+                <span className="hidden sm:inline">Actualizar</span>
+                <span className="sm:hidden">Act.</span>
+              </AnimatedButton>
+              
+              <AnimatedButton
+                variant="primary"
+                icon={FiDownload}
+                onClick={handleExportAll}
+                size="sm"
+              >
+                <span className="hidden sm:inline">Exportar</span>
+                <span className="sm:hidden">Exp.</span>
+              </AnimatedButton>
+            </div>
           </div>
         </div>
 
@@ -232,8 +265,8 @@ const Communiques = () => {
         <CommuniqueStats estadisticas={estadisticas} loading={cargando} />
 
         {/* Controles de búsqueda y filtros */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 mb-4 sm:mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <SearchInput
               value={searchTerm}
               onChange={setSearchTerm}
@@ -265,10 +298,10 @@ const Communiques = () => {
           
           {/* Contador de resultados */}
           <div className="mt-4 pt-4 border-t border-gray-200">
-            <p className="text-sm text-gray-600">
+            <p className="text-xs sm:text-sm text-gray-600">
               Mostrando {comunicadosFiltrados.length} de {comunicados.length} comunicados
               {searchTerm && (
-                <span className="ml-2">
+                <span className="ml-2 block sm:inline mt-1 sm:mt-0">
                   para "<span className="font-medium">{searchTerm}</span>"
                 </span>
               )}
@@ -296,8 +329,8 @@ const Communiques = () => {
         ) : (
           <div className={`${
             viewMode === 'grid' 
-              ? 'grid grid-cols-1 lg:grid-cols-2 gap-6' 
-              : 'space-y-4'
+              ? 'grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6' 
+              : 'space-y-3 sm:space-y-4'
           }`}>
             {comunicadosFiltrados.map((comunicado, index) => (
               <motion.div

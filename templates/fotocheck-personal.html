@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fotocheck Personal Administrativo - Talentos College</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f0f0f0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        /* Tamaño estándar de carnet: 85.6mm × 53.98mm */
+        .fotocheck {
+            width: 324px; /* 85.6mm */
+            height: 204px; /* 53.98mm */
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+            overflow: hidden;
+            position: relative;
+        }
+        
+        /* Header con gradiente para personal */
+        .header {
+            background: linear-gradient(135deg, #374151 0%, #111827 100%);
+            padding: 10px 15px;
+            color: white;
+            position: relative;
+            height: 50px;
+        }
+        
+        .logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            height: 100%;
+        }
+        
+        .logo {
+            width: 35px;
+            height: 35px;
+            background: white;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            padding: 2px;
+        }
+        
+        .logo img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        
+        .college-name {
+            font-size: 16px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+        
+        .staff-type {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 11px;
+            background: rgba(255,255,255,0.2);
+            padding: 3px 10px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+        
+        /* Contenido principal */
+        .content {
+            padding: 15px;
+            display: flex;
+            gap: 15px;
+            height: calc(100% - 50px);
+        }
+        
+        /* Foto del personal */
+        .photo-section {
+            flex: 0 0 90px;
+        }
+        
+        .photo {
+            width: 90px;
+            height: 110px;
+            background: #e0e0e0;
+            border-radius: 6px;
+            border: 3px solid #374151;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #999;
+            font-size: 12px;
+            text-align: center;
+            overflow: hidden;
+        }
+        
+        .photo img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        /* Información del personal */
+        .info-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        
+        .staff-name {
+            font-size: 17px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 2px;
+        }
+        
+        .staff-position {
+            font-size: 13px;
+            color: #374151;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        
+        .info-row {
+            display: flex;
+            margin-bottom: 5px;
+            font-size: 11px;
+        }
+        
+        .info-label {
+            font-weight: 600;
+            color: #666;
+            width: 70px;
+        }
+        
+        .info-value {
+            color: #333;
+        }
+        
+        /* Código QR */
+        .qr-section {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            text-align: center;
+        }
+        
+        .qr-code {
+            width: 50px;
+            height: 50px;
+            background: #f0f0f0;
+            border: 1px solid #ddd;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            color: #999;
+        }
+        
+        .qr-label {
+            font-size: 9px;
+            color: #666;
+            margin-top: 2px;
+        }
+        
+        /* Área/Departamento */
+        .department-badge {
+            position: absolute;
+            bottom: 10px;
+            left: 105px;
+            background: #374151;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: 600;
+        }
+        
+        /* Nivel de acceso */
+        .access-level {
+            position: absolute;
+            top: 60px;
+            right: 15px;
+            background: #FEF3C7;
+            color: #92400E;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 9px;
+            font-weight: 600;
+            border: 1px solid #FCD34D;
+        }
+        
+        /* Marca de agua */
+        .watermark {
+            position: absolute;
+            bottom: 5px;
+            left: 15px;
+            font-size: 8px;
+            color: #ccc;
+            opacity: 0.5;
+        }
+        
+        /* Versión para imprimir */
+        @media print {
+            body {
+                background: white;
+            }
+            .fotocheck {
+                box-shadow: none;
+                page-break-inside: avoid;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="fotocheck">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo-container">
+                <div class="logo">
+                    <img src="../public/logo-talentos.jpeg" alt="Talentos College">
+                </div>
+                <div class="college-name">TALENTOS COLLEGE</div>
+            </div>
+            <div class="staff-type">ADMINISTRATIVO</div>
+        </div>
+        
+        <!-- Nivel de acceso -->
+        <div class="access-level">ACCESO TOTAL</div>
+        
+        <!-- Contenido -->
+        <div class="content">
+            <!-- Foto -->
+            <div class="photo-section">
+                <div class="photo">
+                    FOTO<br>
+                    3x4
+                </div>
+            </div>
+            
+            <!-- Información -->
+            <div class="info-section">
+                <div>
+                    <div class="staff-name">NOMBRE DEL PERSONAL</div>
+                    <div class="staff-position">SECRETARIA ACADÉMICA</div>
+                    
+                    <div class="info-row">
+                        <span class="info-label">CÓDIGO:</span>
+                        <span class="info-value">ADM-2024-001</span>
+                    </div>
+                    
+                    <div class="info-row">
+                        <span class="info-label">DNI:</span>
+                        <span class="info-value">87654321</span>
+                    </div>
+                    
+                    <div class="info-row">
+                        <span class="info-label">VIGENCIA:</span>
+                        <span class="info-value">DIC 2024</span>
+                    </div>
+                    
+                    <div class="info-row">
+                        <span class="info-label">HORARIO:</span>
+                        <span class="info-value">8:00 AM - 5:00 PM</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- QR -->
+            <div class="qr-section">
+                <div class="qr-code">QR</div>
+                <div class="qr-label">CÓDIGO QR</div>
+            </div>
+            
+            <!-- Departamento -->
+            <div class="department-badge">ADMINISTRACIÓN</div>
+        </div>
+        
+        <!-- Marca de agua -->
+        <div class="watermark">PERSONAL</div>
+    </div>
+    
+    <!-- Instrucciones -->
+    <div style="margin-top: 30px; background: white; padding: 20px; border-radius: 8px; max-width: 500px;">
+        <h3 style="color: #333; margin-bottom: 15px;">📋 Instrucciones para Photoshop:</h3>
+        <ol style="line-height: 1.8; color: #666;">
+            <li><strong>Captura:</strong> Presiona F12, luego Ctrl+Shift+P y escribe "Capture screenshot"</li>
+            <li><strong>Edición en Photoshop:</strong>
+                <ul>
+                    <li>Tamaño real: 85.6mm × 53.98mm (300 DPI)</li>
+                    <li>Reemplaza "FOTO 3x4" con la foto del personal</li>
+                    <li>Reemplaza "QR" con el código QR generado</li>
+                    <li>El logo ya está incluido (logo-talentos.jpeg)</li>
+                    <li>Actualiza cargo y departamento</li>
+                </ul>
+            </li>
+            <li><strong>Colores para personal:</strong>
+                <ul>
+                    <li>Principal: #374151 (Gris oscuro)</li>
+                    <li>Secundario: #111827 (Negro)</li>
+                    <li>Texto: #333333</li>
+                </ul>
+            </li>
+            <li><strong>Niveles de acceso:</strong>
+                <ul>
+                    <li>ACCESO TOTAL - Badge amarillo</li>
+                    <li>ACCESO LIMITADO - Badge naranja</li>
+                    <li>SOLO OFICINAS - Badge gris</li>
+                </ul>
+            </li>
+            <li><strong>Departamentos:</strong>
+                <ul>
+                    <li>ADMINISTRACIÓN</li>
+                    <li>CONTABILIDAD</li>
+                    <li>RECURSOS HUMANOS</li>
+                    <li>MANTENIMIENTO</li>
+                    <li>SEGURIDAD</li>
+                </ul>
+            </li>
+        </ol>
+    </div>
+</body>
+</html>

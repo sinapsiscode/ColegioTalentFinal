@@ -1,4 +1,5 @@
 import { create } from 'zustand'
+import { DatabaseQueries } from '../data/databaseSchema'
 
 const useAdminCommunicationsStore = create((set, get) => ({
   cargando: false,
@@ -20,6 +21,18 @@ const useAdminCommunicationsStore = create((set, get) => ({
   
   cargarComunicados: () => {
     set({ cargando: true })
+    
+    // Obtener datos dinámicos de la base de datos
+    console.log('📢 Cargando comunicados dinámicos...')
+    const todosLosUsuarios = DatabaseQueries.getAllUsers()
+    const todosLosEstudiantes = DatabaseQueries.getAllStudents()
+    const totalComunidad = todosLosUsuarios.length + todosLosEstudiantes.length
+    
+    console.log('📊 Datos para comunicados:', {
+      usuarios: todosLosUsuarios.length,
+      estudiantes: todosLosEstudiantes.length,
+      totalComunidad
+    })
     
     setTimeout(() => {
       const comunicados = [
@@ -479,19 +492,30 @@ const useAdminCommunicationsStore = create((set, get) => ({
     }
   },
   
-  exportarComunicados: (formato = 'excel') => {
+  exportarComunicados: async (formato = 'excel') => {
     const { comunicados } = get()
     
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          success: true,
-          archivo: `comunicados_${new Date().toISOString().split('T')[0]}.${formato}`,
-          registros: comunicados.length,
-          url: '#'
-        })
-      }, 1500)
-    })
+    try {
+      // Importar dinámicamente el exportador
+      const { ExcelExporter } = await import('../utils/excelExporter')
+      
+      // Exportar con formato real
+      const resultado = ExcelExporter.exportarComunicados(comunicados)
+      
+      if (resultado.success) {
+        return resultado
+      } else {
+        throw new Error(resultado.error)
+      }
+      
+    } catch (error) {
+      console.error('Error en exportación:', error)
+      return {
+        success: false,
+        error: error.message || 'Error al exportar comunicados',
+        mensaje: 'No se pudo completar la exportación'
+      }
+    }
   },
   
   obtenerAnalytics: () => {

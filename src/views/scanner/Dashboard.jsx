@@ -19,6 +19,7 @@ import useTutorAttendanceStore from '../../stores/tutorAttendanceStore'
 import useAuthStore from '../../stores/authStore'
 
 import QRScanner from '../../components/scanner/QRScanner'
+import QRScannerSimple from '../../components/scanner/QRScannerSimple'
 import AttendanceStats from '../../components/scanner/AttendanceStats'
 import AttendanceList from '../../components/scanner/AttendanceList'
 import LoadingSpinner from '../../components/common/LoadingSpinner'
@@ -42,6 +43,7 @@ const Dashboard = () => {
   const { cargarRegistrosAsistencia } = useTutorAttendanceStore()
 
   const [mostrarEscaner, setMostrarEscaner] = useState(true)
+  const [usarEscanerReal, setUsarEscanerReal] = useState(true) // Por defecto usar el scanner real
   const [ultimaActualizacion, setUltimaActualizacion] = useState(new Date())
 
   // Inicializar datos al montar el componente
@@ -150,17 +152,17 @@ const Dashboard = () => {
     <div className="min-h-screen bg-gray-50">
       <Header />
       
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
         {/* Header de la página */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 space-y-4 sm:space-y-0">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Control de Acceso</h1>
-            <p className="text-gray-600 mt-1">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Control de Acceso</h1>
+            <p className="text-sm sm:text-base text-gray-600 mt-1">
               Sistema de registro de asistencia por código QR
             </p>
           </div>
           
-          <div className="flex items-center space-x-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -205,14 +207,14 @@ const Dashboard = () => {
         </div>
 
         {/* Estado del sistema */}
-        <div className="mb-6">
+        <div className="mb-4 sm:mb-6">
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white rounded-lg shadow-sm border border-gray-200 p-4"
+            className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4"
           >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between space-y-3 sm:space-y-0">
+              <div className="flex flex-wrap items-center gap-3 sm:gap-4">
                 <div className="flex items-center space-x-2">
                   <div className={`w-3 h-3 rounded-full ${escaneando ? 'bg-green-500' : 'bg-gray-400'}`} />
                   <span className="text-sm font-medium text-gray-900">
@@ -235,7 +237,7 @@ const Dashboard = () => {
                 </div>
               </div>
               
-              <div className="flex items-center space-x-2 text-xs text-gray-500">
+              <div className="flex items-center space-x-2 text-xs text-gray-500 mt-2 sm:mt-0">
                 <FiClock className="w-3 h-3" />
                 <span>
                   Última actualización: {ultimaActualizacion.toLocaleTimeString('es-PE')}
@@ -245,9 +247,29 @@ const Dashboard = () => {
           </motion.div>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-6">
           {/* Columna principal */}
-          <div className="lg:col-span-2 space-y-6">
+          <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+            {/* Toggle para cambiar entre scanner real y simulado */}
+            {mostrarEscaner && (
+              <div className="mb-4">
+                <div className="flex items-center justify-between bg-gray-50 p-3 rounded-lg">
+                  <span className="text-sm font-medium text-gray-700">
+                    Modo de escáner: {usarEscanerReal ? 'Manual' : 'Simulado'}
+                  </span>
+                  <label className="relative inline-flex items-center cursor-pointer">
+                    <input
+                      type="checkbox"
+                      checked={usarEscanerReal}
+                      onChange={(e) => setUsarEscanerReal(e.target.checked)}
+                      className="sr-only peer"
+                    />
+                    <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                  </label>
+                </div>
+              </div>
+            )}
+
             {/* Escáner QR */}
             {mostrarEscaner && (
               <motion.div
@@ -255,10 +277,16 @@ const Dashboard = () => {
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.95 }}
               >
-                <QRScanner
-                  onScanSuccess={handleScanSuccess}
-                  onScanError={handleScanError}
-                />
+                {usarEscanerReal ? (
+                  <QRScannerSimple
+                    onScanComplete={handleScanSuccess}
+                  />
+                ) : (
+                  <QRScanner
+                    onScanSuccess={handleScanSuccess}
+                    onScanError={handleScanError}
+                  />
+                )}
               </motion.div>
             )}
 
@@ -281,33 +309,33 @@ const Dashboard = () => {
           </div>
 
           {/* Sidebar */}
-          <div className="space-y-6">
+          <div className="space-y-4 sm:space-y-6">
             {/* Estudiantes presentes */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               className="bg-white rounded-lg shadow-sm border border-gray-200"
             >
-              <div className="p-4 border-b border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
+              <div className="p-3 sm:p-4 border-b border-gray-200">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 flex items-center space-x-2">
                   <FiCheckCircle className="w-5 h-5 text-green-600" />
                   <span>Estudiantes Presentes</span>
                 </h3>
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="text-xs sm:text-sm text-gray-600 mt-1">
                   {estudiantesPresentes.length} estudiante{estudiantesPresentes.length !== 1 ? 's' : ''} en el colegio
                 </p>
               </div>
               
               <div className="max-h-96 overflow-y-auto">
                 {estudiantesPresentes.length === 0 ? (
-                  <div className="p-4 text-center text-gray-500">
+                  <div className="p-3 sm:p-4 text-center text-gray-500">
                     <FiUsers className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-                    <p className="text-sm">No hay estudiantes presentes</p>
+                    <p className="text-xs sm:text-sm">No hay estudiantes presentes</p>
                   </div>
                 ) : (
                   <div className="divide-y divide-gray-200">
                     {estudiantesPresentes.map((estudiante) => (
-                      <div key={estudiante.id} className="p-3 hover:bg-gray-50 transition-colors duration-200">
+                      <div key={estudiante.id} className="p-2 sm:p-3 hover:bg-gray-50 transition-colors duration-200">
                         <div className="flex items-center space-x-3">
                           <div className="w-8 h-8 bg-gray-200 rounded-full overflow-hidden">
                             <img
@@ -324,7 +352,7 @@ const Dashboard = () => {
                             </div>
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-gray-900 truncate">
+                            <p className="text-xs sm:text-sm font-medium text-gray-900 truncate">
                               {estudiante.nombre}
                             </p>
                             <p className="text-xs text-gray-600">
@@ -346,14 +374,14 @@ const Dashboard = () => {
               transition={{ delay: 0.1 }}
               className="bg-white rounded-lg shadow-sm border border-gray-200"
             >
-              <div className="p-4 border-b border-gray-200">
-                <h3 className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
+              <div className="p-3 sm:p-4 border-b border-gray-200">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900 flex items-center space-x-2">
                   <FiSettings className="w-5 h-5 text-blue-600" />
                   <span>Accesos Rápidos</span>
                 </h3>
               </div>
               
-              <div className="p-4 space-y-3">
+              <div className="p-3 sm:p-4 space-y-2 sm:space-y-3">
                 <motion.button
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
@@ -361,7 +389,7 @@ const Dashboard = () => {
                   className="w-full flex items-center space-x-3 p-3 bg-blue-50 text-blue-700 rounded-lg hover:bg-blue-100 transition-colors duration-200"
                 >
                   <FiDownload className="w-4 h-4" />
-                  <span className="text-sm font-medium">Descargar reporte</span>
+                  <span className="text-xs sm:text-sm font-medium">Descargar reporte</span>
                 </motion.button>
                 
                 <motion.button
@@ -371,7 +399,7 @@ const Dashboard = () => {
                   className="w-full flex items-center space-x-3 p-3 bg-green-50 text-green-700 rounded-lg hover:bg-green-100 transition-colors duration-200"
                 >
                   <FiRefreshCw className="w-4 h-4" />
-                  <span className="text-sm font-medium">Actualizar datos</span>
+                  <span className="text-xs sm:text-sm font-medium">Actualizar datos</span>
                 </motion.button>
                 
                 <motion.button
@@ -381,7 +409,7 @@ const Dashboard = () => {
                   className="w-full flex items-center space-x-3 p-3 bg-purple-50 text-purple-700 rounded-lg hover:bg-purple-100 transition-colors duration-200"
                 >
                   <FiSettings className="w-4 h-4" />
-                  <span className="text-sm font-medium">Configuración</span>
+                  <span className="text-xs sm:text-sm font-medium">Configuración</span>
                 </motion.button>
               </div>
             </motion.div>
@@ -391,14 +419,14 @@ const Dashboard = () => {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 }}
-              className="bg-gradient-to-r from-talentos-primary/10 to-talentos-secondary/10 rounded-lg border border-talentos-primary/20 p-4"
+              className="bg-gradient-to-r from-talentos-primary/10 to-talentos-secondary/10 rounded-lg border border-talentos-primary/20 p-3 sm:p-4"
             >
-              <h3 className="text-lg font-semibold text-gray-900 mb-3 flex items-center space-x-2">
+              <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2 sm:mb-3 flex items-center space-x-2">
                 <FiCalendar className="w-5 h-5 text-talentos-primary" />
                 <span>Información del Operador</span>
               </h3>
               
-              <div className="space-y-2 text-sm">
+              <div className="space-y-1 sm:space-y-2 text-xs sm:text-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Usuario:</span>
                   <span className="font-medium text-gray-900">{usuario?.nombre || 'Personal de Entrada'}</span>

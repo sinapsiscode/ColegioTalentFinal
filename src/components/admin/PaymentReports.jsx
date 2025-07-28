@@ -106,20 +106,20 @@ const PaymentReports = () => {
   const pagosPorMetodo = getPagosPorMetodo()
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-800">Reportes de Pagos</h2>
-        <div className="flex gap-3">
+    <div className="space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0">
+        <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-800">Reportes de Pagos</h2>
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 w-full sm:w-auto">
           <AnimatedButton
             onClick={exportReporteMensual}
-            className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700"
+            className="bg-blue-600 text-white px-3 sm:px-4 py-2 text-sm sm:text-base rounded-lg hover:bg-blue-700 min-h-[44px] sm:min-h-auto"
           >
             <FiDownload className="mr-2" />
             Reporte Mensual
           </AnimatedButton>
           <AnimatedButton
             onClick={exportReporteDetallado}
-            className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+            className="bg-green-600 text-white px-3 sm:px-4 py-2 text-sm sm:text-base rounded-lg hover:bg-green-700 min-h-[44px] sm:min-h-auto"
           >
             <FiDownload className="mr-2" />
             Reporte Detallado
@@ -127,68 +127,68 @@ const PaymentReports = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <AnimatedCard className="bg-blue-50 border-l-4 border-blue-500">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6">
+        <AnimatedCard className="bg-blue-50 border-l-4 border-blue-500 p-3 sm:p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-blue-600 text-sm font-medium">Recaudación Total</p>
-              <p className="text-2xl font-bold text-blue-800">S/. {estadisticas.montoTotal.toFixed(2)}</p>
+              <p className="text-blue-600 text-xs sm:text-sm font-medium">Recaudación Total</p>
+              <p className="text-lg sm:text-2xl font-bold text-blue-800">S/. {estadisticas.montoTotal.toFixed(2)}</p>
             </div>
-            <FiDollarSign className="text-blue-500 text-3xl" />
+            <FiDollarSign className="text-blue-500 text-2xl sm:text-3xl" />
           </div>
         </AnimatedCard>
 
-        <AnimatedCard className="bg-green-50 border-l-4 border-green-500">
+        <AnimatedCard className="bg-green-50 border-l-4 border-green-500 p-3 sm:p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-green-600 text-sm font-medium">Tasa de Aprobación</p>
-              <p className="text-2xl font-bold text-green-800">{estadisticas.porcentajeAprobados}%</p>
+              <p className="text-green-600 text-xs sm:text-sm font-medium">Tasa de Aprobación</p>
+              <p className="text-lg sm:text-2xl font-bold text-green-800">{estadisticas.porcentajeAprobados}%</p>
             </div>
-            <FiTrendingUp className="text-green-500 text-3xl" />
+            <FiTrendingUp className="text-green-500 text-2xl sm:text-3xl" />
           </div>
         </AnimatedCard>
 
-        <AnimatedCard className="bg-yellow-50 border-l-4 border-yellow-500">
+        <AnimatedCard className="bg-yellow-50 border-l-4 border-yellow-500 p-3 sm:p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-yellow-600 text-sm font-medium">Pagos Pendientes</p>
-              <p className="text-2xl font-bold text-yellow-800">{estadisticas.pendientes}</p>
+              <p className="text-yellow-600 text-xs sm:text-sm font-medium">Pagos Pendientes</p>
+              <p className="text-lg sm:text-2xl font-bold text-yellow-800">{estadisticas.pendientes}</p>
             </div>
-            <FiBarChart3 className="text-yellow-500 text-3xl" />
+            <FiBarChart3 className="text-yellow-500 text-2xl sm:text-3xl" />
           </div>
         </AnimatedCard>
 
-        <AnimatedCard className="bg-purple-50 border-l-4 border-purple-500">
+        <AnimatedCard className="bg-purple-50 border-l-4 border-purple-500 p-3 sm:p-4">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-purple-600 text-sm font-medium">Promedio por Pago</p>
-              <p className="text-2xl font-bold text-purple-800">
+              <p className="text-purple-600 text-xs sm:text-sm font-medium">Promedio por Pago</p>
+              <p className="text-lg sm:text-2xl font-bold text-purple-800">
                 S/. {estadisticas.aprobados > 0 ? (estadisticas.montoTotal / estadisticas.aprobados).toFixed(2) : '0.00'}
               </p>
             </div>
-            <FiPieChart className="text-purple-500 text-3xl" />
+            <FiPieChart className="text-purple-500 text-2xl sm:text-3xl" />
           </div>
         </AnimatedCard>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         <AnimatedCard>
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Pagos por Mes</h3>
+          <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4">Pagos por Mes</h3>
           <div className="space-y-3">
             {Object.entries(pagosPorMes).map(([mes, data]) => (
               <motion.div
                 key={mes}
                 initial={{ opacity: 0, x: -20 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                className="flex items-center justify-between p-2 sm:p-3 bg-gray-50 rounded-lg"
               >
                 <div className="flex items-center">
-                  <FiCalendar className="text-blue-500 mr-3" />
-                  <span className="font-medium">{mes}</span>
+                  <FiCalendar className="text-blue-500 mr-2 sm:mr-3" />
+                  <span className="text-sm sm:text-base font-medium">{mes}</span>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm text-gray-600">{data.cantidad} pagos</p>
-                  <p className="font-semibold">S/. {data.monto.toFixed(2)}</p>
+                  <p className="text-xs sm:text-sm text-gray-600">{data.cantidad} pagos</p>
+                  <p className="text-sm sm:text-base font-semibold">S/. {data.monto.toFixed(2)}</p>
                 </div>
               </motion.div>
             ))}
@@ -196,22 +196,22 @@ const PaymentReports = () => {
         </AnimatedCard>
 
         <AnimatedCard>
-          <h3 className="text-lg font-semibold text-gray-800 mb-4">Métodos de Pago</h3>
+          <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4">Métodos de Pago</h3>
           <div className="space-y-3">
             {Object.entries(pagosPorMetodo).map(([metodo, data]) => (
               <motion.div
                 key={metodo}
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
-                className="flex items-center justify-between p-3 bg-gray-50 rounded-lg"
+                className="flex items-center justify-between p-2 sm:p-3 bg-gray-50 rounded-lg"
               >
                 <div className="flex items-center">
-                  <FiDollarSign className="text-green-500 mr-3" />
-                  <span className="font-medium capitalize">{metodo}</span>
+                  <FiDollarSign className="text-green-500 mr-2 sm:mr-3" />
+                  <span className="text-sm sm:text-base font-medium capitalize">{metodo}</span>
                 </div>
                 <div className="text-right">
-                  <p className="text-sm text-gray-600">{data.cantidad} pagos</p>
-                  <p className="font-semibold">S/. {data.monto.toFixed(2)}</p>
+                  <p className="text-xs sm:text-sm text-gray-600">{data.cantidad} pagos</p>
+                  <p className="text-sm sm:text-base font-semibold">S/. {data.monto.toFixed(2)}</p>
                 </div>
               </motion.div>
             ))}
@@ -220,30 +220,30 @@ const PaymentReports = () => {
       </div>
 
       <AnimatedCard>
-        <h3 className="text-lg font-semibold text-gray-800 mb-4">Resumen Estadístico</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <h3 className="text-base sm:text-lg font-semibold text-gray-800 mb-3 sm:mb-4">Resumen Estadístico</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
           <div className="text-center">
-            <div className="bg-blue-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3">
-              <FiBarChart3 className="text-blue-600 text-2xl" />
+            <div className="bg-blue-100 rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mx-auto mb-2 sm:mb-3">
+              <FiBarChart3 className="text-blue-600 text-xl sm:text-2xl" />
             </div>
-            <h4 className="font-semibold text-gray-800">Total de Transacciones</h4>
-            <p className="text-2xl font-bold text-blue-600">{estadisticas.total}</p>
+            <h4 className="text-sm sm:text-base font-semibold text-gray-800">Total de Transacciones</h4>
+            <p className="text-lg sm:text-2xl font-bold text-blue-600">{estadisticas.total}</p>
           </div>
           
           <div className="text-center">
-            <div className="bg-green-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3">
-              <FiTrendingUp className="text-green-600 text-2xl" />
+            <div className="bg-green-100 rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mx-auto mb-2 sm:mb-3">
+              <FiTrendingUp className="text-green-600 text-xl sm:text-2xl" />
             </div>
-            <h4 className="font-semibold text-gray-800">Efectividad</h4>
-            <p className="text-2xl font-bold text-green-600">{estadisticas.porcentajeAprobados}%</p>
+            <h4 className="text-sm sm:text-base font-semibold text-gray-800">Efectividad</h4>
+            <p className="text-lg sm:text-2xl font-bold text-green-600">{estadisticas.porcentajeAprobados}%</p>
           </div>
           
           <div className="text-center">
-            <div className="bg-purple-100 rounded-full w-16 h-16 flex items-center justify-center mx-auto mb-3">
-              <FiDollarSign className="text-purple-600 text-2xl" />
+            <div className="bg-purple-100 rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mx-auto mb-2 sm:mb-3">
+              <FiDollarSign className="text-purple-600 text-xl sm:text-2xl" />
             </div>
-            <h4 className="font-semibold text-gray-800">Ingresos</h4>
-            <p className="text-2xl font-bold text-purple-600">S/. {estadisticas.montoTotal.toFixed(2)}</p>
+            <h4 className="text-sm sm:text-base font-semibold text-gray-800">Ingresos</h4>
+            <p className="text-lg sm:text-2xl font-bold text-purple-600">S/. {estadisticas.montoTotal.toFixed(2)}</p>
           </div>
         </div>
       </AnimatedCard>

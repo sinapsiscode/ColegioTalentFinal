@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 import {
   FiUser,
@@ -10,7 +10,10 @@ import {
   FiX,
   FiSave,
   FiEye,
-  FiEyeOff
+  FiEyeOff,
+  FiCamera,
+  FiUpload,
+  FiTrash2
 } from 'react-icons/fi'
 import AnimatedButton from '../common/AnimatedButton'
 
@@ -38,11 +41,15 @@ const UserForm = ({ isOpen, onClose, onSave, usuario = null, configuraciones }) 
     password: '',
     confirmPassword: '',
     // Permisos
-    permisos: []
+    permisos: [],
+    // Campo para foto
+    foto_url: '',
+    foto_preview: null
   })
   const [showPassword, setShowPassword] = useState(false)
   const [errors, setErrors] = useState({})
   const [loading, setSaving] = useState(false)
+  const fileInputRef = useRef(null)
 
   useEffect(() => {
     if (usuario) {
@@ -96,6 +103,40 @@ const UserForm = ({ isOpen, onClose, onSave, usuario = null, configuraciones }) 
         [field]: ''
       }))
     }
+  }
+
+  const handlePhotoUpload = (e) => {
+    const file = e.target.files[0]
+    if (!file) return
+
+    // Validar tipo de archivo
+    const validTypes = ['image/jpeg', 'image/jpg', 'image/png']
+    if (!validTypes.includes(file.type)) {
+      setErrors(prev => ({ ...prev, foto: 'Solo se permiten archivos JPG y PNG' }))
+      return
+    }
+
+    // Validar tamaño (2MB máximo)
+    const maxSize = 2 * 1024 * 1024 // 2MB
+    if (file.size > maxSize) {
+      setErrors(prev => ({ ...prev, foto: 'El archivo debe ser menor a 2MB' }))
+      return
+    }
+
+    // Limpiar error si existe
+    if (errors.foto) {
+      setErrors(prev => ({ ...prev, foto: '' }))
+    }
+
+    // Crear preview
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      handleInputChange('foto_preview', reader.result)
+      // En producción, aquí se subiría al servidor y se obtendría la URL
+      // Por ahora, guardamos el base64 como foto_url
+      handleInputChange('foto_url', reader.result)
+    }
+    reader.readAsDataURL(file)
   }
 
   const handleTipoChange = (nuevoTipo) => {
@@ -350,6 +391,63 @@ const UserForm = ({ isOpen, onClose, onSave, usuario = null, configuraciones }) 
       case 'estudiante':
         return (
           <>
+            {/* Sección de foto del estudiante */}
+            <div className="mb-6">
+              <label className="block text-sm font-medium text-gray-700 mb-2">Foto del Estudiante</label>
+              <div className="flex items-center gap-4">
+                <div className="relative">
+                  <div className="w-32 h-32 rounded-lg overflow-hidden bg-gray-100 border-2 border-gray-300 border-dashed">
+                    {formData.foto_preview || formData.foto_url ? (
+                      <img
+                        src={formData.foto_preview || formData.foto_url}
+                        alt="Foto del estudiante"
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center">
+                        <FiUser className="w-12 h-12 text-gray-400" />
+                      </div>
+                    )}
+                  </div>
+                  {(formData.foto_preview || formData.foto_url) && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        handleInputChange('foto_preview', null)
+                        handleInputChange('foto_url', '')
+                        if (fileInputRef.current) fileInputRef.current.value = ''
+                      }}
+                      className="absolute -top-2 -right-2 p-1 bg-red-500 text-white rounded-full hover:bg-red-600 transition-colors"
+                    >
+                      <FiTrash2 className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+                
+                <div className="flex-1">
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/jpg,image/png"
+                    onChange={handlePhotoUpload}
+                    className="hidden"
+                    id="foto-input"
+                  />
+                  <label
+                    htmlFor="foto-input"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer transition-colors"
+                  >
+                    <FiUpload className="w-4 h-4" />
+                    Subir Foto
+                  </label>
+                  <p className="text-xs text-gray-500 mt-2">
+                    Formatos: JPG, PNG. Tamaño máximo: 2MB
+                  </p>
+                  {errors.foto && <p className="text-red-500 text-xs mt-1">{errors.foto}</p>}
+                </div>
+              </div>
+            </div>
+            
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Grado *</label>

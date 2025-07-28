@@ -13,7 +13,7 @@ import {
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 
-const ActivityCard = ({ actividad, onComplete, onUpdateProgress }) => {
+const ActivityCard = ({ actividad, onComplete, onUpdateProgress, onClick }) => {
   const getTipoIcon = (tipo) => {
     const icons = {
       calificacion: FiEdit3,
@@ -69,10 +69,11 @@ const ActivityCard = ({ actividad, onComplete, onUpdateProgress }) => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -2 }}
+      whileHover={{ y: -2, scale: 1.01 }}
+      onClick={() => onClick && onClick(actividad)}
       className={`bg-white rounded-lg shadow-sm border transition-all duration-200 hover:shadow-md p-4 ${
         actividad.completado ? 'border-green-200 bg-green-50' : 'border-gray-200'
-      }`}
+      } ${onClick ? 'cursor-pointer' : ''}`}
     >
       {/* Header */}
       <div className="flex items-start justify-between mb-3">
@@ -146,7 +147,10 @@ const ActivityCard = ({ actividad, onComplete, onUpdateProgress }) => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => onUpdateProgress(actividad.id, Math.min(100, actividad.progreso + 25))}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onUpdateProgress(actividad.id, Math.min(100, actividad.progreso + 25))
+                }}
                 className="flex-1 px-3 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded hover:bg-gray-200 transition-colors duration-200"
               >
                 +25%
@@ -155,7 +159,10 @@ const ActivityCard = ({ actividad, onComplete, onUpdateProgress }) => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => onUpdateProgress(actividad.id, Math.min(100, actividad.progreso + 50))}
+                onClick={(e) => {
+                  e.stopPropagation()
+                  onUpdateProgress(actividad.id, Math.min(100, actividad.progreso + 50))
+                }}
                 className="flex-1 px-3 py-1 bg-gray-100 text-gray-700 text-xs font-medium rounded hover:bg-gray-200 transition-colors duration-200"
               >
                 +50%
@@ -166,7 +173,10 @@ const ActivityCard = ({ actividad, onComplete, onUpdateProgress }) => {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            onClick={() => onComplete(actividad.id)}
+            onClick={(e) => {
+              e.stopPropagation()
+              onComplete(actividad.id)
+            }}
             className="flex-1 flex items-center justify-center space-x-1 px-3 py-1 bg-green-600 text-white text-xs font-medium rounded hover:bg-green-700 transition-colors duration-200"
           >
             <FiCheck className="w-3 h-3" />

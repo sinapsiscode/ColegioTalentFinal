@@ -5,10 +5,11 @@ const MySwal = withReactContent(Swal)
 
 const defaultConfig = {
   customClass: {
-    confirmButton: 'btn-primary',
-    cancelButton: 'btn-outline',
+    confirmButton: 'btn-primary ml-3',
+    cancelButton: 'btn-outline mr-3',
     popup: 'rounded-lg',
-    title: 'text-talentos-primary'
+    title: 'text-talentos-primary',
+    actions: 'gap-4'
   },
   buttonsStyling: false,
   confirmButtonText: 'Confirmar',
@@ -108,6 +109,14 @@ export const showInput = (title, inputLabel, options = {}) => {
     input: 'text',
     inputLabel,
     showCancelButton: true,
+    confirmButtonText: 'Continuar',
+    cancelButtonText: 'Cancelar',
+    customClass: {
+      ...defaultConfig.customClass,
+      actions: 'swal2-actions-custom',
+      confirmButton: 'btn-primary swal2-confirm-custom',
+      cancelButton: 'btn-outline swal2-cancel-custom'
+    },
     inputValidator: (value) => {
       if (!value) {
         return 'Este campo es requerido'

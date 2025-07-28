@@ -154,18 +154,18 @@ const PhotocheckTemplate = ({ student, qrCode, onClose, isOpen }) => {
   }
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50">
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
-        className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+        className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[95vh] sm:max-h-[90vh] overflow-y-auto"
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Fotocheck del Estudiante</h2>
-            <p className="text-gray-600 mt-1">
+            <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900">Fotocheck del Estudiante</h2>
+            <p className="text-sm sm:text-base text-gray-600 mt-1">
               Vista previa del fotocheck para {student.nombre} {student.apellidos}
             </p>
           </div>
@@ -179,24 +179,24 @@ const PhotocheckTemplate = ({ student, qrCode, onClose, isOpen }) => {
           </motion.button>
         </div>
 
-        <div className="p-6">
-          <div className="flex flex-col lg:flex-row gap-8">
+        <div className="p-4 sm:p-6">
+          <div className="flex flex-col lg:flex-row gap-4 sm:gap-6 lg:gap-8">
             {/* Photocheck Preview */}
             <div className="flex-1 flex justify-center">
               <div 
                 ref={photocheckRef}
-                className="w-85mm h-135mm bg-white border-2 border-gray-200 rounded-xl shadow-xl overflow-hidden relative"
-                style={{ width: '340px', height: '540px' }}
+                className="w-full max-w-[340px] mx-auto lg:mx-0 bg-white border-2 border-gray-200 rounded-xl shadow-xl overflow-hidden relative"
+                style={{ aspectRatio: '340/540' }}
               >
-                {/* Logo/Brand Corner */}
-                <div className="absolute top-3 right-3 w-12 h-12 bg-white rounded-full shadow-md flex items-center justify-center z-10">
-                  <span className="text-blue-700 font-bold text-lg">CT</span>
-                </div>
-
-                {/* Header */}
+                {/* Header with Logo */}
                 <div className="bg-gradient-to-br from-blue-700 via-blue-800 to-blue-900 text-white p-4 text-center relative">
                   <div className="absolute inset-0 bg-black opacity-10"></div>
                   <div className="relative z-10">
+                    <img 
+                      src="/logo-talentos.jpeg" 
+                      alt="Colegio Talentos" 
+                      className="h-16 mx-auto mb-2 filter brightness-0 invert"
+                    />
                     <h1 className="text-xl font-bold tracking-wide">COLEGIO TALENTOS</h1>
                     <p className="text-sm opacity-90 mt-1">FOTOCHECK ESTUDIANTIL</p>
                     <div className="w-16 h-0.5 bg-white opacity-60 mx-auto mt-2"></div>
@@ -322,14 +322,14 @@ const PhotocheckTemplate = ({ student, qrCode, onClose, isOpen }) => {
             </div>
 
             {/* Information Panel */}
-            <div className="w-full lg:w-80 space-y-4">
+            <div className="w-full lg:w-80 space-y-3 sm:space-y-4">
               {/* Student Details */}
-              <div className="bg-gray-50 rounded-lg p-4">
-                <h3 className="font-semibold text-gray-900 mb-3 flex items-center space-x-2">
+              <div className="bg-gray-50 rounded-lg p-3 sm:p-4">
+                <h3 className="text-sm sm:text-base font-semibold text-gray-900 mb-2 sm:mb-3 flex items-center space-x-2">
                   <FiUser className="w-5 h-5 text-blue-600" />
                   <span>Información del Estudiante</span>
                 </h3>
-                <div className="space-y-2 text-sm">
+                <div className="space-y-1 sm:space-y-2 text-xs sm:text-sm">
                   <div>
                     <span className="text-gray-600">Nombre completo:</span>
                     <p className="font-medium">{student.nombre} {student.apellidos}</p>
@@ -361,10 +361,10 @@ const PhotocheckTemplate = ({ student, qrCode, onClose, isOpen }) => {
 
               {/* QR Information */}
               {qrCode && (
-                <div className="bg-blue-50 rounded-lg p-4">
-                  <h3 className="font-semibold text-gray-900 mb-3">Información del QR</h3>
-                  <div className="space-y-2 text-sm">
-                    <p className="text-gray-600">
+                <div className="bg-blue-50 rounded-lg p-3 sm:p-4">
+                  <h3 className="text-sm sm:text-base font-semibold text-gray-900 mb-2 sm:mb-3">Información del QR</h3>
+                  <div className="space-y-1 sm:space-y-2 text-xs sm:text-sm">
+                    <p className="text-gray-600 text-xs sm:text-sm">
                       El código QR contiene información encriptada del estudiante para verificación de identidad y control de acceso.
                     </p>
                     <div className="bg-white p-2 rounded border text-xs font-mono text-gray-700">
@@ -375,9 +375,9 @@ const PhotocheckTemplate = ({ student, qrCode, onClose, isOpen }) => {
               )}
 
               {/* Instructions */}
-              <div className="bg-yellow-50 rounded-lg p-4">
-                <h3 className="font-semibold text-gray-900 mb-3">Instrucciones de uso</h3>
-                <ul className="text-sm text-gray-700 space-y-1">
+              <div className="bg-yellow-50 rounded-lg p-3 sm:p-4">
+                <h3 className="text-sm sm:text-base font-semibold text-gray-900 mb-2 sm:mb-3">Instrucciones de uso</h3>
+                <ul className="text-xs sm:text-sm text-gray-700 space-y-1">
                   <li>• Usar todos los días de clases</li>
                   <li>• Presentar en portería del colegio</li>
                   <li>• No doblar ni maltratar</li>
@@ -387,12 +387,12 @@ const PhotocheckTemplate = ({ student, qrCode, onClose, isOpen }) => {
               </div>
 
               {/* Actions */}
-              <div className="space-y-3">
+              <div className="space-y-2 sm:space-y-3">
                 <AnimatedButton
                   variant="primary"
                   icon={FiFileText}
                   onClick={handleDownloadDirectPDF}
-                  className="w-full"
+                  className="w-full min-h-[44px] sm:min-h-auto text-sm sm:text-base"
                 >
                   PDF A5 Profesional (Recomendado)
                 </AnimatedButton>
@@ -401,7 +401,7 @@ const PhotocheckTemplate = ({ student, qrCode, onClose, isOpen }) => {
                   variant="secondary"
                   icon={FiFileText}
                   onClick={handleDownloadAlternatePDF}
-                  className="w-full"
+                  className="w-full min-h-[44px] sm:min-h-auto text-sm sm:text-base"
                 >
                   PDF Captura Visual
                 </AnimatedButton>
@@ -410,7 +410,7 @@ const PhotocheckTemplate = ({ student, qrCode, onClose, isOpen }) => {
                   variant="outline"
                   icon={FiDownload}
                   onClick={handleDownload}
-                  className="w-full"
+                  className="w-full min-h-[44px] sm:min-h-auto text-sm sm:text-base"
                 >
                   Descargar PNG
                 </AnimatedButton>
@@ -419,7 +419,7 @@ const PhotocheckTemplate = ({ student, qrCode, onClose, isOpen }) => {
                   variant="outline"
                   icon={FiPrinter}
                   onClick={handlePrint}
-                  className="w-full"
+                  className="w-full min-h-[44px] sm:min-h-auto text-sm sm:text-base"
                 >
                   Imprimir Vista Previa
                 </AnimatedButton>
@@ -429,10 +429,11 @@ const PhotocheckTemplate = ({ student, qrCode, onClose, isOpen }) => {
         </div>
 
         {/* Footer */}
-        <div className="flex items-center justify-end space-x-3 p-6 border-t border-gray-200">
+        <div className="flex items-center justify-end space-x-2 sm:space-x-3 p-4 sm:p-6 border-t border-gray-200">
           <AnimatedButton
             variant="outline"
             onClick={onClose}
+            className="min-h-[44px] sm:min-h-auto"
           >
             Cerrar
           </AnimatedButton>

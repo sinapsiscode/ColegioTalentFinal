@@ -395,6 +395,11 @@ const TutorPhotocheckTemplate = ({
                       </div>
                       
                       <div className="relative z-10">
+                        <img 
+                          src="/logo-talentos.jpeg" 
+                          alt="Colegio Talentos" 
+                          className="h-16 mx-auto mb-2 filter brightness-0 invert"
+                        />
                         <h1 className="text-xl font-bold tracking-wide">COLEGIO TALENTOS</h1>
                         <p className="text-sm opacity-90 mt-1">FOTOCHECK DOCENTE</p>
                       </div>

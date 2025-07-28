@@ -119,6 +119,9 @@ const usePaymentsStore = create((set, get) => ({
     )
     
     set({ pagos: pagosActualizados })
+    
+    // Retornar el pago actualizado
+    return pagosActualizados.find(p => p.id === pagoId)
   },
 
   rechazarPago: (pagoId, aprobadoPor, observaciones) => {

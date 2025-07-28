@@ -121,3 +121,62 @@ export const createQRBlob = async (dataURL) => {
     throw new Error('No se pudo procesar el código QR')
   }
 }
+
+// Función principal para generar QR seguro (alias para compatibilidad)
+export const generateSecureQRCode = async (data) => {
+  try {
+    let qrData = {}
+    
+    // Determinar el tipo de QR según los datos
+    if (data.tipo === 'estudiante') {
+      qrData = {
+        id: data.id,
+        codigo: data.codigoQR || `ST${data.id.toString().padStart(6, '0')}`,
+        nombre: data.nombre || '',
+        apellidos: data.apellidos || '',
+        grado: data.grado || '',
+        seccion: data.seccion || '',
+        tipo: 'fotocheck_estudiante',
+        timestamp: new Date().toISOString(),
+        school: 'Colegio Talentos',
+        version: '1.0'
+      }
+    } else if (data.tipo === 'tutor') {
+      qrData = {
+        id: data.id,
+        codigo: data.codigoQR || `T${data.id.toString().padStart(6, '0')}`,
+        nombre: data.nombre || '',
+        apellidos: data.apellidos || '',
+        especialidad: data.especialidad || '',
+        tipo: 'fotocheck_tutor',
+        timestamp: new Date().toISOString(),
+        school: 'Colegio Talentos',
+        version: '1.0'
+      }
+    } else {
+      // Datos genéricos
+      qrData = {
+        ...data,
+        timestamp: new Date().toISOString(),
+        school: 'Colegio Talentos',
+        version: '1.0'
+      }
+    }
+
+    const result = await generateSecureQR(qrData, {
+      width: 200,
+      color: {
+        dark: '#1e40af',
+        light: '#ffffff'
+      }
+    })
+
+    return {
+      ...result,
+      qrData
+    }
+  } catch (error) {
+    console.error('Error generando QR seguro:', error)
+    throw new Error('No se pudo generar el código QR')
+  }
+}

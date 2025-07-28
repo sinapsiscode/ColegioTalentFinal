@@ -26,6 +26,8 @@ import {
 } from 'react-icons/fi'
 import usePaymentScheduleStore from '../../stores/paymentScheduleStore'
 import PaymentModal from './PaymentModal'
+import { ExcelExporter } from '../../utils/excelExporter'
+import Swal from 'sweetalert2'
 
 const PaymentSchedule = ({ padreEmail, estudianteId = null }) => {
   const [isInitialLoad, setIsInitialLoad] = useState(true)
@@ -75,11 +77,11 @@ const PaymentSchedule = ({ padreEmail, estudianteId = null }) => {
         }
       case 'pendiente':
         return {
-          bg: 'bg-gradient-to-br from-blue-50 to-sky-100',
-          border: 'border-blue-200',
-          text: 'text-blue-800',
-          dot: 'bg-blue-500',
-          icon: 'text-blue-600'
+          bg: 'bg-gradient-to-br from-yellow-50 to-amber-100',
+          border: 'border-yellow-200',
+          text: 'text-yellow-800',
+          dot: 'bg-yellow-500',
+          icon: 'text-yellow-600'
         }
       case 'vencido':
         return {
@@ -190,11 +192,75 @@ const PaymentSchedule = ({ padreEmail, estudianteId = null }) => {
     // Aquí podrías actualizar el estado del cronograma
   }, [])
 
+  const handleExportarCronograma = useCallback(async () => {
+    try {
+      // Preparar filtros actuales
+      const filtros = {}
+      if (filtroEstado !== 'todos') {
+        filtros.estado = filtroEstado
+      }
+      if (estudianteSeleccionado) {
+        filtros.estudianteId = estudianteSeleccionado
+      }
+
+      // Datos a exportar basados en filtros actuales
+      const datosExportar = estudianteSeleccionado 
+        ? [getCronogramaPorEstudiante(estudianteSeleccionado)]
+        : cronogramas
+
+      // Filtrar datos vacíos
+      const datosLimpios = datosExportar.filter(cronograma => cronograma && cronograma.cronograma)
+
+      if (datosLimpios.length === 0) {
+        Swal.fire({
+          title: 'Sin datos para exportar',
+          text: 'No hay registros que coincidan con los filtros seleccionados',
+          icon: 'warning'
+        })
+        return
+      }
+
+      // Mostrar indicador de carga
+      Swal.fire({
+        title: 'Exportando...',
+        text: 'Generando archivo Excel',
+        allowOutsideClick: false,
+        didOpen: () => {
+          Swal.showLoading()
+        }
+      })
+
+      // Exportar datos
+      const resultado = ExcelExporter.exportarCronogramaPagos(datosLimpios, filtros)
+
+      Swal.close()
+
+      if (resultado.success) {
+        Swal.fire({
+          title: '¡Exportación exitosa!',
+          text: resultado.mensaje,
+          icon: 'success',
+          confirmButtonText: 'Entendido'
+        })
+      } else {
+        throw new Error(resultado.error || 'Error desconocido')
+      }
+
+    } catch (error) {
+      console.error('Error al exportar cronograma:', error)
+      Swal.fire({
+        title: 'Error de exportación',
+        text: 'No se pudo generar el archivo Excel. Inténtelo nuevamente.',
+        icon: 'error'
+      })
+    }
+  }, [cronogramas, filtroEstado, estudianteSeleccionado, getCronogramaPorEstudiante])
+
   const CardHeader = ({ title, subtitle, action }) => (
     <div className="flex items-center justify-between mb-6">
       <div>
-        <h2 className="text-2xl font-bold text-gray-900">{title}</h2>
-        {subtitle && <p className="text-gray-600 mt-1">{subtitle}</p>}
+        <h2 className="text-2xl font-bold text-talentos-dark">{title}</h2>
+        {subtitle && <p className="text-talentos-gray-600 mt-1">{subtitle}</p>}
       </div>
       {action}
     </div>
@@ -303,7 +369,7 @@ const PaymentSchedule = ({ padreEmail, estudianteId = null }) => {
           {pago.estado === 'pendiente' && (
             <div className="flex items-center justify-between text-sm">
               <span className="text-gray-600">Días restantes:</span>
-              <span className={`font-medium ${diasRestantes <= 7 ? 'text-red-600' : 'text-blue-600'}`}>
+              <span className={`font-medium ${diasRestantes <= 7 ? 'text-red-600' : 'text-yellow-600'}`}>
                 {diasRestantes > 0 ? `${diasRestantes} días` : 'Vencido'}
               </span>
             </div>
@@ -322,7 +388,7 @@ const PaymentSchedule = ({ padreEmail, estudianteId = null }) => {
                 initial={{ width: 0 }}
                 animate={{ width: `${Math.max(0, Math.min(100, ((30 - diasRestantes) / 30) * 100))}%` }}
                 transition={{ duration: 1, delay: 0.5 }}
-                className={`h-2 rounded-full ${diasRestantes <= 7 ? 'bg-red-500' : 'bg-blue-500'}`}
+                className={`h-2 rounded-full ${diasRestantes <= 7 ? 'bg-red-500' : 'bg-yellow-500'}`}
               />
             </div>
           </div>
@@ -373,19 +439,19 @@ const PaymentSchedule = ({ padreEmail, estudianteId = null }) => {
   return (
     <div className="space-y-6">
       {/* Header mejorado */}
-      <div className="bg-gradient-to-r from-talentos-primary to-talentos-secondary rounded-xl p-6 text-white">
+      <div className="bg-gradient-to-r from-talentos-light to-white border-2 border-talentos-primary/20 rounded-xl p-6">
         <CardHeader
-          title="Cronograma de Pensiones 2024"
+          title="Control de Pagos"
           subtitle="Gestione y monitoree todos sus pagos de manera inteligente"
           action={
             <div className="flex items-center space-x-2">
-              <div className="flex bg-white/20 rounded-lg p-1">
+              <div className="flex bg-talentos-gray-100 rounded-lg p-1">
                 <button
                   onClick={() => setVistaActual('calendario')}
                   className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                     vistaActual === 'calendario'
-                      ? 'bg-white text-talentos-primary'
-                      : 'text-white/80 hover:text-white'
+                      ? 'bg-talentos-primary text-white'
+                      : 'text-talentos-gray-600 hover:text-talentos-dark'
                   }`}
                 >
                   <FiGrid className="w-4 h-4 mr-2 inline" />
@@ -395,8 +461,8 @@ const PaymentSchedule = ({ padreEmail, estudianteId = null }) => {
                   onClick={() => setVistaActual('lista')}
                   className={`px-3 py-2 rounded-md text-sm font-medium transition-colors ${
                     vistaActual === 'lista'
-                      ? 'bg-white text-talentos-primary'
-                      : 'text-white/80 hover:text-white'
+                      ? 'bg-talentos-primary text-white'
+                      : 'text-talentos-gray-600 hover:text-talentos-dark'
                   }`}
                 >
                   <FiList className="w-4 h-4 mr-2 inline" />
@@ -407,8 +473,9 @@ const PaymentSchedule = ({ padreEmail, estudianteId = null }) => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                className="p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors"
-                title="Exportar cronograma"
+                onClick={handleExportarCronograma}
+                className="p-2 bg-talentos-primary text-white hover:bg-talentos-secondary rounded-lg transition-colors"
+                title="Exportar cronograma a Excel"
               >
                 <FiDownload className="w-4 h-4" />
               </motion.button>
@@ -424,7 +491,7 @@ const PaymentSchedule = ({ padreEmail, estudianteId = null }) => {
           title="Total de Pagos"
           value={estadisticasGenerales.totalPagos}
           subtitle="Cronograma completo"
-          color={getEstadoColor('pendiente')}
+          color={getEstadoColor('default')}
           trend="+12%"
         />
         <StatsCard

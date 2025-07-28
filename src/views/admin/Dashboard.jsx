@@ -26,9 +26,12 @@ import RecentCommuniques from '../../components/admin/RecentCommuniques'
 import SecurityAlerts from '../../components/admin/SecurityAlerts'
 import AnimatedButton from '../../components/common/AnimatedButton'
 import LoadingSpinner from '../../components/common/LoadingSpinner'
-import { showSuccess, showError } from '../../utils/sweetAlert'
+import InteractiveChart from '../../components/common/InteractiveChart'
+import { showSuccess, showError, showInfo } from '../../utils/sweetAlert'
+import { useNavigate } from 'react-router-dom'
 
 const Dashboard = () => {
+  const navigate = useNavigate()
   const { usuario } = useAuthStore()
   const { 
     cargando,
@@ -129,7 +132,7 @@ const Dashboard = () => {
     return (
       <div className="min-h-screen bg-gray-50">
         <Header />
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
           <div className="flex items-center justify-center min-h-96">
             <LoadingSpinner size="xl" />
           </div>
@@ -142,24 +145,26 @@ const Dashboard = () => {
     <div className="min-h-screen bg-gray-50">
       <Header />
       
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header de la página */}
-        <div className="flex items-center justify-between mb-6">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Panel de Administración</h1>
-            <p className="text-gray-600 mt-1">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+        {/* Header de la página - Mejorado para desktop */}
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between mb-6 lg:mb-8 gap-4">
+          <div className="flex-1">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900">Panel de Administración</h1>
+            <p className="text-sm sm:text-base lg:text-lg text-gray-600 mt-1 max-w-3xl">
               Gestión integral del Colegio Talentos - Vista general del sistema
             </p>
           </div>
           
-          <div className="flex items-center space-x-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 sm:gap-3 lg:gap-4">
             <AnimatedButton
               variant="outline"
               icon={FiRefreshCw}
               onClick={handleRefresh}
               size="sm"
+              className="whitespace-nowrap justify-center lg:justify-start"
             >
-              Actualizar
+              <span className="hidden sm:inline">Actualizar</span>
+              <span className="sm:hidden">Refresh</span>
             </AnimatedButton>
             
             <AnimatedButton
@@ -167,8 +172,10 @@ const Dashboard = () => {
               icon={FiDownload}
               onClick={handleExportReport}
               size="sm"
+              className="whitespace-nowrap justify-center lg:justify-start"
             >
-              Exportar Reporte
+              <span className="hidden md:inline">Exportar Reporte</span>
+              <span className="md:hidden">Exportar</span>
             </AnimatedButton>
             
             <AnimatedButton
@@ -176,49 +183,51 @@ const Dashboard = () => {
               icon={FiSettings}
               onClick={() => showSuccess('Configuración', 'Panel de configuración próximamente')}
               size="sm"
+              className="whitespace-nowrap justify-center lg:justify-start"
             >
-              Configuración
+              <span className="hidden sm:inline">Configuración</span>
+              <span className="sm:hidden">Config</span>
             </AnimatedButton>
           </div>
         </div>
 
-        {/* Resumen rápido */}
+        {/* Resumen rápido - Mejorado para desktop */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-gradient-to-r from-talentos-primary to-talentos-secondary rounded-lg shadow-sm p-6 mb-6 text-white"
+          className="bg-gradient-to-r from-talentos-primary to-talentos-secondary rounded-xl shadow-lg p-4 sm:p-6 lg:p-8 mb-6 lg:mb-8 text-white"
         >
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            <div className="text-center">
-              <div className="flex items-center justify-center w-12 h-12 bg-white/20 rounded-lg mx-auto mb-2">
-                <FiUsers className="w-6 h-6" />
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 xl:gap-8">
+            <div className="text-center lg:text-left">
+              <div className="flex items-center justify-center lg:justify-start w-12 h-12 lg:w-14 lg:h-14 bg-white/20 rounded-lg mx-auto lg:mx-0 mb-2 lg:mb-3">
+                <FiUsers className="w-6 h-6 lg:w-7 lg:h-7" />
               </div>
-              <p className="text-2xl font-bold">{resumenRapido.usuariosConectados}</p>
-              <p className="text-sm opacity-90">Usuarios Conectados</p>
+              <p className="text-xl sm:text-2xl lg:text-3xl font-bold">{resumenRapido.usuariosConectados}</p>
+              <p className="text-xs sm:text-sm lg:text-base opacity-90">Usuarios Conectados</p>
             </div>
             
-            <div className="text-center">
-              <div className="flex items-center justify-center w-12 h-12 bg-white/20 rounded-lg mx-auto mb-2">
-                <FiMessageSquare className="w-6 h-6" />
+            <div className="text-center lg:text-left">
+              <div className="flex items-center justify-center lg:justify-start w-12 h-12 lg:w-14 lg:h-14 bg-white/20 rounded-lg mx-auto lg:mx-0 mb-2 lg:mb-3">
+                <FiMessageSquare className="w-6 h-6 lg:w-7 lg:h-7" />
               </div>
-              <p className="text-2xl font-bold">{resumenRapido.comunicadosHoy}</p>
-              <p className="text-sm opacity-90">Comunicados Hoy</p>
+              <p className="text-xl sm:text-2xl lg:text-3xl font-bold">{resumenRapido.comunicadosHoy}</p>
+              <p className="text-xs sm:text-sm lg:text-base opacity-90">Comunicados Hoy</p>
             </div>
             
-            <div className="text-center">
-              <div className="flex items-center justify-center w-12 h-12 bg-white/20 rounded-lg mx-auto mb-2">
-                <FiShield className="w-6 h-6" />
+            <div className="text-center lg:text-left">
+              <div className="flex items-center justify-center lg:justify-start w-12 h-12 lg:w-14 lg:h-14 bg-white/20 rounded-lg mx-auto lg:mx-0 mb-2 lg:mb-3">
+                <FiShield className="w-6 h-6 lg:w-7 lg:h-7" />
               </div>
-              <p className="text-2xl font-bold">{resumenRapido.alertasPendientes}</p>
-              <p className="text-sm opacity-90">Alertas Pendientes</p>
+              <p className="text-xl sm:text-2xl lg:text-3xl font-bold">{resumenRapido.alertasPendientes}</p>
+              <p className="text-xs sm:text-sm lg:text-base opacity-90">Alertas Pendientes</p>
             </div>
             
-            <div className="text-center">
-              <div className="flex items-center justify-center w-12 h-12 bg-white/20 rounded-lg mx-auto mb-2">
-                <FiTrendingUp className="w-6 h-6" />
+            <div className="text-center lg:text-left">
+              <div className="flex items-center justify-center lg:justify-start w-12 h-12 lg:w-14 lg:h-14 bg-white/20 rounded-lg mx-auto lg:mx-0 mb-2 lg:mb-3">
+                <FiTrendingUp className="w-6 h-6 lg:w-7 lg:h-7" />
               </div>
-              <p className="text-2xl font-bold">{resumenRapido.rendimientoGeneral}</p>
-              <p className="text-sm opacity-90">Rendimiento General</p>
+              <p className="text-xl sm:text-2xl lg:text-3xl font-bold">{resumenRapido.rendimientoGeneral}</p>
+              <p className="text-xs sm:text-sm lg:text-base opacity-90">Rendimiento General</p>
             </div>
           </div>
         </motion.div>
@@ -234,113 +243,113 @@ const Dashboard = () => {
             transition={{ delay: 0.2 }}
             className="mb-6"
           >
-            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
-                  <FiCalendar className="w-5 h-5 text-talentos-primary" />
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-4 sm:p-6 lg:p-8">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 lg:mb-6 gap-3">
+                <h3 className="text-lg sm:text-xl lg:text-2xl font-semibold text-gray-900 flex items-center space-x-2 lg:space-x-3">
+                  <FiCalendar className="w-5 h-5 lg:w-6 lg:h-6 text-talentos-primary" />
                   <span>Asistencia de Hoy - Resumen General</span>
                 </h3>
                 <button
                   onClick={cargarEstadisticasAsistencia}
-                  className="text-sm text-talentos-primary hover:text-talentos-secondary transition-colors duration-200"
+                  className="text-sm lg:text-base text-talentos-primary hover:text-talentos-secondary transition-colors duration-200 flex items-center space-x-1 lg:space-x-2 justify-center sm:justify-start"
                 >
-                  <FiRefreshCw className="w-4 h-4 inline mr-1" />
-                  Actualizar
+                  <FiRefreshCw className="w-4 h-4 lg:w-5 lg:h-5" />
+                  <span>Actualizar</span>
                 </button>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6 xl:gap-8">
                 {/* Estadísticas de Tutores */}
-                <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                  <h4 className="font-medium text-blue-900 mb-3 flex items-center space-x-2">
-                    <FiUsers className="w-4 h-4" />
-                    <span>Tutores</span>
+                <div className="bg-blue-50 rounded-xl p-4 lg:p-6 border border-blue-200 hover:shadow-md transition-shadow duration-200">
+                  <h4 className="font-medium lg:font-semibold text-blue-900 mb-3 lg:mb-4 flex items-center space-x-2">
+                    <FiUsers className="w-4 h-4 lg:w-5 lg:h-5" />
+                    <span className="text-sm lg:text-base">Tutores</span>
                   </h4>
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
+                  <div className="space-y-2 lg:space-y-3">
+                    <div className="flex justify-between text-sm lg:text-base">
                       <span className="text-blue-700">Total:</span>
-                      <span className="font-medium text-blue-900">{estadisticasAsistencia.tutores.total}</span>
+                      <span className="font-medium lg:font-semibold text-blue-900">{estadisticasAsistencia.tutores.total}</span>
                     </div>
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between text-sm lg:text-base">
                       <span className="text-blue-700">Presentes:</span>
-                      <span className="font-medium text-green-600">{estadisticasAsistencia.tutores.presentes}</span>
+                      <span className="font-medium lg:font-semibold text-green-600">{estadisticasAsistencia.tutores.presentes}</span>
                     </div>
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between text-sm lg:text-base">
                       <span className="text-blue-700">Tardanzas:</span>
-                      <span className="font-medium text-yellow-600">{estadisticasAsistencia.tutores.tardanzas}</span>
+                      <span className="font-medium lg:font-semibold text-yellow-600">{estadisticasAsistencia.tutores.tardanzas}</span>
                     </div>
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between text-sm lg:text-base">
                       <span className="text-blue-700">Faltas:</span>
-                      <span className="font-medium text-red-600">{estadisticasAsistencia.tutores.faltas}</span>
+                      <span className="font-medium lg:font-semibold text-red-600">{estadisticasAsistencia.tutores.faltas}</span>
                     </div>
-                    <div className="pt-2 border-t border-blue-200">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-blue-700">Asistencia:</span>
-                        <span className="font-bold text-blue-900">{estadisticasAsistencia.tutores.porcentajeAsistencia.toFixed(1)}%</span>
+                    <div className="pt-2 lg:pt-3 border-t border-blue-200">
+                      <div className="flex justify-between text-sm lg:text-base">
+                        <span className="text-blue-700 font-medium">Asistencia:</span>
+                        <span className="font-bold lg:text-lg text-blue-900">{estadisticasAsistencia.tutores.porcentajeAsistencia.toFixed(1)}%</span>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Estadísticas de Estudiantes */}
-                <div className="bg-green-50 rounded-lg p-4 border border-green-200">
-                  <h4 className="font-medium text-green-900 mb-3 flex items-center space-x-2">
-                    <FiUsers className="w-4 h-4" />
-                    <span>Estudiantes</span>
+                <div className="bg-green-50 rounded-xl p-4 lg:p-6 border border-green-200 hover:shadow-md transition-shadow duration-200">
+                  <h4 className="font-medium lg:font-semibold text-green-900 mb-3 lg:mb-4 flex items-center space-x-2">
+                    <FiUsers className="w-4 h-4 lg:w-5 lg:h-5" />
+                    <span className="text-sm lg:text-base">Estudiantes</span>
                   </h4>
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
+                  <div className="space-y-2 lg:space-y-3">
+                    <div className="flex justify-between text-sm lg:text-base">
                       <span className="text-green-700">Total:</span>
-                      <span className="font-medium text-green-900">{estadisticasAsistencia.estudiantes.total}</span>
+                      <span className="font-medium lg:font-semibold text-green-900">{estadisticasAsistencia.estudiantes.total}</span>
                     </div>
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between text-sm lg:text-base">
                       <span className="text-green-700">Presentes:</span>
-                      <span className="font-medium text-green-600">{estadisticasAsistencia.estudiantes.presentes}</span>
+                      <span className="font-medium lg:font-semibold text-green-600">{estadisticasAsistencia.estudiantes.presentes}</span>
                     </div>
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between text-sm lg:text-base">
                       <span className="text-green-700">Tardanzas:</span>
-                      <span className="font-medium text-yellow-600">{estadisticasAsistencia.estudiantes.tardanzas}</span>
+                      <span className="font-medium lg:font-semibold text-yellow-600">{estadisticasAsistencia.estudiantes.tardanzas}</span>
                     </div>
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between text-sm lg:text-base">
                       <span className="text-green-700">Faltas:</span>
-                      <span className="font-medium text-red-600">{estadisticasAsistencia.estudiantes.faltas}</span>
+                      <span className="font-medium lg:font-semibold text-red-600">{estadisticasAsistencia.estudiantes.faltas}</span>
                     </div>
-                    <div className="pt-2 border-t border-green-200">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-green-700">Asistencia:</span>
-                        <span className="font-bold text-green-900">{estadisticasAsistencia.estudiantes.porcentajeAsistencia.toFixed(1)}%</span>
+                    <div className="pt-2 lg:pt-3 border-t border-green-200">
+                      <div className="flex justify-between text-sm lg:text-base">
+                        <span className="text-green-700 font-medium">Asistencia:</span>
+                        <span className="font-bold lg:text-lg text-green-900">{estadisticasAsistencia.estudiantes.porcentajeAsistencia.toFixed(1)}%</span>
                       </div>
                     </div>
                   </div>
                 </div>
 
                 {/* Resumen Consolidado */}
-                <div className="bg-purple-50 rounded-lg p-4 border border-purple-200">
-                  <h4 className="font-medium text-purple-900 mb-3 flex items-center space-x-2">
-                    <FiBarChart className="w-4 h-4" />
-                    <span>Resumen General</span>
+                <div className="bg-purple-50 rounded-xl p-4 lg:p-6 border border-purple-200 hover:shadow-md transition-shadow duration-200">
+                  <h4 className="font-medium lg:font-semibold text-purple-900 mb-3 lg:mb-4 flex items-center space-x-2">
+                    <FiBarChart className="w-4 h-4 lg:w-5 lg:h-5" />
+                    <span className="text-sm lg:text-base">Resumen General</span>
                   </h4>
-                  <div className="space-y-2">
-                    <div className="flex justify-between text-sm">
+                  <div className="space-y-2 lg:space-y-3">
+                    <div className="flex justify-between text-sm lg:text-base">
                       <span className="text-purple-700">Total personas:</span>
-                      <span className="font-medium text-purple-900">{estadisticasAsistencia.consolidado.totalPersonas}</span>
+                      <span className="font-medium lg:font-semibold text-purple-900">{estadisticasAsistencia.consolidado.totalPersonas}</span>
                     </div>
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between text-sm lg:text-base">
                       <span className="text-purple-700">Presentes:</span>
-                      <span className="font-medium text-green-600">{estadisticasAsistencia.consolidado.totalPresentes}</span>
+                      <span className="font-medium lg:font-semibold text-green-600">{estadisticasAsistencia.consolidado.totalPresentes}</span>
                     </div>
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between text-sm lg:text-base">
                       <span className="text-purple-700">Tardanzas:</span>
-                      <span className="font-medium text-yellow-600">{estadisticasAsistencia.consolidado.totalTardanzas}</span>
+                      <span className="font-medium lg:font-semibold text-yellow-600">{estadisticasAsistencia.consolidado.totalTardanzas}</span>
                     </div>
-                    <div className="flex justify-between text-sm">
+                    <div className="flex justify-between text-sm lg:text-base">
                       <span className="text-purple-700">Faltas:</span>
-                      <span className="font-medium text-red-600">{estadisticasAsistencia.consolidado.totalFaltas}</span>
+                      <span className="font-medium lg:font-semibold text-red-600">{estadisticasAsistencia.consolidado.totalFaltas}</span>
                     </div>
-                    <div className="pt-2 border-t border-purple-200">
-                      <div className="flex justify-between text-sm">
-                        <span className="text-purple-700">Promedio:</span>
-                        <span className="font-bold text-purple-900">{estadisticasAsistencia.consolidado.promedioAsistencia.toFixed(1)}%</span>
+                    <div className="pt-2 lg:pt-3 border-t border-purple-200">
+                      <div className="flex justify-between text-sm lg:text-base">
+                        <span className="text-purple-700 font-medium">Promedio:</span>
+                        <span className="font-bold lg:text-lg text-purple-900">{estadisticasAsistencia.consolidado.promedioAsistencia.toFixed(1)}%</span>
                       </div>
                     </div>
                   </div>
@@ -378,12 +387,46 @@ const Dashboard = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
           {/* Actividad reciente */}
           <div className="lg:col-span-1">
-            <RecentActivity actividades={actividadReciente} loading={cargando} />
+            <RecentActivity 
+              actividades={actividadReciente} 
+              loading={cargando}
+              onActivityClick={(actividad) => {
+                // Manejar click en actividad
+                let mensaje = `${actividad.accion}`
+                if (actividad.detalle) {
+                  mensaje += `: ${actividad.detalle}`
+                }
+                
+                // Navegar según el tipo de actividad
+                switch(actividad.tipo) {
+                  case 'comunicado':
+                    navigate('/admin/communiques')
+                    break
+                  case 'mensaje':
+                    navigate('/admin/users')
+                    break
+                  case 'calificacion':
+                    navigate('/admin/reports')
+                    break
+                  case 'asistencia':
+                    navigate('/admin/attendance') 
+                    break
+                  default:
+                    showInfo('Actividad', mensaje)
+                }
+              }}
+            />
           </div>
           
           {/* Usuarios activos */}
           <div className="lg:col-span-1">
-            <ActiveUsers usuarios={usuariosActivos} loading={cargando} />
+            <ActiveUsers 
+              usuarios={usuariosActivos} 
+              loading={cargando}
+              onUserClick={(usuario) => {
+                navigate('/admin/users')
+              }}
+            />
           </div>
           
           {/* Alertas de seguridad */}
@@ -391,14 +434,76 @@ const Dashboard = () => {
             <SecurityAlerts 
               alertas={alertasSeguridad} 
               onMarcarComoLeida={handleAlertRead}
-              loading={cargando} 
+              loading={cargando}
+              onAlertClick={(alerta) => {
+                // Navegar según el tipo de alerta
+                switch(alerta.tipo) {
+                  case 'acceso':
+                    navigate('/admin/users')
+                    break
+                  case 'actualizacion':
+                    navigate('/admin/settings')
+                    break
+                  case 'comportamiento':
+                    navigate('/admin/reports')
+                    break
+                  default:
+                    showInfo('Alerta de Seguridad', alerta.mensaje)
+                }
+              }}
             />
           </div>
         </div>
 
         {/* Comunicados recientes */}
         <div className="mb-6">
-          <RecentCommuniques comunicados={comunicadosRecientes} loading={cargando} />
+          <RecentCommuniques 
+            comunicados={comunicadosRecientes} 
+            loading={cargando}
+            onCommuniqueClick={(comunicado) => {
+              navigate('/admin/communiques')
+            }}
+          />
+        </div>
+
+        {/* Gráficos interactivos */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          {/* Gráfico de asistencia por día */}
+          <InteractiveChart
+            type="line"
+            title="Tendencia de Asistencia"
+            subtitle="Últimos 7 días"
+            data={[
+              { label: 'Lun', value: 92 },
+              { label: 'Mar', value: 88 },
+              { label: 'Mie', value: 95 },
+              { label: 'Jue', value: 91 },
+              { label: 'Vie', value: 87 },
+              { label: 'Sáb', value: 85 },
+              { label: 'Hoy', value: estadisticasAsistencia?.consolidado.promedioAsistencia || 90 }
+            ]}
+            height={250}
+            onDataPointClick={(data) => {
+              showInfo('Detalles del día', `Asistencia: ${data.value}%`)
+            }}
+          />
+          
+          {/* Gráfico de distribución de usuarios */}
+          <InteractiveChart
+            type="donut"
+            title="Distribución de Usuarios"
+            subtitle="Por tipo de rol"
+            data={[
+              { label: 'Estudiantes', value: estadisticasGenerales.totalEstudiantes || 450, color: 'rgb(34, 197, 94)' },
+              { label: 'Padres', value: estadisticasGenerales.totalPadres || 380, color: 'rgb(59, 130, 246)' },
+              { label: 'Tutores', value: estadisticasGenerales.totalTutores || 25, color: 'rgb(168, 85, 247)' },
+              { label: 'Administrativos', value: 5, color: 'rgb(251, 146, 60)' }
+            ]}
+            height={250}
+            onDataPointClick={(data) => {
+              navigate('/admin/users')
+            }}
+          />
         </div>
 
         {/* Reportes y métricas adicionales */}
@@ -408,7 +513,9 @@ const Dashboard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-white rounded-lg shadow-sm border border-gray-200 p-4"
+            whileHover={{ scale: 1.02 }}
+            onClick={() => navigate('/admin/reports')}
+            className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 cursor-pointer hover:shadow-md transition-all duration-200"
           >
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
@@ -444,7 +551,9 @@ const Dashboard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="bg-white rounded-lg shadow-sm border border-gray-200 p-4"
+            whileHover={{ scale: 1.02 }}
+            onClick={() => navigate('/admin/communiques')}
+            className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 cursor-pointer hover:shadow-md transition-all duration-200"
           >
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
@@ -476,7 +585,9 @@ const Dashboard = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="bg-white rounded-lg shadow-sm border border-gray-200 p-4"
+            whileHover={{ scale: 1.02 }}
+            onClick={() => navigate('/admin/users')}
+            className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 cursor-pointer hover:shadow-md transition-all duration-200"
           >
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-lg font-semibold text-gray-900 flex items-center space-x-2">

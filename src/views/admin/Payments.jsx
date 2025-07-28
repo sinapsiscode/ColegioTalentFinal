@@ -114,10 +114,10 @@ const PaymentsAdmin = () => {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      <div className="p-6 space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-3xl font-bold text-gray-800">Gestión de Pagos</h1>
-        <div className="flex gap-3">
+      <div className="py-4 sm:py-6 px-4 sm:px-6 space-y-4 sm:space-y-6">
+      <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 sm:gap-0">
+        <h1 className="text-2xl sm:text-3xl font-bold text-gray-800">Gestión de Pagos</h1>
+        <div className="flex flex-wrap gap-2 sm:gap-3">
           <AnimatedButton
             onClick={exportToCSV}
             className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
@@ -128,7 +128,7 @@ const PaymentsAdmin = () => {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
         <AnimatedCard className="bg-blue-50 border-l-4 border-blue-500">
           <div className="flex items-center justify-between">
             <div>
@@ -170,11 +170,11 @@ const PaymentsAdmin = () => {
         </AnimatedCard>
       </div>
 
-      <AnimatedCard>
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-semibold text-gray-800">Validación de Pagos</h2>
+      <AnimatedCard className="p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row justify-between sm:items-center mb-4 sm:mb-6 gap-4 sm:gap-0">
+          <h2 className="text-lg sm:text-xl font-semibold text-gray-800">Validación de Pagos</h2>
           
-          <div className="flex gap-3">
+          <div className="flex flex-wrap gap-2 sm:gap-3">
             <FilterDropdown
               label="Estado"
               value={filtros.estado}
@@ -192,7 +192,7 @@ const PaymentsAdmin = () => {
               placeholder="Buscar estudiante..."
               value={filtros.estudiante}
               onChange={(e) => setFiltros({ estudiante: e.target.value })}
-              className="border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
+              className="w-full sm:max-w-md border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-blue-500"
             />
           </div>
         </div>
@@ -201,14 +201,14 @@ const PaymentsAdmin = () => {
           <table className="w-full table-auto">
             <thead>
               <tr className="bg-gray-50">
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Estudiante</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Concepto</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Monto</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Método</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">N° Operación</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Estado</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Fecha Subida</th>
-                <th className="px-4 py-3 text-left text-sm font-medium text-gray-600">Acciones</th>
+                <th className="px-3 sm:px-4 py-3 sm:py-4 text-left text-sm font-medium text-gray-600">Estudiante</th>
+                <th className="px-3 sm:px-4 py-3 sm:py-4 text-left text-sm font-medium text-gray-600">Concepto</th>
+                <th className="px-3 sm:px-4 py-3 sm:py-4 text-left text-sm font-medium text-gray-600">Monto</th>
+                <th className="px-3 sm:px-4 py-3 sm:py-4 text-left text-sm font-medium text-gray-600">Método</th>
+                <th className="px-3 sm:px-4 py-3 sm:py-4 text-left text-sm font-medium text-gray-600">N° Operación</th>
+                <th className="px-3 sm:px-4 py-3 sm:py-4 text-left text-sm font-medium text-gray-600">Estado</th>
+                <th className="px-3 sm:px-4 py-3 sm:py-4 text-left text-sm font-medium text-gray-600">Fecha Subida</th>
+                <th className="px-3 sm:px-4 py-3 sm:py-4 text-left text-sm font-medium text-gray-600">Acciones</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-200">
@@ -219,22 +219,22 @@ const PaymentsAdmin = () => {
                   animate={{ opacity: 1 }}
                   className="hover:bg-gray-50"
                 >
-                  <td className="px-4 py-3 text-sm text-gray-800">{pago.nombreEstudiante}</td>
-                  <td className="px-4 py-3 text-sm text-gray-600">{pago.concepto}</td>
-                  <td className="px-4 py-3 text-sm font-medium text-gray-800">S/. {pago.monto.toFixed(2)}</td>
-                  <td className="px-4 py-3 text-sm text-gray-600 capitalize">{pago.metodoPago}</td>
-                  <td className="px-4 py-3 text-sm text-gray-600">{pago.numeroOperacion}</td>
-                  <td className="px-4 py-3">
+                  <td className="px-3 sm:px-4 py-3 text-sm text-gray-800">{pago.nombreEstudiante}</td>
+                  <td className="px-3 sm:px-4 py-3 text-sm text-gray-600">{pago.concepto}</td>
+                  <td className="px-3 sm:px-4 py-3 text-sm font-medium text-gray-800">S/. {pago.monto.toFixed(2)}</td>
+                  <td className="px-3 sm:px-4 py-3 text-sm text-gray-600 capitalize">{pago.metodoPago}</td>
+                  <td className="px-3 sm:px-4 py-3 text-sm text-gray-600">{pago.numeroOperacion}</td>
+                  <td className="px-3 sm:px-4 py-3">
                     <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(pago.estado)}`}>
                       {getStatusIcon(pago.estado)}
                       <span className="ml-1 capitalize">{pago.estado.replace('_', ' ')}</span>
                     </span>
                   </td>
-                  <td className="px-4 py-3 text-sm text-gray-600">
+                  <td className="px-3 sm:px-4 py-3 text-sm text-gray-600">
                     {pago.fechaSubida ? new Date(pago.fechaSubida).toLocaleDateString() : '-'}
                   </td>
-                  <td className="px-4 py-3">
-                    <div className="flex gap-2">
+                  <td className="px-3 sm:px-4 py-3">
+                    <div className="flex flex-col sm:flex-row gap-1 sm:gap-2">
                       <button
                         onClick={() => setSelectedPayment(pago)}
                         className="text-blue-600 hover:text-blue-800 p-1"
@@ -271,11 +271,11 @@ const PaymentsAdmin = () => {
       </AnimatedCard>
 
       {selectedPayment && typeof selectedPayment === 'object' && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-white rounded-lg p-6 w-full max-w-lg mx-4"
+            className="bg-white rounded-lg p-4 sm:p-6 w-full max-w-lg"
           >
             <h3 className="text-lg font-semibold mb-4">Detalle del Pago</h3>
             
@@ -373,11 +373,11 @@ const PaymentsAdmin = () => {
       )}
 
       {showRejectModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <motion.div
             initial={{ scale: 0.9, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
-            className="bg-white rounded-lg p-6 w-full max-w-md mx-4"
+            className="bg-white rounded-lg p-4 sm:p-6 w-full max-w-md"
           >
             <h3 className="text-lg font-semibold mb-4">Rechazar Pago</h3>
             

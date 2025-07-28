@@ -57,6 +57,18 @@ export const getNestedValue = (obj, path) => {
   }, obj)
 }
 
+// Función para comparar IDs de manera segura (maneja strings y números)
+export const compareIds = (id1, id2) => {
+  // Si ambos son null o undefined, son iguales
+  if (!id1 && !id2) return true
+  
+  // Si uno es null/undefined y el otro no, no son iguales
+  if (!id1 || !id2) return false
+  
+  // Convertir ambos a string para comparación
+  return id1.toString() === id2.toString()
+}
+
 export const useSearch = (initialItems, searchFields, initialFilters = {}) => {
   const [searchTerm, setSearchTerm] = useState('')
   const [filters, setFilters] = useState(initialFilters)

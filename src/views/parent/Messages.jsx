@@ -8,7 +8,9 @@ import {
   FiFilter,
   FiArrowLeft,
   FiUsers,
-  FiUser
+  FiUser,
+  FiSend,
+  FiDownload
 } from 'react-icons/fi'
 import { useNavigate } from 'react-router-dom'
 
@@ -16,70 +18,64 @@ import Header from '../../components/common/Header'
 import useMessagesStore from '../../stores/messagesStore'
 import useAuthStore from '../../stores/authStore'
 
-import ConversationList from '../../components/messaging/ConversationList'
-import ChatHeader from '../../components/messaging/ChatHeader'
-import MessageArea from '../../components/messaging/MessageArea'
-import MessageInput from '../../components/messaging/MessageInput'
 import SearchInput from '../../components/common/SearchInput'
 import AnimatedButton from '../../components/common/AnimatedButton'
 import LoadingSpinner from '../../components/common/LoadingSpinner'
-import FilterDropdown from '../../components/common/FilterDropdown'
-import { showSuccess, showError, showInput } from '../../utils/sweetAlert'
+import { showSuccess, showError } from '../../utils/sweetAlert'
+import NewConversationModal from '../../components/messaging/NewConversationModal'
+import { debugMessages } from '../../utils/debugMessages'
+import { testMessages } from '../../utils/testMessages'
+import { exportForParents } from '../../utils/exportUtilsSimple'
 
 const Messages = () => {
   const navigate = useNavigate()
   const { usuario } = useAuthStore()
   const { 
     conversaciones, 
-    cargando, 
-    cargarConversaciones, 
-    enviarMensaje, 
-    marcarConversacionComoLeida,
+    mensajesActuales,
+    mensajesNoLeidos,
+    cargando,
+    enviando,
+    cargarConversaciones,
+    cargarMensajes,
+    enviarMensaje,
     buscarConversaciones,
-    simularRespuestaAutomatica
+    obtenerUsuariosDisponibles
   } = useMessagesStore()
 
   // Estados locales
   const [selectedConversation, setSelectedConversation] = useState(null)
   const [searchTerm, setSearchTerm] = useState('')
-  const [typeFilter, setTypeFilter] = useState('all')
   const [showMobileChat, setShowMobileChat] = useState(false)
-  const [conversacionesFiltradas, setConversacionesFiltradas] = useState([])
+  const [messageInput, setMessageInput] = useState('')
+  const [showNewConversationModal, setShowNewConversationModal] = useState(false)
 
   // Cargar conversaciones al montar
   useEffect(() => {
     cargarConversaciones()
+    // Debug mejorado
+    console.log('🔍 Debug desde Messages.jsx:')
+    console.log('Usuario actual:', usuario)
+    console.log('Conversaciones:', conversaciones)
+    console.log('Cargando:', cargando)
+    console.log('Usuarios disponibles:', obtenerUsuariosDisponibles())
+    
+    // Ejecutar test completo
+    testMessages()
   }, [cargarConversaciones])
 
-  // Filtrar conversaciones
-  useEffect(() => {
-    let resultado = conversaciones
-
-    // Filtrar por búsqueda
-    if (searchTerm) {
-      resultado = buscarConversaciones(searchTerm)
-    }
-
-    // Filtrar por tipo
-    if (typeFilter !== 'all') {
-      resultado = resultado.filter(conv => conv.tipo === typeFilter)
-    }
-
-    // Ordenar por fecha del último mensaje
-    resultado = resultado.sort((a, b) => 
-      new Date(b.ultimoMensaje.fecha) - new Date(a.ultimoMensaje.fecha)
-    )
-
-    setConversacionesFiltradas(resultado)
-  }, [conversaciones, searchTerm, typeFilter, buscarConversaciones])
+  // Filtrar conversaciones por búsqueda
+  const conversacionesFiltradas = searchTerm 
+    ? buscarConversaciones(searchTerm)
+    : conversaciones
 
   // Handlers
-  const handleSelectConversation = (conversacion) => {
+  const handleSelectConversation = async (conversacion) => {
     setSelectedConversation(conversacion)
     setShowMobileChat(true)
     
-    // Marcar como leída
-    marcarConversacionComoLeida(conversacion.id)
+    // Cargar mensajes de la conversación
+    await cargarMensajes(conversacion.id)
   }
 
   const handleBackToList = () => {
@@ -87,19 +83,19 @@ const Messages = () => {
     setSelectedConversation(null)
   }
 
-  const handleSendMessage = (texto) => {
-    if (!selectedConversation) return
+  const handleSendMessage = async () => {
+    if (!messageInput.trim() || !selectedConversation) return
 
-    const mensaje = {
-      texto,
-      remitente: usuario?.nombre || 'Carlos Rodríguez'
-    }
+    const result = await enviarMensaje(
+      selectedConversation.id,
+      messageInput.trim(),
+      selectedConversation.otroParticipante.id
+    )
 
-    enviarMensaje(selectedConversation.id, mensaje)
-    
-    // Simular respuesta automática ocasional
-    if (Math.random() > 0.7) {
-      simularRespuestaAutomatica(selectedConversation.id)
+    if (result.success) {
+      setMessageInput('')
+    } else {
+      showError('Error', 'No se pudo enviar el mensaje')
     }
   }
 
@@ -108,63 +104,117 @@ const Messages = () => {
     showSuccess('Mensajes actualizados', 'Se han cargado los mensajes más recientes')
   }
 
-  const handleNewMessage = async () => {
-    try {
-      const result = await showInput(
-        'Nuevo Mensaje',
-        'Selecciona el destinatario',
-        {
-          input: 'select',
-          inputOptions: {
-            'Maria García': 'Profesora María García',
-            'José López': 'Profesor José López',
-            'Administración': 'Administración del Colegio'
-          },
-          showCancelButton: true,
-          confirmButtonText: 'Continuar',
-          cancelButtonText: 'Cancelar'
-        }
-      )
+  const handleExport = async () => {
+    if (conversaciones.length === 0) {
+      showError('Sin Datos', 'No hay conversaciones para exportar')
+      return
+    }
 
-      if (result.isConfirmed) {
-        // Simular creación de nueva conversación
-        showSuccess('Función próximamente', 'La creación de nuevos mensajes estará disponible pronto')
+    try {
+      // Preparar datos para exportación (padres solo reciben PDF)
+      const exportData = conversaciones.map(conv => ({
+        'Conversación con': conv.receptor?.nombre || 'Desconocido',
+        'Rol': conv.receptor?.rol === 'tutor' ? 'Profesor' : conv.receptor?.rol || 'N/A',
+        'Último mensaje': conv.ultimoMensaje || 'Sin mensajes',
+        'Fecha': new Date(conv.fecha).toLocaleDateString('es-PE'),
+        'Hora': new Date(conv.fecha).toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit' }),
+        'Mensajes no leídos': conv.noLeidos || 0,
+        'Total mensajes': conv.totalMensajes || 0,
+        'Estado': conv.noLeidos > 0 ? 'Pendiente' : 'Leído'
+      }))
+
+      const result = await exportForParents(exportData, {
+        title: `Conversaciones - ${usuario?.nombre || 'Padre de Familia'}`,
+        filename: 'conversaciones_mensajes'
+      })
+      
+      if (result) {
+        showSuccess('Exportación exitosa', 'Las conversaciones han sido exportadas en PDF')
       }
     } catch (error) {
-      console.log('Cancelado por el usuario')
+      console.error('Error al exportar:', error)
+      showError('Error', 'No se pudo exportar las conversaciones')
     }
   }
 
-  const handleShowInfo = () => {
-    if (selectedConversation) {
-      const info = {
-        participantes: selectedConversation.participantes,
-        tipo: selectedConversation.tipo,
-        totalMensajes: selectedConversation.mensajes.length,
-        ultimaActividad: selectedConversation.ultimoMensaje.fecha
-      }
+  const handleNewMessage = () => {
+    setShowNewConversationModal(true)
+  }
+
+  const handleSelectRecipient = async (recipient) => {
+    try {
+      // Buscar si ya existe una conversación con este usuario
+      const conversacionExistente = conversaciones.find(conv => 
+        conv.participants.includes(recipient.id)
+      )
       
-      console.log('Información de la conversación:', info)
-      showSuccess('Información', `Conversación con ${selectedConversation.participantes.join(', ')}`)
+      if (conversacionExistente) {
+        // Si ya existe, seleccionarla
+        handleSelectConversation(conversacionExistente)
+        setShowNewConversationModal(false)
+        showSuccess('Conversación existente', `Ya tienes una conversación con ${recipient.name}`)
+      } else {
+        // Si no existe, crear una nueva conversación vacía
+        const { iniciarConversacion } = useMessagesStore.getState()
+        const result = await iniciarConversacion(recipient.id)
+        
+        if (result.success) {
+          // Recargar conversaciones
+          await cargarConversaciones()
+          
+          // Buscar la nueva conversación
+          const nuevaConversacion = conversaciones.find(conv => 
+            conv.id === result.conversacionId
+          )
+          
+          if (nuevaConversacion) {
+            handleSelectConversation(nuevaConversacion)
+          }
+          
+          setShowNewConversationModal(false)
+          showSuccess('¡Listo!', `Ahora puedes enviar mensajes a ${recipient.name}`)
+        } else {
+          showError('Error', 'No se pudo crear la conversación')
+        }
+      }
+    } catch (error) {
+      console.error('Error al seleccionar destinatario:', error)
+      showError('Error', 'Ocurrió un error al procesar la solicitud')
     }
   }
 
-  // Opciones de filtro
-  const filterOptions = [
-    { value: 'all', label: 'Todas las conversaciones' },
-    { value: 'padre-tutor', label: 'Solo profesores' },
-    { value: 'admin-padre', label: 'Solo administración' }
-  ]
+  // Renderizar mensaje individual
+  const renderMessage = (mensaje) => {
+    const isOwnMessage = mensaje.senderId === usuario?.id
+    
+    return (
+      <div key={mensaje.id} className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'} mb-4`}>
+        <div className={`max-w-[70%] ${isOwnMessage ? 'order-2' : ''}`}>
+          <div className={`rounded-lg px-4 py-2 ${
+            isOwnMessage 
+              ? 'bg-blue-600 text-white' 
+              : 'bg-gray-200 text-gray-800'
+          }`}>
+            <p className="text-sm">{mensaje.content}</p>
+          </div>
+          <p className="text-xs text-gray-500 mt-1">
+            {new Date(mensaje.timestamp).toLocaleTimeString('es-PE', {
+              hour: '2-digit',
+              minute: '2-digit'
+            })}
+          </p>
+        </div>
+      </div>
+    )
+  }
 
-  if (cargando) {
+  if (cargando && conversaciones.length === 0) {
     return (
       <div className="min-h-screen bg-gray-50">
         <Header />
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="flex items-center justify-center min-h-96">
-            <LoadingSpinner size="xl" />
-          </div>
-        </main>
+        <div className="flex items-center justify-center h-[calc(100vh-64px)]">
+          <LoadingSpinner size="lg" />
+        </div>
       </div>
     )
   }
@@ -173,150 +223,171 @@ const Messages = () => {
     <div className="min-h-screen bg-gray-50">
       <Header />
       
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header de la página - solo visible en móvil cuando no hay chat abierto o en desktop */}
-        {(!showMobileChat || window.innerWidth >= 1024) && (
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center space-x-4">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => navigate('/parent/dashboard')}
-                className="p-2 text-gray-600 hover:text-talentos-primary transition-colors duration-200 lg:hidden"
-              >
-                <FiArrowLeft className="w-5 h-5" />
-              </motion.button>
-              
-              <div>
-                <h1 className="text-3xl font-bold text-gray-900">Mensajes</h1>
-                <p className="text-gray-600 mt-1">
-                  Comunicación con profesores y administración
-                </p>
-              </div>
-            </div>
-            
-            <div className="flex items-center space-x-3">
-              <AnimatedButton
-                variant="outline"
-                icon={FiRefreshCw}
-                onClick={handleRefresh}
-                size="sm"
-              >
-                Actualizar
-              </AnimatedButton>
-              
-              <AnimatedButton
-                variant="primary"
-                icon={FiEdit3}
-                onClick={handleNewMessage}
-                size="sm"
-              >
-                Nuevo
-              </AnimatedButton>
-            </div>
-          </div>
-        )}
+      <div className="container mx-auto px-4 py-6">
+        {/* Header de mensajes */}
+        <div className="mb-6">
+          <h1 className="text-2xl font-bold text-gray-800 mb-2">Mensajes</h1>
+          <p className="text-gray-600">
+            {mensajesNoLeidos > 0 
+              ? `Tienes ${mensajesNoLeidos} mensajes sin leer`
+              : 'Todos los mensajes leídos'
+            }
+          </p>
+        </div>
 
-        {/* Contenedor principal */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden" style={{ height: '70vh' }}>
+        {/* Layout principal */}
+        <div className="bg-white rounded-lg shadow-lg overflow-hidden h-[calc(100vh-200px)]">
           <div className="flex h-full">
-            {/* Panel izquierdo - Lista de conversaciones */}
-            <div className={`${showMobileChat ? 'hidden' : 'flex'} lg:flex flex-col w-full lg:w-1/3 border-r border-gray-200`}>
-              {/* Controles de búsqueda y filtros */}
-              <div className="p-4 border-b border-gray-200 bg-gray-50">
-                <div className="space-y-3">
+            {/* Lista de conversaciones - Desktop y Mobile */}
+            <div className={`${showMobileChat ? 'hidden md:block' : 'block'} w-full md:w-1/3 border-r border-gray-200`}>
+              {/* Barra de búsqueda y acciones */}
+              <div className="p-4 border-b border-gray-200">
+                <div className="flex gap-2 mb-3">
                   <SearchInput
                     value={searchTerm}
                     onChange={setSearchTerm}
-                    onClear={() => setSearchTerm('')}
-                    placeholder="Buscar conversaciones..."
+                    placeholder="Buscar conversación..."
+                    className="flex-1"
                   />
-                  
-                  <FilterDropdown
-                    label="Filtrar conversaciones"
-                    options={filterOptions}
-                    selectedValue={typeFilter}
-                    onSelect={setTypeFilter}
+                  <AnimatedButton
+                    variant="secondary"
+                    size="sm"
+                    onClick={handleRefresh}
+                    icon={FiRefreshCw}
                   />
-                </div>
-                
-                {/* Estadísticas */}
-                <div className="mt-3 flex items-center justify-between text-sm text-gray-600">
-                  <span>{conversacionesFiltradas.length} conversaciones</span>
-                  <div className="flex items-center space-x-4">
-                    <div className="flex items-center space-x-1">
-                      <FiUsers className="w-4 h-4" />
-                      <span>{conversacionesFiltradas.filter(c => c.tipo === 'padre-tutor').length}</span>
-                    </div>
-                    <div className="flex items-center space-x-1">
-                      <FiUser className="w-4 h-4" />
-                      <span>{conversacionesFiltradas.filter(c => c.tipo === 'admin-padre').length}</span>
-                    </div>
-                  </div>
+                  <AnimatedButton
+                    variant="outline"
+                    size="sm"
+                    onClick={handleExport}
+                    icon={FiDownload}
+                    title="Exportar conversaciones"
+                  />
+                  <AnimatedButton
+                    variant="primary"
+                    size="sm"
+                    onClick={handleNewMessage}
+                    icon={FiEdit3}
+                    title="Nuevo mensaje"
+                  >
+                    Nuevo
+                  </AnimatedButton>
                 </div>
               </div>
-              
+
               {/* Lista de conversaciones */}
-              <div className="flex-1 overflow-y-auto p-4">
+              <div className="overflow-y-auto h-[calc(100%-80px)]">
                 {conversacionesFiltradas.length === 0 ? (
-                  <div className="text-center py-8">
-                    <FiMessageSquare className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">
-                      {searchTerm || typeFilter !== 'all' ? 'No se encontraron resultados' : 'No hay conversaciones'}
-                    </h3>
-                    <p className="text-gray-600">
-                      {searchTerm || typeFilter !== 'all' 
-                        ? 'Intenta con otros términos de búsqueda o filtros'
-                        : 'Inicia una conversación con un profesor o la administración'
-                      }
-                    </p>
+                  <div className="text-center py-8 text-gray-500">
+                    <FiMessageSquare className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                    <p className="text-lg mb-2">No hay conversaciones</p>
+                    <p className="text-sm">Haz clic en "Nuevo" para iniciar una conversación</p>
                   </div>
                 ) : (
-                  <ConversationList
-                    conversaciones={conversacionesFiltradas}
-                    selectedConversation={selectedConversation}
-                    onSelectConversation={handleSelectConversation}
-                  />
+                  conversacionesFiltradas.map((conv) => (
+                    <motion.div
+                      key={conv.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className={`p-4 border-b border-gray-100 hover:bg-gray-50 cursor-pointer ${
+                        selectedConversation?.id === conv.id ? 'bg-blue-50' : ''
+                      }`}
+                      onClick={() => handleSelectConversation(conv)}
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex-1">
+                          <h3 className="font-semibold text-gray-800">
+                            {conv.nombreParticipante}
+                          </h3>
+                          <p className="text-sm text-gray-600 truncate">
+                            {conv.lastMessage}
+                          </p>
+                        </div>
+                        <div className="text-right ml-2">
+                          <p className="text-xs text-gray-500">
+                            {new Date(conv.lastMessageTime).toLocaleDateString()}
+                          </p>
+                          {conv.unreadCount?.[usuario?.id] > 0 && (
+                            <span className="inline-block bg-blue-600 text-white text-xs rounded-full px-2 py-1 mt-1">
+                              {conv.unreadCount[usuario.id]}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                    </motion.div>
+                  ))
                 )}
               </div>
             </div>
 
-            {/* Panel derecho - Chat */}
-            <div className={`${showMobileChat ? 'flex' : 'hidden'} lg:flex flex-col w-full lg:w-2/3`}>
+            {/* Área de chat */}
+            <div className={`${showMobileChat ? 'block' : 'hidden md:block'} flex-1 flex flex-col`}>
               {selectedConversation ? (
                 <>
-                  <ChatHeader
-                    conversacion={selectedConversation}
-                    onBack={handleBackToList}
-                    onShowInfo={handleShowInfo}
-                  />
-                  
-                  <MessageArea
-                    conversacion={selectedConversation}
-                    currentUser={usuario?.nombre || 'Carlos Rodríguez'}
-                  />
-                  
-                  <MessageInput
-                    onSendMessage={handleSendMessage}
-                    placeholder="Escribe tu mensaje..."
-                  />
+                  {/* Header del chat */}
+                  <div className="p-4 border-b border-gray-200 bg-white">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center">
+                        <button
+                          onClick={handleBackToList}
+                          className="md:hidden mr-3 text-gray-600 hover:text-gray-800"
+                        >
+                          <FiArrowLeft className="w-5 h-5" />
+                        </button>
+                        <div className="w-10 h-10 bg-gray-300 rounded-full flex items-center justify-center mr-3">
+                          <FiUser className="w-5 h-5 text-gray-600" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-gray-800">
+                            {selectedConversation.nombreParticipante}
+                          </h3>
+                          <p className="text-sm text-gray-500">
+                            {selectedConversation.otroParticipante?.rol}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Área de mensajes */}
+                  <div className="flex-1 overflow-y-auto p-4 bg-gray-50">
+                    {mensajesActuales.map(renderMessage)}
+                  </div>
+
+                  {/* Input de mensaje */}
+                  <div className="p-4 border-t border-gray-200 bg-white">
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={messageInput}
+                        onChange={(e) => setMessageInput(e.target.value)}
+                        onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                        placeholder="Escribe un mensaje..."
+                        className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        disabled={enviando}
+                      />
+                      <AnimatedButton
+                        onClick={handleSendMessage}
+                        disabled={!messageInput.trim() || enviando}
+                        icon={FiSend}
+                      >
+                        {enviando ? 'Enviando...' : 'Enviar'}
+                      </AnimatedButton>
+                    </div>
+                  </div>
                 </>
               ) : (
-                <div className="flex-1 flex items-center justify-center bg-gray-50">
+                <div className="flex-1 flex items-center justify-center text-gray-500">
                   <div className="text-center">
-                    <FiMessageSquare className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                    <h3 className="text-lg font-medium text-gray-900 mb-2">
-                      Selecciona una conversación
-                    </h3>
-                    <p className="text-gray-600 mb-6">
-                      Elige una conversación de la lista para comenzar a chatear
-                    </p>
+                    <FiMessageSquare className="w-16 h-16 mx-auto mb-4 opacity-50" />
+                    <p className="text-lg font-medium mb-2">Selecciona una conversación</p>
+                    <p className="text-sm text-gray-400 mb-4">O inicia una nueva conversación</p>
                     <AnimatedButton
                       variant="primary"
-                      icon={FiEdit3}
+                      size="md"
                       onClick={handleNewMessage}
+                      icon={FiEdit3}
                     >
-                      Iniciar nueva conversación
+                      Nueva Conversación
                     </AnimatedButton>
                   </div>
                 </div>
@@ -324,51 +395,17 @@ const Messages = () => {
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Información adicional */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4"
-        >
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                <FiUsers className="w-5 h-5 text-blue-600" />
-              </div>
-              <div>
-                <h3 className="text-sm font-medium text-gray-900">Profesores</h3>
-                <p className="text-xs text-gray-600">Comunicación directa con tutores</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
-                <FiUser className="w-5 h-5 text-purple-600" />
-              </div>
-              <div>
-                <h3 className="text-sm font-medium text-gray-900">Administración</h3>
-                <p className="text-xs text-gray-600">Consultas administrativas</p>
-              </div>
-            </div>
-          </div>
-          
-          <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
-                <FiMessageSquare className="w-5 h-5 text-green-600" />
-              </div>
-              <div>
-                <h3 className="text-sm font-medium text-gray-900">Respuesta rápida</h3>
-                <p className="text-xs text-gray-600">Comunicación eficiente</p>
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      </main>
+      {/* Modal de nueva conversación */}
+      {showNewConversationModal && (
+        <NewConversationModal
+          isOpen={showNewConversationModal}
+          onClose={() => setShowNewConversationModal(false)}
+          onSelectRecipient={handleSelectRecipient}
+          availableUsers={obtenerUsuariosDisponibles()}
+        />
+      )}
     </div>
   )
 }

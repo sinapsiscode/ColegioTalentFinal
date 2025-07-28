@@ -4,6 +4,8 @@ import { motion } from 'framer-motion'
 import useAuthStore from './stores/authStore'
 import useNotificationsStore from './stores/notificationsStore'
 import LoadingSpinner from './components/common/LoadingSpinner'
+import ToastContainer from './components/common/ToastNotification'
+import ErrorBoundary from './components/common/ErrorBoundary'
 
 const Login = React.lazy(() => import('./views/Login'))
 const ParentDashboard = React.lazy(() => import('./views/parent/Dashboard'))
@@ -12,11 +14,15 @@ const ParentMessages = React.lazy(() => import('./views/parent/Messages'))
 const ParentCommuniques = React.lazy(() => import('./views/parent/Communiques'))
 const ParentGrades = React.lazy(() => import('./views/parent/Grades'))
 const ParentProfile = React.lazy(() => import('./views/parent/Profile'))
+const ParentStudents = React.lazy(() => import('./views/parent/Students'))
 
 const TutorDashboard = React.lazy(() => import('./views/tutor/Dashboard'))
 const TutorStudents = React.lazy(() => import('./views/tutor/TutorStudents'))
 const TutorMessages = React.lazy(() => import('./views/tutor/Messages'))
 const TutorCommuniques = React.lazy(() => import('./views/tutor/Communiques'))
+const TutorReports = React.lazy(() => import('./views/tutor/Reports'))
+const TutorGrades = React.lazy(() => import('./views/tutor/Grades'))
+const TutorCourses = React.lazy(() => import('./views/tutor/Courses'))
 
 const AdminDashboard = React.lazy(() => import('./views/admin/Dashboard'))
 const AdminReports = React.lazy(() => import('./views/admin/Reports'))
@@ -25,8 +31,23 @@ const AdminCommuniques = React.lazy(() => import('./views/admin/Communiques'))
 const AdminPayments = React.lazy(() => import('./views/admin/Payments'))
 const AdminPaymentConcepts = React.lazy(() => import('./views/admin/PaymentConcepts'))
 const AdminTutorAttendance = React.lazy(() => import('./views/admin/TutorAttendance'))
+const CoursesAndAssignments = React.lazy(() => import('./views/admin/CoursesAndAssignments'))
+const AdminConfiguration = React.lazy(() => import('./views/admin/Configuration'))
+const AttendanceControl = React.lazy(() => import('./views/admin/AttendanceControl'))
+const PaymentManagement = React.lazy(() => import('./views/admin/PaymentManagement'))
+const AdminAttendanceDashboard = React.lazy(() => import('./views/admin/AttendanceDashboard'))
+const AdminAttendanceRegister = React.lazy(() => import('./views/admin/AttendanceRegister'))
+const AsistenciaDashboard = React.lazy(() => import('./views/asistencia/Dashboard'))
+const AsistenciaHistorial = React.lazy(() => import('./views/asistencia/Historial'))
+const MensajesDashboard = React.lazy(() => import('./views/mensajes/Dashboard'))
 
 const ParentPayments = React.lazy(() => import('./views/parent/Payments'))
+const ParentNotifications = React.lazy(() => import('./views/parent/Notifications'))
+const StudentProfile = React.lazy(() => import('./views/parent/StudentProfile'))
+const NotificationCenter = React.lazy(() => import('./views/parent/NotificationCenter'))
+
+const NotasDashboard = React.lazy(() => import('./views/notas/Dashboard'))
+const ReportesDashboard = React.lazy(() => import('./views/reportes/Dashboard'))
 
 const ScannerDashboard = React.lazy(() => import('./views/scanner/Dashboard'))
 
@@ -76,17 +97,18 @@ function App() {
       case 'admin':
         return '/admin/dashboard'
       case 'entrada':
-        return '/scanner/dashboard'
+        return '/asistencia'
       default:
         return '/login'
     }
   }
   
   return (
-    <Router>
-      <div className="min-h-screen bg-gray-50">
-        <Suspense fallback={<LoadingFallback />}>
-          <Routes>
+    <ErrorBoundary>
+      <Router>
+        <div className="min-h-screen bg-gray-50">
+          <Suspense fallback={<LoadingFallback />}>
+            <Routes>
             <Route path="/login" element={<Login />} />
             
             <Route path="/" element={
@@ -126,9 +148,29 @@ function App() {
                 <ParentProfile />
               </PrivateRoute>
             } />
+            <Route path="/parent/students" element={
+              <PrivateRoute allowedRoles={['padre']}>
+                <ParentStudents />
+              </PrivateRoute>
+            } />
+            <Route path="/parent/student/:studentId" element={
+              <PrivateRoute allowedRoles={['padre']}>
+                <StudentProfile />
+              </PrivateRoute>
+            } />
             <Route path="/parent/payments" element={
               <PrivateRoute allowedRoles={['padre']}>
                 <ParentPayments />
+              </PrivateRoute>
+            } />
+            <Route path="/parent/notifications" element={
+              <PrivateRoute allowedRoles={['padre']}>
+                <ParentNotifications />
+              </PrivateRoute>
+            } />
+            <Route path="/parent/notification-center" element={
+              <PrivateRoute allowedRoles={['padre']}>
+                <NotificationCenter />
               </PrivateRoute>
             } />
             
@@ -151,6 +193,21 @@ function App() {
             <Route path="/tutor/communiques" element={
               <PrivateRoute allowedRoles={['tutor']}>
                 <TutorCommuniques />
+              </PrivateRoute>
+            } />
+            <Route path="/tutor/reports" element={
+              <PrivateRoute allowedRoles={['tutor']}>
+                <TutorReports />
+              </PrivateRoute>
+            } />
+            <Route path="/tutor/grades" element={
+              <PrivateRoute allowedRoles={['tutor']}>
+                <TutorGrades />
+              </PrivateRoute>
+            } />
+            <Route path="/tutor/courses" element={
+              <PrivateRoute allowedRoles={['tutor']}>
+                <TutorCourses />
               </PrivateRoute>
             } />
             
@@ -177,12 +234,7 @@ function App() {
             } />
             <Route path="/admin/payments" element={
               <PrivateRoute allowedRoles={['admin']}>
-                <AdminPayments />
-              </PrivateRoute>
-            } />
-            <Route path="/admin/payment-concepts" element={
-              <PrivateRoute allowedRoles={['admin']}>
-                <AdminPaymentConcepts />
+                <PaymentManagement />
               </PrivateRoute>
             } />
             <Route path="/admin/tutor-attendance" element={
@@ -190,11 +242,84 @@ function App() {
                 <AdminTutorAttendance />
               </PrivateRoute>
             } />
+            <Route path="/admin/tutor-assignments" element={
+              <PrivateRoute allowedRoles={['admin']}>
+                <CoursesAndAssignments />
+              </PrivateRoute>
+            } />
+            <Route path="/admin/configuration" element={
+              <PrivateRoute allowedRoles={['admin']}>
+                <AdminConfiguration />
+              </PrivateRoute>
+            } />
+            <Route path="/admin/attendance" element={
+              <PrivateRoute allowedRoles={['admin']}>
+                <AdminAttendanceDashboard />
+              </PrivateRoute>
+            } />
+            <Route path="/admin/attendance/register" element={
+              <PrivateRoute allowedRoles={['admin']}>
+                <AdminAttendanceRegister />
+              </PrivateRoute>
+            } />
             
             {/* Rutas para Personal de Entrada */}
             <Route path="/scanner/dashboard" element={
               <PrivateRoute allowedRoles={['entrada']}>
                 <ScannerDashboard />
+              </PrivateRoute>
+            } />
+            
+            {/* Rutas del Sistema de Asistencia */}
+            <Route path="/asistencia" element={
+              <PrivateRoute allowedRoles={['admin', 'entrada']}>
+                {rol === 'admin' ? <AttendanceControl /> : <AsistenciaDashboard />}
+              </PrivateRoute>
+            } />
+            <Route path="/asistencia/scanner" element={
+              <PrivateRoute allowedRoles={['admin', 'entrada']}>
+                <ScannerDashboard />
+              </PrivateRoute>
+            } />
+            <Route path="/asistencia/registro" element={
+              <PrivateRoute allowedRoles={['admin']}>
+                <AdminAttendanceRegister />
+              </PrivateRoute>
+            } />
+            <Route path="/asistencia/historial" element={
+              <PrivateRoute allowedRoles={['admin', 'entrada']}>
+                <AsistenciaHistorial />
+              </PrivateRoute>
+            } />
+            
+            {/* Rutas del Sistema de Mensajes */}
+            <Route path="/mensajes" element={
+              <PrivateRoute allowedRoles={['admin', 'padre', 'tutor']}>
+                <MensajesDashboard />
+              </PrivateRoute>
+            } />
+            <Route path="/mensajes/:usuarioId" element={
+              <PrivateRoute allowedRoles={['admin', 'padre', 'tutor']}>
+                <MensajesDashboard />
+              </PrivateRoute>
+            } />
+            
+            {/* Rutas del Sistema de Notas */}
+            <Route path="/notas" element={
+              <PrivateRoute allowedRoles={['admin', 'padre', 'tutor']}>
+                <NotasDashboard />
+              </PrivateRoute>
+            } />
+            <Route path="/notas/:bimestre" element={
+              <PrivateRoute allowedRoles={['admin', 'padre', 'tutor']}>
+                <NotasDashboard />
+              </PrivateRoute>
+            } />
+            
+            {/* Rutas del Sistema de Reportes */}
+            <Route path="/reportes" element={
+              <PrivateRoute allowedRoles={['admin']}>
+                <ReportesDashboard />
               </PrivateRoute>
             } />
             
@@ -219,8 +344,12 @@ function App() {
             } />
           </Routes>
         </Suspense>
-      </div>
-    </Router>
+        
+          {/* Toast Notifications Container */}
+          <ToastContainer />
+        </div>
+      </Router>
+    </ErrorBoundary>
   )
 }
 

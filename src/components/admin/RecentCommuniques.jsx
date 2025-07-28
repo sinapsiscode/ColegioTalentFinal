@@ -13,7 +13,7 @@ import {
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 
-const RecentCommuniques = ({ comunicados, loading = false }) => {
+const RecentCommuniques = ({ comunicados, loading = false, onCommuniqueClick }) => {
   if (loading) {
     return (
       <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
@@ -105,7 +105,13 @@ const RecentCommuniques = ({ comunicados, loading = false }) => {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: index * 0.05 }}
-            className="border-b border-gray-200 pb-3 last:border-b-0 hover:bg-gray-50 rounded-lg p-3 transition-colors duration-200"
+            whileHover={{ scale: 1.01 }}
+            onClick={() => {
+              if (onCommuniqueClick) {
+                onCommuniqueClick(comunicado)
+              }
+            }}
+            className="border-b border-gray-200 pb-3 last:border-b-0 hover:bg-gray-50 rounded-lg p-3 transition-colors duration-200 cursor-pointer"
           >
             {/* Header */}
             <div className="flex items-start justify-between mb-2">

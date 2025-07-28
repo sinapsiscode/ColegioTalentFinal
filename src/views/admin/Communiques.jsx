@@ -176,8 +176,13 @@ const Communiques = () => {
 
   const handleExport = async () => {
     try {
-      const archivo = await exportarComunicados('excel')
-      showSuccess('Exportación completada', `Descargando ${archivo.archivo}`)
+      const resultado = await exportarComunicados('excel')
+      
+      if (resultado.success) {
+        showSuccess('¡Exportación Exitosa!', resultado.mensaje)
+      } else {
+        showError('Error al Exportar', resultado.error || 'No se pudo completar la exportación')
+      }
     } catch (error) {
       showError('Error', 'No se pudo exportar la lista de comunicados')
     }
@@ -253,17 +258,17 @@ const Communiques = () => {
     <div className="min-h-screen bg-gray-50">
       <Header />
       
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      <main className="py-4 sm:py-8 px-4 sm:px-6 lg:px-8 mx-auto max-w-7xl">
         {/* Header de la página */}
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 sm:mb-6 gap-4 sm:gap-0">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Gestión de Comunicados</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Gestión de Comunicados</h1>
             <p className="text-gray-600 mt-1">
               Administra comunicados institucionales y mensajes a la comunidad
             </p>
           </div>
           
-          <div className="flex items-center space-x-3">
+          <div className="flex flex-wrap items-center gap-2 sm:gap-3">
             <div className="flex items-center bg-white rounded-lg border border-gray-200 p-1">
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -327,8 +332,8 @@ const Communiques = () => {
         <CommuniqueStats estadisticas={estadisticas} loading={cargando} />
 
         {/* Controles de búsqueda y filtros */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 mb-4 sm:mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
             <SearchInput
               value={searchTerm}
               onChange={setSearchTerm}
@@ -366,7 +371,7 @@ const Communiques = () => {
           </div>
           
           {/* Contador de resultados */}
-          <div className="mt-4 pt-4 border-t border-gray-200 flex items-center justify-between">
+          <div className="mt-4 pt-4 border-t border-gray-200 flex flex-col sm:flex-row sm:items-center justify-between gap-4 sm:gap-0">
             <p className="text-sm text-gray-600">
               Mostrando {comunicadosFiltrados.length} de {comunicados.length} comunicados
               {searchTerm && (
@@ -409,7 +414,7 @@ const Communiques = () => {
 
         {/* Lista de comunicados */}
         {comunicadosFiltrados.length === 0 ? (
-          <div className="text-center py-12 bg-white rounded-lg border border-gray-200">
+          <div className="text-center py-8 sm:py-12 bg-white rounded-lg border border-gray-200">
             <FiFileText className="w-16 h-16 text-gray-400 mx-auto mb-4" />
             <h3 className="text-lg font-medium text-gray-900 mb-2">
               {searchTerm || Object.values(filtros).some(f => f !== 'all')
@@ -436,7 +441,7 @@ const Communiques = () => {
         ) : (
           <div className={`${
             viewMode === 'grid' 
-              ? 'grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6' 
+              ? 'grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-4 sm:gap-6' 
               : 'space-y-4'
           }`}>
             {comunicadosFiltrados.map((comunicado, index) => (

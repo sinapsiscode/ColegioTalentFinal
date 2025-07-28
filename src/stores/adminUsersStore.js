@@ -451,20 +451,31 @@ const useAdminUsersStore = create((set, get) => ({
     }
   },
   
-  exportarUsuarios: (formato = 'excel') => {
+  exportarUsuarios: async (formato = 'excel') => {
     const { usuarios } = get()
     
-    // Simular exportación
-    return new Promise((resolve) => {
-      setTimeout(() => {
-        resolve({
-          success: true,
-          archivo: `usuarios_${new Date().toISOString().split('T')[0]}.${formato}`,
-          registros: usuarios.length,
-          url: '#'
-        })
-      }, 1500)
-    })
+    try {
+      // Importar dinámicamente el exportador
+      const { ExcelExporter } = await import('../utils/excelExporter')
+      
+      // Exportar con formato real
+      const resultado = ExcelExporter.exportarUsuarios(usuarios)
+      
+      if (resultado.success) {
+        // Mostrar notificación de éxito
+        return resultado
+      } else {
+        throw new Error(resultado.error)
+      }
+      
+    } catch (error) {
+      console.error('Error en exportación:', error)
+      return {
+        success: false,
+        error: error.message || 'Error al exportar usuarios',
+        mensaje: 'No se pudo completar la exportación'
+      }
+    }
   },
   
   importarUsuarios: (archivo) => {

@@ -1,6 +1,9 @@
 import { create } from 'zustand'
 import { subDays, format } from 'date-fns'
 import { es } from 'date-fns/locale'
+import useAuthStore from './authStore'
+import { DatabaseQueries } from '../data/databaseSchema'
+import { compareIds } from '../utils/searchHelpers'
 
 const useAttendanceStore = create((set, get) => ({
   registrosAsistencia: [],
@@ -10,14 +13,45 @@ const useAttendanceStore = create((set, get) => ({
     set({ cargando: true })
     
     setTimeout(() => {
+      // FILTRAR ASISTENCIA POR ROL Y USUARIO
+      const authStore = useAuthStore.getState()
+      const { usuario, rol } = authStore
+      
+      if (!usuario) {
+        set({ registrosAsistencia: [], cargando: false })
+        return
+      }
+      
+      // OBTENER IDs DE ESTUDIANTES AUTORIZADOS
+      let alumnosAutorizados = []
+      
+      if (rol === 'padre') {
+        // Padre solo ve asistencia de sus hijos
+        const hijos = DatabaseQueries.getChildrenByParentId(usuario.id)
+        alumnosAutorizados = hijos.map(h => h.id)
+      } else if (rol === 'tutor') {
+        // Tutor solo ve asistencia de sus estudiantes asignados
+        const estudiantes = DatabaseQueries.getStudentsByTutorId(usuario.id)
+        alumnosAutorizados = estudiantes.map(e => e.id)
+      } else if (rol === 'admin' || rol === 'entrada') {
+        // Admin y entrada ven todos los estudiantes
+        const todosLosEstudiantes = DatabaseQueries.getAllStudents()
+        alumnosAutorizados = todosLosEstudiantes.map(e => e.id)
+      }
+      
+      // Si no hay estudiantes autorizados, no mostrar registros
+      if (alumnosAutorizados.length === 0) {
+        set({ registrosAsistencia: [], cargando: false })
+        return
+      }
+      
       const registros = []
-      const alumnosIds = [1, 2, 3, 4, 5]
       const hoy = new Date()
       
       for (let i = 0; i < 30; i++) {
         const fecha = subDays(hoy, i)
         
-        alumnosIds.forEach(alumnoId => {
+        alumnosAutorizados.forEach(alumnoId => {
           const probabilidadAsistencia = Math.random()
           
           if (probabilidadAsistencia > 0.1) {
@@ -64,7 +98,7 @@ const useAttendanceStore = create((set, get) => ({
     const fechaHoy = format(ahora, 'yyyy-MM-dd')
     
     const registroExistente = registrosAsistencia.find(
-      reg => reg.alumnoId === alumnoId && format(reg.fecha, 'yyyy-MM-dd') === fechaHoy
+      reg => compareIds(reg.alumnoId, alumnoId) && format(reg.fecha, 'yyyy-MM-dd') === fechaHoy
     )
     
     let nuevosRegistros
@@ -160,7 +194,7 @@ const useAttendanceStore = create((set, get) => ({
     set({ registrosAsistencia: nuevosRegistros })
     
     const registroFinal = nuevosRegistros.find(
-      reg => reg.alumnoId === alumnoId && format(reg.fecha, 'yyyy-MM-dd') === fechaHoy
+      reg => compareIds(reg.alumnoId, alumnoId) && format(reg.fecha, 'yyyy-MM-dd') === fechaHoy
     )
     
     return { 
@@ -178,7 +212,7 @@ const useAttendanceStore = create((set, get) => ({
       const inicio = new Date(fechaInicio)
       const fin = new Date(fechaFin)
       
-      return reg.alumnoId === alumnoId && 
+      return compareIds(reg.alumnoId, alumnoId) && 
              fechaRegistro >= inicio && 
              fechaRegistro <= fin
     })
@@ -186,7 +220,7 @@ const useAttendanceStore = create((set, get) => ({
   
   obtenerEstadisticasAsistencia: (alumnoId) => {
     const { registrosAsistencia } = get()
-    const registrosAlumno = registrosAsistencia.filter(reg => reg.alumnoId === alumnoId)
+    const registrosAlumno = registrosAsistencia.filter(reg => compareIds(reg.alumnoId, alumnoId))
     
     const total = registrosAlumno.length
     const presentes = registrosAlumno.filter(reg => reg.estado === 'presente').length
@@ -207,7 +241,7 @@ const useAttendanceStore = create((set, get) => ({
     const hoy = format(new Date(), 'yyyy-MM-dd')
     
     return registrosAsistencia.find(
-      reg => reg.alumnoId === alumnoId && format(reg.fecha, 'yyyy-MM-dd') === hoy
+      reg => compareIds(reg.alumnoId, alumnoId) && format(reg.fecha, 'yyyy-MM-dd') === hoy
     )
   },
 
@@ -267,6 +301,120 @@ const useAttendanceStore = create((set, get) => ({
       reg.horaEntrada && 
       !reg.horaSalida
     )
+  },
+
+  // Función requerida por Students.jsx
+  getStudentAttendance: (estudianteId) => {
+    const { registrosAsistencia } = get()
+    return registrosAsistencia.filter(reg => compareIds(reg.alumnoId, estudianteId))
+  },
+
+  // Exportar asistencia a Excel
+  exportarAsistencia: async (formato = 'excel', filtros = {}) => {
+    const { registrosAsistencia } = get()
+    
+    try {
+      // Importar dinámicamente el exportador
+      const { ExcelExporter } = await import('../utils/excelExporter')
+      
+      // Aplicar filtros si los hay
+      let datosAExportar = registrosAsistencia
+      
+      if (filtros.fechaInicio && filtros.fechaFin) {
+        datosAExportar = datosAExportar.filter(reg => {
+          const fechaReg = new Date(reg.fecha)
+          const inicio = new Date(filtros.fechaInicio)
+          const fin = new Date(filtros.fechaFin)
+          return fechaReg >= inicio && fechaReg <= fin
+        })
+      }
+      
+      if (filtros.grado) {
+        datosAExportar = datosAExportar.filter(reg => reg.grado === filtros.grado)
+      }
+      
+      if (filtros.estado) {
+        datosAExportar = datosAExportar.filter(reg => reg.estado === filtros.estado)
+      }
+      
+      // Preparar datos con información completa
+      const datosCompletos = datosAExportar.map(reg => ({
+        ...reg,
+        nombreEstudiante: reg.nombreAlumno,
+        registradoPor: 'Sistema'
+      }))
+      
+      // Exportar con formato real
+      const resultado = ExcelExporter.exportarAsistencia(datosCompletos)
+      
+      if (resultado.success) {
+        return resultado
+      } else {
+        throw new Error(resultado.error)
+      }
+      
+    } catch (error) {
+      console.error('Error en exportación:', error)
+      return {
+        success: false,
+        error: error.message || 'Error al exportar asistencia',
+        mensaje: 'No se pudo completar la exportación'
+      }
+    }
+  },
+
+  // Registrar múltiples asistencias a la vez
+  registrarMultiplesAsistencias: async (registros) => {
+    set({ cargando: true })
+    
+    try {
+      // Simular guardado en batch
+      await new Promise(resolve => setTimeout(resolve, 500))
+      
+      // En producción, esto sería una llamada API
+      // const response = await apiService.post('/api/attendance/batch', { registros })
+      
+      // Por ahora, procesar cada registro individualmente
+      const resultados = []
+      const { registrosAsistencia } = get()
+      let nuevosRegistros = [...registrosAsistencia]
+      
+      registros.forEach(registro => {
+        const fechaRegistro = typeof registro.fecha === 'string' ? registro.fecha : format(registro.fecha, 'yyyy-MM-dd')
+        const existingIndex = nuevosRegistros.findIndex(
+          r => compareIds(r.alumnoId, registro.alumnoId) && format(r.fecha, 'yyyy-MM-dd') === fechaRegistro
+        )
+        
+        const nuevoRegistro = {
+          id: `${registro.alumnoId}-${fechaRegistro}`,
+          alumnoId: registro.alumnoId,
+          fecha: new Date(registro.fecha),
+          horaEntrada: registro.estado !== 'falta' ? new Date() : null,
+          horaSalida: null,
+          estado: registro.estado,
+          observaciones: registro.observaciones || null
+        }
+        
+        if (existingIndex >= 0) {
+          nuevosRegistros[existingIndex] = nuevoRegistro
+        } else {
+          nuevosRegistros.push(nuevoRegistro)
+        }
+        
+        resultados.push({ success: true, alumnoId: registro.alumnoId })
+      })
+      
+      set({ 
+        registrosAsistencia: nuevosRegistros.sort((a, b) => b.fecha - a.fecha),
+        cargando: false 
+      })
+      
+      return { success: true, resultados }
+    } catch (error) {
+      set({ cargando: false })
+      console.error('Error registrando asistencias:', error)
+      return { success: false, error }
+    }
   }
 }))
 

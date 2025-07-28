@@ -13,11 +13,13 @@ import {
   FiUser,
   FiFileText,
   FiEye,
-  FiDownload
+  FiDownload,
+  FiSmartphone
 } from 'react-icons/fi'
 import usePaymentConceptsStore from '../../stores/paymentConceptsStore'
 import usePaymentsStore from '../../stores/paymentsStore'
 import useAuthStore from '../../stores/authStore'
+import PaymentSimulationModal from './PaymentSimulationModal'
 import Swal from 'sweetalert2'
 
 const PaymentModal = ({ isOpen, onClose, payment, onPaymentSuccess }) => {
@@ -25,6 +27,8 @@ const PaymentModal = ({ isOpen, onClose, payment, onPaymentSuccess }) => {
   const { subirVoucher } = usePaymentsStore()
   const { getConceptosActivos } = usePaymentConceptsStore()
   
+  const [paymentMethod, setPaymentMethod] = useState('upload') // 'upload' o 'direct'
+  const [showSimulationModal, setShowSimulationModal] = useState(false)
   const [step, setStep] = useState(1) // 1: resumen, 2: método de pago, 3: voucher, 4: confirmación
   const [paymentData, setPaymentData] = useState({
     metodoPago: 'transferencia',
@@ -141,6 +145,47 @@ const PaymentModal = ({ isOpen, onClose, payment, onPaymentSuccess }) => {
       case 1:
         return (
           <div className="space-y-6">
+            {/* Opciones de pago */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => {
+                  setShowSimulationModal(true)
+                  onClose()
+                }}
+                className="p-6 border-2 border-gray-200 rounded-lg hover:border-green-500 hover:shadow-lg transition-all group"
+              >
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-green-200 transition-colors">
+                    <FiCreditCard className="w-8 h-8 text-green-600" />
+                  </div>
+                  <h4 className="font-semibold text-gray-900 mb-1">Pago Directo</h4>
+                  <p className="text-sm text-gray-600">Paga con tarjeta, Yape o Plin</p>
+                  <p className="text-xs text-green-600 mt-2">✨ Aprobación inmediata</p>
+                </div>
+              </motion.button>
+              
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => {
+                  setPaymentMethod('upload')
+                  setStep(2)
+                }}
+                className="p-6 border-2 border-gray-200 rounded-lg hover:border-blue-500 hover:shadow-lg transition-all group"
+              >
+                <div className="text-center">
+                  <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-3 group-hover:bg-blue-200 transition-colors">
+                    <FiUpload className="w-8 h-8 text-blue-600" />
+                  </div>
+                  <h4 className="font-semibold text-gray-900 mb-1">Subir Voucher</h4>
+                  <p className="text-sm text-gray-600">Sube tu comprobante de pago</p>
+                  <p className="text-xs text-blue-600 mt-2">📄 Validación en 24h</p>
+                </div>
+              </motion.button>
+            </div>
+            
             {/* Resumen del pago */}
             <div className="bg-gradient-to-r from-talentos-primary/10 to-talentos-secondary/10 rounded-lg p-6 border border-talentos-primary/20">
               <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
@@ -507,6 +552,28 @@ const PaymentModal = ({ isOpen, onClose, payment, onPaymentSuccess }) => {
           </div>
         </motion.div>
       </div>
+      
+      {/* Modal de simulación de pago */}
+      {showSimulationModal && payment && (
+        <PaymentSimulationModal
+          isOpen={showSimulationModal}
+          onClose={() => {
+            setShowSimulationModal(false)
+            // Reabrir el modal original si es necesario
+          }}
+          concepto={{
+            id: payment.id || 1,
+            nombre: `Pensión ${payment.mes} ${payment.año}`,
+            monto: payment.monto,
+            fechaVencimiento: payment.fechaVencimiento
+          }}
+          estudiante={{
+            id: payment.estudianteId,
+            nombreCompleto: payment.nombreEstudiante,
+            padreEmail: usuario?.email || 'padre1@email.com'
+          }}
+        />
+      )}
     </AnimatePresence>
   )
 }

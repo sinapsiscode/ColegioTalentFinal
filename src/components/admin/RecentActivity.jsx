@@ -13,10 +13,10 @@ import {
 import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 
-const RecentActivity = ({ actividades, loading = false }) => {
+const RecentActivity = ({ actividades, loading = false, onActivityClick }) => {
   if (loading) {
     return (
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4">
         <div className="animate-pulse">
           <div className="h-6 bg-gray-200 rounded mb-4"></div>
           {[...Array(5)].map((_, index) => (
@@ -76,16 +76,16 @@ const RecentActivity = ({ actividades, loading = false }) => {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4">
+      <div className="flex items-center justify-between mb-3 sm:mb-4">
+        <h3 className="text-base sm:text-lg font-semibold text-gray-900 flex items-center space-x-2">
           <FiActivity className="w-5 h-5 text-talentos-primary" />
           <span>Actividad Reciente</span>
         </h3>
-        <span className="text-xs text-gray-500">{actividades.length} actividades</span>
+        <span className="text-xs text-gray-500 hidden sm:inline">{actividades.length} actividades</span>
       </div>
 
-      <div className="space-y-3 max-h-96 overflow-y-auto">
+      <div className="space-y-2 sm:space-y-3 max-h-80 sm:max-h-96 overflow-y-auto">
         {actividades.map((actividad, index) => {
           const IconComponent = getActivityIcon(actividad.tipo)
           const colorClass = getActivityColor(actividad.tipo)
@@ -96,23 +96,29 @@ const RecentActivity = ({ actividades, loading = false }) => {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: index * 0.05 }}
-              className="flex items-start space-x-3 p-3 hover:bg-gray-50 rounded-lg transition-colors duration-200"
+              whileHover={{ scale: 1.01 }}
+              onClick={() => {
+                if (onActivityClick) {
+                  onActivityClick(actividad)
+                }
+              }}
+              className="flex items-start space-x-2 sm:space-x-3 p-2 sm:p-3 hover:bg-gray-50 rounded-lg transition-colors duration-200 cursor-pointer"
             >
-              <div className={`w-8 h-8 rounded-full ${colorClass} flex items-center justify-center flex-shrink-0`}>
-                <IconComponent className="w-4 h-4" />
+              <div className={`w-6 h-6 sm:w-8 sm:h-8 rounded-full ${colorClass} flex items-center justify-center flex-shrink-0`}>
+                <IconComponent className="w-3 h-3 sm:w-4 sm:h-4" />
               </div>
               
               <div className="flex-1 min-w-0">
                 <div className="flex items-center justify-between">
-                  <p className="text-sm font-medium text-gray-900 truncate">
+                  <p className="text-xs sm:text-sm font-medium text-gray-900 truncate">
                     {actividad.usuario}
                   </p>
-                  <span className="text-xs text-gray-500 whitespace-nowrap ml-2">
+                  <span className="text-xs text-gray-500 whitespace-nowrap ml-1 sm:ml-2">
                     {formatTimeAgo(actividad.fecha)}
                   </span>
                 </div>
                 
-                <p className="text-sm text-gray-600 mt-1">
+                <p className="text-xs sm:text-sm text-gray-600 mt-1">
                   <span className="capitalize">{actividad.accion}</span>
                   {actividad.detalle && (
                     <>
@@ -121,7 +127,7 @@ const RecentActivity = ({ actividades, loading = false }) => {
                   )}
                 </p>
                 
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 mt-1 hidden sm:block">
                   {format(new Date(actividad.fecha), 'dd MMM yyyy, HH:mm', { locale: es })}
                 </p>
               </div>
@@ -131,9 +137,9 @@ const RecentActivity = ({ actividades, loading = false }) => {
       </div>
 
       {actividades.length === 0 && (
-        <div className="text-center py-8">
-          <FiActivity className="w-12 h-12 text-gray-400 mx-auto mb-2" />
-          <p className="text-sm text-gray-600">No hay actividad reciente</p>
+        <div className="text-center py-6 sm:py-8">
+          <FiActivity className="w-10 h-10 sm:w-12 sm:h-12 text-gray-400 mx-auto mb-2" />
+          <p className="text-xs sm:text-sm text-gray-600">No hay actividad reciente</p>
         </div>
       )}
     </div>

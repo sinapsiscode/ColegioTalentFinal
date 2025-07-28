@@ -10,7 +10,7 @@ const AnimatedCard = ({
   hover = true,
   ...props 
 }) => {
-  const baseClass = "card bg-white rounded-lg shadow-sm border border-gray-200 p-6"
+  const baseClass = "card bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6"
   const combinedClass = `${baseClass} ${className}`
   
   const animationProps = {

@@ -258,12 +258,13 @@ const TutorCommuniqueCard = ({
           </div>
           
           <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => onViewDetails(comunicado)}
-            className="px-4 py-2 bg-talentos-primary text-white text-sm font-medium rounded-lg hover:bg-talentos-secondary transition-colors duration-200"
+            className="px-2 py-1.5 sm:px-3 sm:py-2 md:px-4 md:py-2 bg-talentos-primary text-white text-xs sm:text-sm font-medium rounded-md sm:rounded-lg hover:bg-talentos-secondary transition-colors duration-200 whitespace-nowrap flex-shrink-0"
           >
-            Ver completo
+            <span className="hidden sm:inline">Ver completo</span>
+            <span className="sm:hidden">Ver</span>
           </motion.button>
         </div>
       </div>

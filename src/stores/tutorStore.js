@@ -1,17 +1,9 @@
 import { create } from 'zustand'
+import { DatabaseQueries } from '../data/databaseSchema'
 
 const useTutorStore = create((set, get) => ({
-  // Datos del tutor
-  tutor: {
-    id: 1,
-    nombre: 'María García',
-    especialidad: 'Matemáticas',
-    grado: '5to Grado',
-    seccion: 'A',
-    foto: '/avatar-teacher.jpg',
-    email: 'maria.garcia@talentoscolegio.edu.pe',
-    telefono: '+51 987 654 321'
-  },
+  // Datos del tutor (se cargarán dinámicamente)
+  tutor: {},
 
   // Estudiantes a cargo
   estudiantes: [],
@@ -29,12 +21,39 @@ const useTutorStore = create((set, get) => ({
   cargando: false,
 
   // Cargar datos del dashboard
-  cargarDashboard: () => {
+  cargarDashboard: (tutorId) => {
     set({ cargando: true })
     
     setTimeout(() => {
-      // Estudiantes de 5to A a cargo de María García
-      const estudiantes = [
+      // Obtener información del tutor actual
+      const tutorActual = tutorId ? DatabaseQueries.getUserById(tutorId) : {
+        id: 2001,
+        nombre: 'María',
+        apellidos: 'García',
+        especialidad: 'Matemáticas',
+        avatar: '/avatar-teacher.jpg'
+      }
+      
+      // Obtener estudiantes asignados al tutor directamente - Siempre actualizado
+      const estudiantesAsignados = tutorId ? DatabaseQueries.getStudentsByTeacherId(tutorId) : []
+      
+      // Obtener grados únicos
+      const gradosUnicos = [...new Set(estudiantesAsignados.map(e => e.grado))]
+      
+      // Mapear estudiantes asignados al formato del dashboard o usar datos por defecto
+      const estudiantes = estudiantesAsignados.length > 0 ? estudiantesAsignados.map((est, index) => ({
+        id: est.id,
+        nombre: `${est.nombre} ${est.apellidos}`,
+        foto: est.foto || '/avatar-student.jpg',
+        promedio: null, // Las calificaciones se cargarían del store de grades
+        asistencia: 90 + Math.floor(Math.random() * 10), // Simulado
+        estado: index === 5 ? 'necesita_atencion' : 'activo',
+        ultimaClase: new Date(),
+        observaciones: 'Sin observaciones registradas',
+        grado: est.grado,
+        seccion: est.seccion,
+        codigo: est.codigo_qr
+      })) : [
         {
           id: 1,
           nombre: 'Ana Sofía Rodríguez',
@@ -49,7 +68,7 @@ const useTutorStore = create((set, get) => ({
           id: 2,
           nombre: 'Carlos Alberto Mendoza',
           foto: '/avatar-student2.jpg',
-          promedio: 16.8,
+          promedio: null, // Sin calificaciones asignadas por profesor
           asistencia: 92,
           estado: 'activo',
           ultimaClase: new Date('2024-01-22T10:00:00'),
@@ -59,7 +78,7 @@ const useTutorStore = create((set, get) => ({
           id: 3,
           nombre: 'Lucía Fernanda Torres',
           foto: '/avatar-student3.jpg',
-          promedio: 17.2,
+          promedio: null, // Sin calificaciones asignadas por profesor
           asistencia: 98,
           estado: 'activo',
           ultimaClase: new Date('2024-01-22T10:00:00'),
@@ -69,7 +88,7 @@ const useTutorStore = create((set, get) => ({
           id: 4,
           nombre: 'Diego Alexander Vargas',
           foto: '/avatar-student4.jpg',
-          promedio: 15.5,
+          promedio: null, // Sin calificaciones asignadas por profesor
           asistencia: 88,
           estado: 'activo',
           ultimaClase: new Date('2024-01-22T10:00:00'),
@@ -79,7 +98,7 @@ const useTutorStore = create((set, get) => ({
           id: 5,
           nombre: 'Isabella María Santos',
           foto: '/avatar-student5.jpg',
-          promedio: 19.1,
+          promedio: null, // Sin calificaciones asignadas por profesor
           asistencia: 100,
           estado: 'activo',
           ultimaClase: new Date('2024-01-22T10:00:00'),
@@ -89,7 +108,7 @@ const useTutorStore = create((set, get) => ({
           id: 6,
           nombre: 'Sebastián José Morales',
           foto: '/avatar-student6.jpg',
-          promedio: 14.8,
+          promedio: null, // Sin calificaciones asignadas por profesor
           asistencia: 85,
           estado: 'necesita_atencion',
           ultimaClase: new Date('2024-01-22T10:00:00'),
@@ -97,40 +116,95 @@ const useTutorStore = create((set, get) => ({
         }
       ]
 
-      // Clases programadas para hoy
+      // Clases programadas para hoy - Actualizado con múltiples secciones
       const clasesHoy = [
         {
           id: 1,
-          materia: 'Matemáticas',
-          grado: '5to A',
-          hora: '08:00 - 09:30',
-          aula: 'A-205',
-          tema: 'Fracciones Decimales',
+          materia: 'Comunicación',
+          grado: '3ro A',
+          hora: '07:30 - 08:15',
+          aula: 'A-101',
+          tema: 'Comprensión Lectora',
+          estado: 'completada',
+          asistentes: 25,
+          totalEstudiantes: 25
+        },
+        {
+          id: 2,
+          materia: 'Comunicación',
+          grado: '3ro C',
+          hora: '08:15 - 09:00',
+          aula: 'A-103',
+          tema: 'Comprensión Lectora',
           estado: 'completada',
           asistentes: 24,
           totalEstudiantes: 26
         },
         {
-          id: 2,
-          materia: 'Matemáticas',
-          grado: '5to B',
-          hora: '10:00 - 11:30',
-          aula: 'A-205',
-          tema: 'Operaciones con Decimales',
-          estado: 'en_curso',
-          asistentes: 22,
-          totalEstudiantes: 24
-        },
-        {
           id: 3,
           materia: 'Matemáticas',
-          grado: '5to A',
-          hora: '14:00 - 15:30',
+          grado: '4to B',
+          hora: '09:30 - 10:15',
+          aula: 'A-204',
+          tema: 'Fracciones',
+          estado: 'completada',
+          asistentes: 28,
+          totalEstudiantes: 28
+        },
+        {
+          id: 4,
+          materia: 'Matemáticas',
+          grado: '4to C',
+          hora: '10:15 - 11:00',
           aula: 'A-205',
-          tema: 'Problemas de Aplicación',
+          tema: 'Fracciones',
+          estado: 'en_curso',
+          asistentes: 26,
+          totalEstudiantes: 27
+        },
+        {
+          id: 5,
+          materia: 'Matemáticas',
+          grado: '5to A',
+          hora: '11:30 - 12:15',
+          aula: 'A-301',
+          tema: 'Decimales',
           estado: 'pendiente',
           asistentes: 0,
-          totalEstudiantes: 26
+          totalEstudiantes: 29
+        },
+        {
+          id: 6,
+          materia: 'Matemáticas',
+          grado: '5to B',
+          hora: '12:15 - 13:00',
+          aula: 'A-302',
+          tema: 'Decimales',
+          estado: 'pendiente',
+          asistentes: 0,
+          totalEstudiantes: 28
+        },
+        {
+          id: 7,
+          materia: 'Matemáticas',
+          grado: '6to A',
+          hora: '14:00 - 14:45',
+          aula: 'A-401',
+          tema: 'Geometría',
+          estado: 'pendiente',
+          asistentes: 0,
+          totalEstudiantes: 30
+        },
+        {
+          id: 8,
+          materia: 'Matemáticas',
+          grado: '6to B',
+          hora: '14:45 - 15:30',
+          aula: 'A-402',
+          tema: 'Geometría',
+          estado: 'pendiente',
+          asistentes: 0,
+          totalEstudiantes: 28
         }
       ]
 
@@ -188,12 +262,21 @@ const useTutorStore = create((set, get) => ({
         }
       ]
 
-      set({ 
+      set({
+        tutor: {
+          id: tutorActual.id,
+          nombre: tutorActual.nombre,
+          apellidos: tutorActual.apellidos,
+          especialidad: 'Matemáticas y Comunicación', // Actualizado para reflejar ambas materias
+          grado: gradosUnicos.length > 0 ? gradosUnicos.join(', ') : '3ro, 4to, 5to, 6to',
+          seccion: [...new Set(estudiantesAsignados.map(e => e.seccion))].join(', ') || 'A, B, C',
+          foto: tutorActual.avatar || '/avatar-teacher.jpg'
+        },
         estudiantes,
         clasesHoy,
         actividades,
-        mensajesNoLeidos: 5,
-        cargando: false 
+        mensajesNoLeidos: Math.floor(Math.random() * 10),
+        cargando: false
       })
     }, 800)
   },
@@ -220,6 +303,35 @@ const useTutorStore = create((set, get) => ({
     set({ actividades: nuevasActividades })
   },
 
+  // Refrescar estudiantes del tutor (útil después de cambios en asignaciones)
+  refrescarEstudiantes: (tutorId) => {
+    try {
+      // Obtener estudiantes actualizados
+      const estudiantesAsignados = tutorId ? DatabaseQueries.getStudentsByTeacherId(tutorId) : []
+      
+      // Mapear al formato del dashboard
+      const estudiantes = estudiantesAsignados.map((est, index) => ({
+        id: est.id,
+        nombre: `${est.nombre} ${est.apellidos}`,
+        foto: est.foto || '/avatar-student.jpg',
+        promedio: null,
+        asistencia: 90 + Math.floor(Math.random() * 10),
+        estado: index === 5 ? 'necesita_atencion' : 'activo',
+        grado: est.grado,
+        seccion: est.seccion,
+        email: est.email || 'estudiante@example.com'
+      }))
+      
+      set({ estudiantes })
+      
+      console.log(`✅ Estudiantes del tutor ${tutorId} actualizados: ${estudiantes.length} estudiantes`)
+      return true
+    } catch (error) {
+      console.error('Error refrescando estudiantes:', error)
+      return false
+    }
+  },
+
   // Obtener estadísticas del dashboard
   obtenerEstadisticas: () => {
     const { estudiantes, clasesHoy, actividades } = get()
@@ -228,8 +340,9 @@ const useTutorStore = create((set, get) => ({
     const estudiantesActivos = estudiantes.filter(est => est.estado === 'activo').length
     const estudiantesNecesitanAtencion = estudiantes.filter(est => est.estado === 'necesita_atencion').length
     
-    const promedioGeneral = estudiantes.length > 0 
-      ? estudiantes.reduce((sum, est) => sum + est.promedio, 0) / estudiantes.length 
+    const estudiantesConPromedio = estudiantes.filter(est => est.promedio !== null)
+    const promedioGeneral = estudiantesConPromedio.length > 0 
+      ? estudiantesConPromedio.reduce((sum, est) => sum + est.promedio, 0) / estudiantesConPromedio.length 
       : 0
     
     const asistenciaPromedio = estudiantes.length > 0

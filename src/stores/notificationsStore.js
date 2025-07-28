@@ -651,11 +651,109 @@ const useNotificationsStore = create(
       },
 
       /**
+       * Generar notificaciones iniciales según el rol
+       */
+      generarNotificacionesIniciales: (role) => {
+        const ahora = new Date()
+        const notificaciones = []
+        
+        if (role === 'padre') {
+          notificaciones.push(
+            {
+              id: Date.now(),
+              tipo: 'asistencia',
+              titulo: 'Ana llegó al colegio',
+              mensaje: 'Ana Rodríguez ha ingresado al colegio a las 7:50 AM',
+              fecha: new Date().toISOString(),
+              leida: false,
+              prioridad: 'media',
+              datos: { estudianteId: 1, hora: '07:50' }
+            },
+            {
+              id: Date.now() + 1,
+              tipo: 'pago',
+              titulo: 'Recordatorio de pago',
+              mensaje: 'La pensión de Mayo vence el 31/05/2024',
+              fecha: new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString(),
+              leida: false,
+              prioridad: 'alta',
+              datos: { concepto: 'Pensión Mayo', monto: 350 }
+            },
+            {
+              id: Date.now() + 2,
+              tipo: 'academico',
+              titulo: 'Nueva calificación',
+              mensaje: 'Se ha registrado una nueva nota en Matemáticas',
+              fecha: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
+              leida: true,
+              prioridad: 'media',
+              datos: { materia: 'Matemáticas', nota: 18 }
+            }
+          )
+        } else if (role === 'tutor') {
+          notificaciones.push(
+            {
+              id: Date.now(),
+              tipo: 'mensaje',
+              titulo: 'Nuevo mensaje',
+              mensaje: 'Carlos Rodríguez te ha enviado un mensaje',
+              fecha: new Date().toISOString(),
+              leida: false,
+              prioridad: 'media',
+              datos: { remitenteId: 'padre1@email.com' }
+            },
+            {
+              id: Date.now() + 1,
+              tipo: 'sistema',
+              titulo: 'Recordatorio',
+              mensaje: 'No olvides registrar las notas del primer bimestre',
+              fecha: new Date(Date.now() - 3 * 60 * 60 * 1000).toISOString(),
+              leida: false,
+              prioridad: 'alta',
+              datos: {}
+            }
+          )
+        } else if (role === 'admin') {
+          notificaciones.push(
+            {
+              id: Date.now(),
+              tipo: 'usuario',
+              titulo: 'Nuevo usuario registrado',
+              mensaje: 'Se ha registrado un nuevo padre de familia',
+              fecha: new Date().toISOString(),
+              leida: false,
+              prioridad: 'baja',
+              datos: { userId: 10 }
+            },
+            {
+              id: Date.now() + 1,
+              tipo: 'sistema',
+              titulo: 'Respaldo completado',
+              mensaje: 'El respaldo automático se completó exitosamente',
+              fecha: new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString(),
+              leida: true,
+              prioridad: 'baja',
+              datos: {}
+            }
+          )
+        }
+        
+        return notificaciones
+      },
+
+      /**
        * Inicializar store (nuevo)
        */
       inicializar: (userId, role) => {
         // Limpiar notificaciones antiguas
         get().limpiarNotificacionesAntiguas()
+        
+        // Generar notificaciones iniciales según el rol
+        const notificacionesIniciales = get().generarNotificacionesIniciales(role)
+        set({ 
+          notificaciones: notificacionesIniciales,
+          notificacionesNoLeidas: notificacionesIniciales.filter(n => !n.leida).length
+        })
         
         // Configurar preferencias por defecto según rol
         const preferenciasRol = {

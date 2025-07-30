@@ -44,6 +44,7 @@ import ExcelGradeImport from '../../components/tutor/ExcelGradeImport'
 
 import { showSuccess, showError, showConfirm } from '../../utils/sweetAlert'
 import { exportToPDF, exportToExcel } from '../../utils/exportUtilsSimple'
+import UnifiedExcelButton from '../../components/common/UnifiedExcelButton'
 
 // Helper para formatear fechas de manera segura
 const formatDateSafe = (date, formatStr = 'dd/MM', defaultValue = 'N/A') => {
@@ -437,32 +438,23 @@ const Grades = () => {
                   </button>
                 </div>
 
-                <div className="relative group">
-                  <AnimatedButton
-                    variant="outline"
-                    icon={FiDownload}
-                    size="sm"
-                  >
-                    Exportar
-                  </AnimatedButton>
-                  
-                  <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border border-gray-200 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-10">
-                    <button
-                      onClick={() => handleExportGrades('pdf')}
-                      className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2"
-                    >
-                      <FiDownload className="w-4 h-4" />
-                      <span>Exportar PDF</span>
-                    </button>
-                    <button
-                      onClick={() => handleExportGrades('excel')}
-                      className="w-full px-4 py-2 text-left text-sm text-gray-700 hover:bg-gray-50 flex items-center space-x-2 border-t"
-                    >
-                      <FiDownload className="w-4 h-4" />
-                      <span>Exportar Excel</span>
-                    </button>
-                  </div>
-                </div>
+                <UnifiedExcelButton
+                  data={calificaciones}
+                  dataType="calificaciones"
+                  size="sm"
+                  variant="outline"
+                  customLabel="Exportar"
+                  userRole="tutor"
+                  showFormatModal={true}
+                  onExportPDF={async (data) => {
+                    // Usar tu función existente de exportar PDF
+                    await handleExportGrades('pdf')
+                    return { success: true, mensaje: 'PDF de calificaciones generado' }
+                  }}
+                  onExportSuccess={() => {
+                    showSuccess('Exportación exitosa', 'Calificaciones exportadas correctamente')
+                  }}
+                />
               </div>
             </div>
           </div>

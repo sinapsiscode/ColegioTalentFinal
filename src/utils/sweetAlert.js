@@ -61,17 +61,28 @@ export const showInfo = (title, text, options = {}) => {
   })
 }
 
-export const showConfirm = (title, text, options = {}) => {
-  return MySwal.fire({
+export const showConfirm = (title, text, confirmText = 'Sí, confirmar', denyText = null, options = {}) => {
+  // Si se proporciona denyText, activar el botón deny
+  const config = {
     ...defaultConfig,
     title,
     text,
     icon: 'question',
     showCancelButton: true,
-    confirmButtonText: 'Sí, confirmar',
-    cancelButtonText: 'Cancelar',
+    confirmButtonText: options.confirmButtonText || confirmText,
+    cancelButtonText: options.cancelButtonText || 'Cancelar',
     ...options
-  })
+  }
+  
+  // Si se proporciona denyText, agregar configuración para tres botones
+  if (denyText && options.denyButtonText) {
+    config.showDenyButton = true
+    config.denyButtonText = options.denyButtonText || denyText
+    config.denyButtonColor = '#22c55e' // Verde para Excel
+    config.confirmButtonColor = '#dc2626' // Rojo para PDF
+  }
+  
+  return MySwal.fire(config)
 }
 
 export const showDeleteConfirm = (itemName, options = {}) => {
@@ -282,6 +293,36 @@ export const showCustomForm = (title, formFields, options = {}) => {
       return result
     },
     ...options
+  })
+}
+
+// Función específica para seleccionar formato de exportación
+export const showExportFormatSelector = (title = 'Exportar Lista de Alumnos') => {
+  const isMobile = window.innerWidth < 640
+  
+  return MySwal.fire({
+    title: title,
+    text: '¿En qué formato deseas descargar la lista?',
+    icon: 'question',
+    showDenyButton: true,
+    showCancelButton: true,
+    confirmButtonText: isMobile ? 'PDF' : '<i class="far fa-file-pdf mr-2"></i> PDF',
+    denyButtonText: isMobile ? 'Excel' : '<i class="far fa-file-excel mr-2"></i> Excel',
+    cancelButtonText: 'Cancelar',
+    confirmButtonColor: '#dc2626', // Rojo para PDF
+    denyButtonColor: '#22c55e', // Verde para Excel
+    customClass: {
+      popup: 'rounded-lg',
+      title: isMobile ? 'text-base' : 'text-lg',
+      htmlContainer: 'text-sm',
+      actions: isMobile ? 'flex-col space-y-2' : 'flex-row space-x-2',
+      confirmButton: `${isMobile ? 'w-full' : ''} bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded-lg transition-colors`,
+      denyButton: `${isMobile ? 'w-full' : ''} bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded-lg transition-colors`,
+      cancelButton: `${isMobile ? 'w-full' : ''} bg-gray-200 hover:bg-gray-300 text-gray-700 font-medium py-2 px-4 rounded-lg transition-colors`
+    },
+    buttonsStyling: false,
+    width: isMobile ? '90%' : '32rem',
+    padding: isMobile ? '1rem' : '1.5rem'
   })
 }
 

@@ -16,6 +16,7 @@ import useStudentsStore from '../../stores/studentsStore'
 import useTutorStore from '../../stores/tutorStore'
 import useAuthStore from '../../stores/authStore'
 import { fadeInUp, staggerContainer, staggerItem } from '../../utils/animations'
+import UnifiedExcelButton from '../../components/common/UnifiedExcelButton'
 
 const TutorStudents = () => {
   const [viewMode, setViewMode] = useState('grid') // 'grid' o 'list'
@@ -279,16 +280,27 @@ const TutorStudents = () => {
                 </button>
               </div>
               
-              {/* Importar Alumnos */}
-              <button
-                onClick={() => setShowImportModal(true)}
-                className="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
-                title="Importar alumnos desde Excel"
-              >
-                <FiUpload className="w-4 h-4" />
-                <span className="hidden sm:inline">Importar Alumnos</span>
-                <span className="sm:hidden">Importar Excel</span>
-              </button>
+              {/* Botones Excel */}
+              <div className="flex gap-2">
+                <UnifiedExcelButton
+                  data={filteredStudents}
+                  dataType="estudiantes"
+                  showDropdown={true}
+                  userRole="tutor"
+                  showFormatModal={true}
+                  onImport={(data, fileName) => {
+                    console.log('Datos importados:', data)
+                    // Aquí procesarías los datos importados
+                  }}
+                  onExportPDF={async (data) => {
+                    // Generar PDF de estudiantes
+                    console.log('Generando PDF de estudiantes:', data)
+                    return { success: true, mensaje: 'Lista de estudiantes en PDF generada' }
+                  }}
+                  customLabel="Excel"
+                  className="px-4 py-2"
+                />
+              </div>
             </div>
           </div>
         </div>

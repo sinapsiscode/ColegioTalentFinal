@@ -252,73 +252,116 @@ const InteractiveChart = ({
     })
     
     return (
-      <div className="relative h-full flex items-center justify-center">
-        <svg viewBox="0 0 100 100" className="w-full h-full max-w-xs">
-          {segments.map((segment, index) => (
-            <motion.path
-              key={index}
-              initial={{ scale: 0, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              transition={{ delay: index * 0.1 }}
-              d={segment.path}
-              fill={segment.color}
-              className={`${interactive ? 'cursor-pointer' : ''} transition-all duration-300`}
-              style={{
-                filter: hoveredIndex === index || selectedIndex === index ? 'brightness(1.1)' : 'brightness(1)',
-                transform: hoveredIndex === index ? 'scale(1.05)' : 'scale(1)',
-                transformOrigin: '50px 50px'
-              }}
-              onMouseEnter={() => interactive && setHoveredIndex(index)}
-              onMouseLeave={() => interactive && setHoveredIndex(null)}
-              onClick={() => {
-                if (interactive) {
-                  setSelectedIndex(index)
-                  onDataPointClick && onDataPointClick(segment, index)
-                }
-              }}
-            />
-          ))}
-          
-          {/* Centro del donut */}
-          {type === 'donut' && (
-            <text
-              x="50"
-              y="50"
-              textAnchor="middle"
-              dominantBaseline="middle"
-              className="text-lg font-bold fill-gray-900"
-            >
-              {totalValue}
-            </text>
-          )}
-        </svg>
-        
-        {/* Leyenda */}
-        {showLegend && (
-          <div className="absolute right-0 top-1/2 transform -translate-y-1/2 ml-4">
-            {segments.map((segment, index) => (
-              <div
-                key={index}
-                className="flex items-center space-x-2 mb-2 cursor-pointer"
-                onMouseEnter={() => setHoveredIndex(index)}
-                onMouseLeave={() => setHoveredIndex(null)}
-                onClick={() => {
-                  setSelectedIndex(index)
-                  onDataPointClick && onDataPointClick(segment, index)
-                }}
-              >
-                <div
-                  className="w-3 h-3 rounded-full"
-                  style={{ backgroundColor: segment.color }}
-                />
-                <span className="text-xs text-gray-600">{segment.label}</span>
-                <span className="text-xs font-medium text-gray-900">
-                  {segment.percentage.toFixed(1)}%
-                </span>
-              </div>
-            ))}
+      <div className="h-full">
+        <div className="flex flex-col lg:flex-row items-center justify-center h-full gap-4">
+          {/* Gráfico */}
+          <div className="relative flex-1 h-full flex items-center justify-center">
+            <svg viewBox="0 0 100 100" className="w-full h-full max-w-[200px] lg:max-w-[250px]">
+              {segments.map((segment, index) => (
+                <motion.g key={index}>
+                  <motion.path
+                    initial={{ scale: 0, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={{ delay: index * 0.1 }}
+                    d={segment.path}
+                    fill={segment.color}
+                    className={`${interactive ? 'cursor-pointer' : ''} transition-all duration-300`}
+                    style={{
+                      filter: hoveredIndex === index || selectedIndex === index ? 'brightness(1.1)' : 'brightness(1)',
+                      transform: hoveredIndex === index ? 'scale(1.05)' : 'scale(1)',
+                      transformOrigin: '50px 50px'
+                    }}
+                    onMouseEnter={() => interactive && setHoveredIndex(index)}
+                    onMouseLeave={() => interactive && setHoveredIndex(null)}
+                    onClick={() => {
+                      if (interactive) {
+                        setSelectedIndex(index)
+                        onDataPointClick && onDataPointClick(segment, index)
+                      }
+                    }}
+                  />
+                  {/* Tooltip en hover */}
+                  {showTooltip && hoveredIndex === index && (
+                    <g>
+                      <rect
+                        x="35"
+                        y="45"
+                        width="30"
+                        height="10"
+                        fill="rgba(0, 0, 0, 0.8)"
+                        rx="2"
+                      />
+                      <text
+                        x="50"
+                        y="52"
+                        textAnchor="middle"
+                        className="text-[8px] fill-white font-medium"
+                      >
+                        {segment.value} ({segment.percentage.toFixed(1)}%)
+                      </text>
+                    </g>
+                  )}
+                </motion.g>
+              ))}
+              
+              {/* Centro del donut */}
+              {type === 'donut' && (
+                <g>
+                  <text
+                    x="50"
+                    y="48"
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    className="text-2xl font-bold fill-gray-900"
+                  >
+                    {totalValue}
+                  </text>
+                  <text
+                    x="50"
+                    y="56"
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    className="text-[8px] fill-gray-500"
+                  >
+                    TOTAL
+                  </text>
+                </g>
+              )}
+            </svg>
           </div>
-        )}
+          
+          {/* Leyenda */}
+          {showLegend && (
+            <div className="flex flex-row flex-wrap lg:flex-col gap-2 lg:gap-1 justify-center lg:justify-start">
+              {segments.map((segment, index) => (
+                <motion.div
+                  key={index}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: index * 0.1 }}
+                  className="flex items-center space-x-2 px-2 py-1 rounded cursor-pointer hover:bg-gray-50 transition-colors"
+                  onMouseEnter={() => setHoveredIndex(index)}
+                  onMouseLeave={() => setHoveredIndex(null)}
+                  onClick={() => {
+                    setSelectedIndex(index)
+                    onDataPointClick && onDataPointClick(segment, index)
+                  }}
+                >
+                  <div
+                    className="w-3 h-3 rounded-full flex-shrink-0"
+                    style={{ backgroundColor: segment.color }}
+                  />
+                  <span className="text-xs text-gray-700 font-medium whitespace-nowrap">
+                    {segment.label}
+                  </span>
+                  <span className="text-xs text-gray-900 font-bold">
+                    {segment.percentage.toFixed(1)}%
+                  </span>
+                </motion.div>
+              ))}
+            </div>
+          )}
+        </div>
       </div>
     )
   }

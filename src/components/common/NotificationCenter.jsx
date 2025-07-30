@@ -110,7 +110,7 @@ const NotificationCenter = ({ isOpen, onClose }) => {
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-start justify-end pt-16 pr-4">
+    <div className="fixed inset-0 z-50 flex items-start justify-end pt-16 px-2 sm:pr-4">
       {/* Overlay */}
       <motion.div
         initial={{ opacity: 0 }}
@@ -120,26 +120,26 @@ const NotificationCenter = ({ isOpen, onClose }) => {
         onClick={onClose}
       />
 
-      {/* Panel de Notificaciones */}
+      {/* Panel de Notificaciones - Responsive */}
       <motion.div
         initial={{ opacity: 0, x: 400, scale: 0.95 }}
         animate={{ opacity: 1, x: 0, scale: 1 }}
         exit={{ opacity: 0, x: 400, scale: 0.95 }}
         transition={{ type: "spring", damping: 25, stiffness: 300 }}
-        className="relative bg-white rounded-xl shadow-2xl w-full max-w-md max-h-[85vh] overflow-hidden border border-gray-200"
+        className="relative bg-white rounded-xl shadow-2xl w-full max-w-[90vw] sm:max-w-md max-h-[85vh] overflow-hidden border border-gray-200"
       >
         {/* Header */}
-        <div className="sticky top-0 bg-white border-b border-gray-200 p-4 z-10">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center space-x-3">
-              <div className="p-2 bg-blue-100 rounded-lg">
-                <FiBell className="w-6 h-6 text-blue-600" />
+        <div className="sticky top-0 bg-white border-b border-gray-200 p-3 sm:p-4 z-10">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
+            <div className="flex items-center space-x-2 sm:space-x-3">
+              <div className="p-1.5 sm:p-2 bg-blue-100 rounded-lg">
+                <FiBell className="w-5 h-5 sm:w-6 sm:h-6 text-blue-600" />
               </div>
               <div>
-                <h3 className="text-lg font-semibold text-gray-900">
+                <h3 className="text-base sm:text-lg font-semibold text-gray-900">
                   Notificaciones
                 </h3>
-                <p className="text-sm text-gray-600">
+                <p className="text-xs sm:text-sm text-gray-600">
                   {stats.unread} sin leer de {stats.total}
                 </p>
               </div>
@@ -165,7 +165,7 @@ const NotificationCenter = ({ isOpen, onClose }) => {
             </div>
           </div>
 
-          {/* Tabs */}
+          {/* Tabs - Responsive */}
           <div className="flex space-x-1 bg-gray-100 rounded-lg p-1">
             {[
               { key: 'todas', label: 'Todas', count: stats.total },
@@ -175,15 +175,15 @@ const NotificationCenter = ({ isOpen, onClose }) => {
               <button
                 key={tab.key}
                 onClick={() => setActiveTab(tab.key)}
-                className={`flex-1 px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                className={`flex-1 px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-medium rounded-md transition-colors ${
                   activeTab === tab.key
                     ? 'bg-white text-blue-600 shadow-sm'
                     : 'text-gray-600 hover:text-gray-800'
                 }`}
               >
-                {tab.label}
+                <span className="block sm:inline">{tab.label}</span>
                 {tab.count > 0 && (
-                  <span className={`ml-2 px-2 py-0.5 text-xs rounded-full ${
+                  <span className={`ml-1 sm:ml-2 px-1.5 sm:px-2 py-0.5 text-xs rounded-full ${
                     activeTab === tab.key
                       ? 'bg-blue-100 text-blue-600'
                       : 'bg-gray-200 text-gray-600'
@@ -195,12 +195,12 @@ const NotificationCenter = ({ isOpen, onClose }) => {
             ))}
           </div>
 
-          {/* Filtro por tipo */}
-          <div className="mt-3">
+          {/* Filtro por tipo - Responsive */}
+          <div className="mt-3 relative">
             <select
               value={filterType}
               onChange={(e) => setFilterType(e.target.value)}
-              className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-3 py-1.5 text-xs sm:text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white appearance-none cursor-pointer"
             >
               <option value="all">Todos los tipos</option>
               <option value="academico">📊 Académicas</option>
@@ -211,6 +211,11 @@ const NotificationCenter = ({ isOpen, onClose }) => {
               <option value="pago">💳 Pagos</option>
               <option value="evento">📅 Eventos</option>
             </select>
+            <div className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+              <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </div>
           </div>
         </div>
 

@@ -32,6 +32,7 @@ import { showSuccess, showError, showConfirm } from '../../utils/sweetAlert'
 import { handleExport } from '../../utils/exportUtilsSimple'
 import { generateAdvancedReport } from '../../utils/advancedPdfGenerator'
 import { generateAdvancedExcelReport } from '../../utils/advancedExcelExporter'
+import UnifiedExcelButton from '../../components/common/UnifiedExcelButton'
 
 const Reports = () => {
   const { usuario } = useAuthStore()

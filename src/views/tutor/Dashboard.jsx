@@ -46,6 +46,7 @@ import TeacherDayView from '../../components/tutor/TeacherDayView'
 import { showSuccess, showError, showInput, showInfo, showConfirm } from '../../utils/sweetAlert'
 import { generateTutorPhotocheckQR, downloadQRCode } from '../../utils/qrGenerator'
 import { exportToPDF, exportToExcel } from '../../utils/exportUtilsSimple'
+// import UnifiedExcelButton from '../../components/common/UnifiedExcelButton'
 
 const Dashboard = () => {
   const navigate = useNavigate()
@@ -84,6 +85,7 @@ const Dashboard = () => {
   const [showGradeModal, setShowGradeModal] = useState(false)
   const [showQuickInput, setShowQuickInput] = useState(false)
   const [localActividades, setLocalActividades] = useState([])
+  const [showExportModal, setShowExportModal] = useState(false)
 
   // Cargar datos al montar
   useEffect(() => {
@@ -183,18 +185,8 @@ const Dashboard = () => {
 
   const handleExportStudentList = async () => {
     try {
-      const result = await showConfirm(
-        'Exportar Lista de Alumnos',
-        '¿En qué formato deseas descargar la lista?',
-        'PDF',
-        'Excel',
-        {
-          showCancelButton: true,
-          confirmButtonText: 'PDF',
-          denyButtonText: 'Excel',
-          cancelButtonText: 'Cancelar'
-        }
-      )
+      const { showExportFormatSelector } = await import('../../utils/sweetAlert')
+      const result = await showExportFormatSelector('Exportar Lista de Alumnos')
 
       if (result.isConfirmed || result.isDenied) {
         const formato = result.isConfirmed ? 'pdf' : 'excel'
@@ -462,19 +454,19 @@ const Dashboard = () => {
           }}
         />
 
-        {/* Panel de Acciones Rápidas del Profesor */}
+        {/* Panel de Acciones Rápidas del Profesor - RESPONSIVE */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6"
+          className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 mb-6"
         >
-          <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
             ⚡ Acciones Rápidas del Día
           </h3>
           
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {/* Botón 1: MIS AULAS - NUEVO */}
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-4">
+            {/* Botón 1: MIS AULAS - RESPONSIVE */}
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
@@ -482,133 +474,145 @@ const Dashboard = () => {
                 const element = document.getElementById('mis-aulas-section')
                 element?.scrollIntoView({ behavior: 'smooth' })
               }}
-              className="p-4 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-lg transition-all duration-200"
+              className="p-3 sm:p-4 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-lg transition-all duration-200"
             >
               <div className="text-center">
-                <div className="w-12 h-12 bg-indigo-500 text-white rounded-full flex items-center justify-center mx-auto mb-2">
-                  <FiGrid className="w-6 h-6" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-indigo-500 text-white rounded-full flex items-center justify-center mx-auto mb-2">
+                  <FiGrid className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
-                <h4 className="font-medium text-gray-900">Mis Aulas</h4>
-                <p className="text-xs text-gray-600 mt-1">{getSeccionesUnicas().length} secciones</p>
+                <h4 className="text-sm sm:text-base font-medium text-gray-900 truncate">Mis Aulas</h4>
+                <p className="text-xs text-gray-600 mt-1 truncate">{getSeccionesUnicas().length} secciones</p>
               </div>
             </motion.button>
 
-            {/* Botón 2: Lista de Alumnos */}
+            {/* Botón 2: Lista de Alumnos - RESPONSIVE */}
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => handleExportStudentList()}
-              className="p-4 bg-green-50 hover:bg-green-100 border border-green-200 rounded-lg transition-all duration-200"
+              className="p-3 sm:p-4 bg-green-50 hover:bg-green-100 border border-green-200 rounded-lg transition-all duration-200"
             >
               <div className="text-center">
-                <div className="w-12 h-12 bg-green-500 text-white rounded-full flex items-center justify-center mx-auto mb-2">
-                  <FiDownload className="w-6 h-6" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-green-500 text-white rounded-full flex items-center justify-center mx-auto mb-2">
+                  <FiDownload className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
-                <h4 className="font-medium text-gray-900">Lista de Alumnos</h4>
-                <p className="text-xs text-gray-600 mt-1">Descargar PDF/Excel</p>
+                <h4 className="text-sm sm:text-base font-medium text-gray-900">Lista de</h4>
+                <h4 className="text-sm sm:text-base font-medium text-gray-900">Alumnos</h4>
+                <p className="text-xs text-gray-600 mt-1">Descargar</p>
+                <p className="text-xs text-gray-600">PDF/Excel</p>
               </div>
             </motion.button>
 
-            {/* Botón 3: Ver Asistencias */}
+            {/* Botón 3: Ver Asistencias - RESPONSIVE */}
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => {
                 navigate('/tutor/reports')
               }}
-              className="p-4 bg-yellow-50 hover:bg-yellow-100 border border-yellow-200 rounded-lg transition-all duration-200"
+              className="p-3 sm:p-4 bg-yellow-50 hover:bg-yellow-100 border border-yellow-200 rounded-lg transition-all duration-200"
             >
               <div className="text-center">
-                <div className="w-12 h-12 bg-yellow-500 text-white rounded-full flex items-center justify-center mx-auto mb-2">
-                  <FiBarChart className="w-6 h-6" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-yellow-500 text-white rounded-full flex items-center justify-center mx-auto mb-2">
+                  <FiBarChart className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
-                <h4 className="font-medium text-gray-900">Ver Asistencias</h4>
-                <p className="text-xs text-gray-600 mt-1">Reportes y estadísticas</p>
+                <h4 className="text-sm sm:text-base font-medium text-gray-900 truncate">Ver</h4>
+                <h4 className="text-sm sm:text-base font-medium text-gray-900 truncate">Asistencias</h4>
+                <p className="text-xs text-gray-600 mt-1 truncate">Reportes y</p>
+                <p className="text-xs text-gray-600 truncate">estadísticas</p>
               </div>
             </motion.button>
 
-            {/* Botón 4: Ingresar Notas */}
+            {/* Botón 4: Ingresar Notas - RESPONSIVE */}
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setShowQuickInput(true)}
-              className="p-4 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition-all duration-200"
+              className="p-3 sm:p-4 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-lg transition-all duration-200"
             >
               <div className="text-center">
-                <div className="w-12 h-12 bg-blue-500 text-white rounded-full flex items-center justify-center mx-auto mb-2">
-                  <FiEdit3 className="w-6 h-6" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-blue-500 text-white rounded-full flex items-center justify-center mx-auto mb-2">
+                  <FiEdit3 className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
-                <h4 className="font-medium text-gray-900">Ingresar Notas</h4>
-                <p className="text-xs text-gray-600 mt-1">Calificar evaluaciones</p>
+                <h4 className="text-sm sm:text-base font-medium text-gray-900 truncate">Ingresar</h4>
+                <h4 className="text-sm sm:text-base font-medium text-gray-900 truncate">Notas</h4>
+                <p className="text-xs text-gray-600 mt-1 truncate">Calificar</p>
+                <p className="text-xs text-gray-600 truncate">evaluaciones</p>
               </div>
             </motion.button>
 
-            {/* Botón 5: Enviar Comunicado */}
+            {/* Botón 5: Enviar Comunicado - RESPONSIVE */}
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => navigate('/tutor/communiques')}
-              className="p-4 bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-lg transition-all duration-200"
+              className="p-3 sm:p-4 bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-lg transition-all duration-200"
             >
               <div className="text-center">
-                <div className="w-12 h-12 bg-purple-500 text-white rounded-full flex items-center justify-center mx-auto mb-2">
-                  <FiSend className="w-6 h-6" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-purple-500 text-white rounded-full flex items-center justify-center mx-auto mb-2">
+                  <FiSend className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
-                <h4 className="font-medium text-gray-900">Enviar Comunicado</h4>
-                <p className="text-xs text-gray-600 mt-1">Avisos a padres</p>
+                <h4 className="text-sm sm:text-base font-medium text-gray-900 truncate">Enviar</h4>
+                <h4 className="text-sm sm:text-base font-medium text-gray-900 truncate">Comunicado</h4>
+                <p className="text-xs text-gray-600 mt-1 truncate">Avisos a</p>
+                <p className="text-xs text-gray-600 truncate">padres</p>
               </div>
             </motion.button>
 
-            {/* Botón 6: Ver Mensajes */}
+            {/* Botón 6: Ver Mensajes - RESPONSIVE */}
             <motion.button
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={() => navigate('/tutor/messages')}
-              className="p-4 bg-orange-50 hover:bg-orange-100 border border-orange-200 rounded-lg transition-all duration-200 relative"
+              className="p-3 sm:p-4 bg-orange-50 hover:bg-orange-100 border border-orange-200 rounded-lg transition-all duration-200 relative"
             >
               {mensajesNoLeidos > 0 && (
-                <span className="absolute top-2 right-2 w-6 h-6 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
+                <span className="absolute top-2 right-2 w-5 h-5 sm:w-6 sm:h-6 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold">
                   {mensajesNoLeidos}
                 </span>
               )}
               <div className="text-center">
-                <div className="w-12 h-12 bg-orange-500 text-white rounded-full flex items-center justify-center mx-auto mb-2">
-                  <FiMessageSquare className="w-6 h-6" />
+                <div className="w-10 h-10 sm:w-12 sm:h-12 bg-orange-500 text-white rounded-full flex items-center justify-center mx-auto mb-2">
+                  <FiMessageSquare className="w-5 h-5 sm:w-6 sm:h-6" />
                 </div>
-                <h4 className="font-medium text-gray-900">Ver Mensajes</h4>
-                <p className="text-xs text-gray-600 mt-1">
-                  {mensajesNoLeidos > 0 ? `${mensajesNoLeidos} sin leer` : 'Chat con padres'}
+                <h4 className="text-sm sm:text-base font-medium text-gray-900 truncate">Ver</h4>
+                <h4 className="text-sm sm:text-base font-medium text-gray-900 truncate">Mensajes</h4>
+                <p className="text-xs text-gray-600 mt-1 truncate">
+                  {mensajesNoLeidos > 0 ? `${mensajesNoLeidos} sin leer` : 'Chat con'}
+                </p>
+                <p className="text-xs text-gray-600 truncate">
+                  {mensajesNoLeidos > 0 ? '' : 'padres'}
                 </p>
               </div>
             </motion.button>
           </div>
 
-          {/* Acciones secundarias */}
+          {/* Acciones secundarias - RESPONSIVE */}
           <div className="mt-4 pt-4 border-t border-gray-200">
             <div className="flex flex-wrap gap-2">
               <button
                 onClick={() => navigate('/tutor/grades')}
-                className="px-3 py-1.5 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors duration-200"
+                className="px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors duration-200"
               >
-                📊 Ver todas las notas
+                📊 <span className="hidden sm:inline">Ver todas las</span> notas
               </button>
               <button
                 onClick={() => navigate('/tutor/reports')}
-                className="px-3 py-1.5 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors duration-200"
+                className="px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors duration-200"
               >
-                📈 Generar reportes
+                📈 <span className="hidden sm:inline">Generar</span> reportes
               </button>
               <button
                 onClick={() => navigate('/tutor/students')}
-                className="px-3 py-1.5 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors duration-200"
+                className="px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors duration-200"
               >
-                👥 Lista completa de alumnos
+                👥 <span className="hidden sm:inline">Lista completa de</span> alumnos
               </button>
               <button
                 onClick={handleVerFotocheck}
-                className="px-3 py-1.5 text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors duration-200"
+                className="px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-full transition-colors duration-200"
               >
-                🆔 Mi fotocheck
+                🆔 <span className="hidden sm:inline">Mi</span> fotocheck
               </button>
             </div>
           </div>
@@ -758,27 +762,27 @@ const Dashboard = () => {
           <div className="lg:col-span-2 space-y-4 sm:space-y-6">
             {/* Mis Estudiantes con búsqueda mejorada */}
             <div>
-              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-4">
+              <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4 mb-4">
                 <div className="flex flex-col gap-3">
-                  {/* Header principal */}
-                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                    <h2 className="text-lg sm:text-xl font-semibold text-gray-900 flex items-center space-x-2">
-                      <FiUsers className="w-5 h-5" />
+                  {/* Header principal - Responsive */}
+                  <div className="space-y-3">
+                    <h2 className="text-base sm:text-lg lg:text-xl font-semibold text-gray-900 flex items-center space-x-2">
+                      <FiUsers className="w-4 h-4 sm:w-5 sm:h-5" />
                       <span>Mis Estudiantes ({estudiantesFiltrados.length})</span>
                     </h2>
                     
-                    <div className="flex items-center gap-2 flex-1 sm:flex-initial">
+                    <div className="flex flex-col sm:flex-row gap-2">
                       <input
                         type="text"
                         placeholder="Buscar alumno..."
                         value={busqueda}
-                        className="flex-1 sm:w-64 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-talentos-primary"
+                        className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-talentos-primary"
                         onChange={(e) => setBusqueda(e.target.value)}
                       />
                       <select
                         value={filtroEstudiantes}
                         onChange={(e) => setFiltroEstudiantes(e.target.value)}
-                        className="px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-talentos-primary"
+                        className="w-full sm:w-auto px-3 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-talentos-primary"
                       >
                         <option value="todos">Todos</option>
                         <option value="activos">Activos</option>
@@ -787,36 +791,38 @@ const Dashboard = () => {
                     </div>
                   </div>
                   
-                  {/* Selector de secciones si el tutor tiene múltiples */}
+                  {/* Selector de secciones si el tutor tiene múltiples - Responsive */}
                   {getSeccionesUnicas().length > 1 && (
-                    <div className="flex flex-wrap gap-2 border-t pt-3">
-                      <span className="text-sm font-medium text-gray-700">Secciones:</span>
-                      <button
-                        onClick={() => setSeccionSeleccionada('todas')}
-                        className={`px-3 py-1 text-sm rounded-full transition-colors ${
-                          seccionSeleccionada === 'todas' 
-                            ? 'bg-blue-500 text-white' 
-                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                        }`}
-                      >
-                        Todas ({estudiantes.length})
-                      </button>
-                      {getSeccionesUnicas().map(seccion => {
-                        const count = estudiantes.filter(e => `${e.grado} ${e.seccion || ''}`.trim() === seccion).length
-                        return (
-                          <button
-                            key={seccion}
-                            onClick={() => setSeccionSeleccionada(seccion)}
-                            className={`px-3 py-1 text-sm rounded-full transition-colors ${
-                              seccionSeleccionada === seccion 
-                                ? 'bg-blue-500 text-white' 
-                                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                            }`}
-                          >
-                            {seccion} ({count})
-                          </button>
-                        )
-                      })}
+                    <div className="border-t pt-3 space-y-2">
+                      <span className="text-xs sm:text-sm font-medium text-gray-700 block">Secciones:</span>
+                      <div className="grid grid-cols-2 sm:flex sm:flex-wrap gap-1.5 sm:gap-2">
+                        <button
+                          onClick={() => setSeccionSeleccionada('todas')}
+                          className={`px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm rounded-md border transition-all duration-200 ${
+                            seccionSeleccionada === 'todas' 
+                              ? 'bg-blue-50 border-blue-300 text-blue-700 font-medium' 
+                              : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+                          }`}
+                        >
+                          Todas ({estudiantes.length})
+                        </button>
+                        {getSeccionesUnicas().map(seccion => {
+                          const count = estudiantes.filter(e => `${e.grado} ${e.seccion || ''}`.trim() === seccion).length
+                          return (
+                            <button
+                              key={seccion}
+                              onClick={() => setSeccionSeleccionada(seccion)}
+                              className={`px-2 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm rounded-md border transition-all duration-200 ${
+                                seccionSeleccionada === seccion 
+                                  ? 'bg-blue-50 border-blue-300 text-blue-700 font-medium' 
+                                  : 'bg-white border-gray-300 text-gray-700 hover:bg-gray-50'
+                              }`}
+                            >
+                              {seccion} ({count})
+                            </button>
+                          )
+                        })}
+                      </div>
                     </div>
                   )}
                 </div>

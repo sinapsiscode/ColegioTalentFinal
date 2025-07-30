@@ -36,27 +36,31 @@ const PaymentManagement = () => {
 
   // Calcular estadísticas manualmente
   const calculateStats = () => {
-    const totalCollected = pagos
-      .filter(p => p.estado === 'aprobado')
-      .reduce((sum, p) => sum + p.monto, 0)
+    // Verificar que pagos y concepts estén definidos
+    const pagosList = pagos || []
+    const conceptsList = concepts || []
     
-    const pendingPayments = pagos.filter(p => 
-      p.estado === 'pendiente' || p.estado === 'pendiente_pago'
+    const totalCollected = pagosList
+      .filter(p => p?.estado === 'aprobado')
+      .reduce((sum, p) => sum + (p?.monto || 0), 0)
+    
+    const pendingPayments = pagosList.filter(p => 
+      p?.estado === 'pendiente' || p?.estado === 'pendiente_pago'
     ).length
     
-    const overduePayments = pagos.filter(p => {
-      if (p.estado === 'aprobado') return false
-      const vencimiento = new Date(p.fechaVencimiento)
-      return vencimiento < new Date()
+    const overduePayments = pagosList.filter(p => {
+      if (!p || p.estado === 'aprobado') return false
+      const vencimiento = p.fechaVencimiento ? new Date(p.fechaVencimiento) : null
+      return vencimiento && vencimiento < new Date()
     }).length
     
-    const activeConcepts = concepts.filter(c => c.isActive).length
+    const activeConcepts = conceptsList.filter(c => c?.isActive).length
     
     return {
       totalCollected,
       pendingPayments,
       overduePayments,
-      totalConcepts: concepts.length,
+      totalConcepts: conceptsList.length,
       activeConcepts,
       monthlyGrowth: 15.3 // Ejemplo
     }

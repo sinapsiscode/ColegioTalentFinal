@@ -29,6 +29,7 @@ import AnimatedButton from '../../components/common/AnimatedButton'
 import LoadingSpinner from '../../components/common/LoadingSpinner'
 import FilterDropdown from '../../components/common/FilterDropdown'
 import { showSuccess, showError, showConfirm } from '../../utils/sweetAlert'
+import UnifiedExcelButton from '../../components/common/UnifiedExcelButton'
 
 const Communiques = () => {
   const { usuario } = useAuthStore()

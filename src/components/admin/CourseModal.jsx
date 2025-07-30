@@ -160,20 +160,20 @@ const CourseModal = ({ isOpen, onClose, course = null }) => {
   ]
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50">
       <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        exit={{ opacity: 0, scale: 0.95 }}
-        className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto"
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 20 }}
+        className="bg-white rounded-lg shadow-xl w-full max-w-xs sm:max-w-sm md:max-w-2xl lg:max-w-4xl max-h-[95vh] sm:max-h-[90vh] overflow-y-auto"
       >
         {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">
+        <div className="flex items-center justify-between p-4 sm:p-6 border-b border-gray-200">
+          <div className="flex-1 min-w-0">
+            <h2 className="text-lg sm:text-xl lg:text-2xl font-bold text-gray-900 truncate">
               {course ? 'Editar Curso' : 'Nuevo Curso'}
             </h2>
-            <p className="text-gray-600 mt-1">
+            <p className="text-xs sm:text-sm text-gray-600 mt-1 hidden sm:block">
               {course ? 'Modifica la información del curso' : 'Completa los datos para crear un nuevo curso'}
             </p>
           </div>
@@ -181,29 +181,29 @@ const CourseModal = ({ isOpen, onClose, course = null }) => {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
             onClick={onClose}
-            className="p-2 text-gray-400 hover:text-gray-600 transition-colors duration-200"
+            className="p-2 text-gray-400 hover:text-gray-600 transition-colors duration-200 flex-shrink-0 ml-2"
           >
-            <FiX className="w-6 h-6" />
+            <FiX className="w-5 h-5 sm:w-6 sm:h-6" />
           </motion.button>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-6">
+        <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 sm:space-y-6">
           {/* Información básica */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
-              <FiBook className="w-5 h-5 text-blue-600" />
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center space-x-2">
+              <FiBook className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
               <span>Información del Curso</span>
             </h3>
             
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Código *</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Código *</label>
                 <input
                   type="text"
                   value={formData.codigo}
                   onChange={(e) => handleInputChange('codigo', e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent ${
+                  className={`w-full px-2 sm:px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent ${
                     errors.codigo ? 'border-red-300' : 'border-gray-300'
                   }`}
                   placeholder="Ej: MAT-5A"
@@ -211,13 +211,13 @@ const CourseModal = ({ isOpen, onClose, course = null }) => {
                 {errors.codigo && <p className="text-red-500 text-xs mt-1">{errors.codigo}</p>}
               </div>
               
-              <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-gray-700 mb-2">Nombre del Curso *</label>
+              <div className="sm:col-span-2 lg:col-span-2">
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Nombre del Curso *</label>
                 <input
                   type="text"
                   value={formData.nombre}
                   onChange={(e) => handleInputChange('nombre', e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent ${
+                  className={`w-full px-2 sm:px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent ${
                     errors.nombre ? 'border-red-300' : 'border-gray-300'
                   }`}
                   placeholder="Ej: Matemáticas 5° Primaria A"
@@ -226,13 +226,13 @@ const CourseModal = ({ isOpen, onClose, course = null }) => {
               </div>
             </div>
             
-            <div className="mt-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Descripción *</label>
+            <div className="mt-3 sm:mt-4">
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Descripción *</label>
               <textarea
                 value={formData.descripcion}
                 onChange={(e) => handleInputChange('descripcion', e.target.value)}
-                rows={3}
-                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent ${
+                rows={2}
+                className={`w-full px-2 sm:px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent ${
                   errors.descripcion ? 'border-red-300' : 'border-gray-300'
                 }`}
                 placeholder="Describe el contenido y objetivos del curso..."
@@ -243,23 +243,23 @@ const CourseModal = ({ isOpen, onClose, course = null }) => {
 
           {/* Detalles académicos */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
-              <FiCalendar className="w-5 h-5 text-purple-600" />
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center space-x-2">
+              <FiCalendar className="w-4 h-4 sm:w-5 sm:h-5 text-purple-600" />
               <span>Detalles Académicos</span>
             </h3>
             
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Grado *</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Grado *</label>
                 <input
                   type="text"
                   value={formData.grado}
                   onChange={(e) => handleInputChange('grado', e.target.value)}
                   list="grados-list"
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent ${
+                  className={`w-full px-2 sm:px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent ${
                     errors.grado ? 'border-red-300' : 'border-gray-300'
                   }`}
-                  placeholder="Ej: 1ro Primaria"
+                  placeholder="1ro Primaria"
                 />
                 <datalist id="grados-list">
                   {grados.map(grado => (
@@ -270,11 +270,11 @@ const CourseModal = ({ isOpen, onClose, course = null }) => {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Sección *</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Sección *</label>
                 <select
                   value={formData.seccion}
                   onChange={(e) => handleInputChange('seccion', e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent"
+                  className="w-full px-2 sm:px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent"
                 >
                   <option value="A">A</option>
                   <option value="B">B</option>
@@ -284,16 +284,16 @@ const CourseModal = ({ isOpen, onClose, course = null }) => {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Materia *</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Materia *</label>
                 <input
                   type="text"
                   value={formData.materia}
                   onChange={(e) => handleInputChange('materia', e.target.value)}
                   list="materias-list"
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent ${
+                  className={`w-full px-2 sm:px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent ${
                     errors.materia ? 'border-red-300' : 'border-gray-300'
                   }`}
-                  placeholder="Ej: Matemáticas"
+                  placeholder="Matemáticas"
                 />
                 <datalist id="materias-list">
                   {materias.map(materia => (
@@ -304,14 +304,14 @@ const CourseModal = ({ isOpen, onClose, course = null }) => {
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Horas/Semana *</label>
+                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Horas/Semana *</label>
                 <input
                   type="number"
                   value={formData.horasSemanales}
                   onChange={(e) => handleInputChange('horasSemanales', parseInt(e.target.value))}
                   min="1"
                   max="20"
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent ${
+                  className={`w-full px-2 sm:px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent ${
                     errors.horasSemanales ? 'border-red-300' : 'border-gray-300'
                   }`}
                 />
@@ -323,22 +323,22 @@ const CourseModal = ({ isOpen, onClose, course = null }) => {
 
           {/* Profesor asignado */}
           <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
-              <FiUser className="w-5 h-5 text-orange-600" />
+            <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center space-x-2">
+              <FiUser className="w-4 h-4 sm:w-5 sm:h-5 text-orange-600" />
               <span>Profesor Asignado</span>
             </h3>
             
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Seleccionar Profesor</label>
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Seleccionar Profesor</label>
               <select
                 value={formData.profesorId || ''}
                 onChange={(e) => handleInputChange('profesorId', e.target.value ? parseInt(e.target.value) : null)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent"
+                className="w-full px-2 sm:px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent"
               >
                 <option value="">Sin profesor asignado</option>
                 {profesores.map(profesor => (
                   <option key={profesor.id} value={profesor.id}>
-                    {profesor.nombre} {profesor.apellidos} - {profesor.email}
+                    {profesor.nombre} {profesor.apellidos}
                     {profesor.especialidad && ` (${profesor.especialidad})`}
                   </option>
                 ))}
@@ -351,11 +351,13 @@ const CourseModal = ({ isOpen, onClose, course = null }) => {
         </form>
 
         {/* Footer */}
-        <div className="flex items-center justify-end space-x-3 p-6 border-t border-gray-200">
+        <div className="flex flex-col-reverse sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3 p-4 sm:p-6 border-t border-gray-200">
           <AnimatedButton
             variant="outline"
             onClick={onClose}
             disabled={loading}
+            className="w-full sm:w-auto"
+            size="sm"
           >
             Cancelar
           </AnimatedButton>
@@ -365,6 +367,8 @@ const CourseModal = ({ isOpen, onClose, course = null }) => {
             icon={FiSave}
             onClick={handleSubmit}
             disabled={loading}
+            className="w-full sm:w-auto"
+            size="sm"
           >
             {loading ? 'Guardando...' : course ? 'Actualizar' : 'Crear Curso'}
           </AnimatedButton>

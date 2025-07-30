@@ -31,6 +31,7 @@ import SearchInput from '../common/SearchInput'
 import FilterDropdown from '../common/FilterDropdown'
 import AssignChildrenModal from './AssignChildrenModal'
 import ImportStudentsModal from './ImportStudentsModal'
+import UnifiedExcelButton from '../common/UnifiedExcelButton'
 
 const UserManagement = () => {
   const { 
@@ -458,12 +459,23 @@ const UserManagement = () => {
               >
                 Desactivar
               </button>
-              <button
-                onClick={() => handleBulkAction('export')}
-                className="px-2 sm:px-3 py-1 text-xs sm:text-sm bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
-              >
-                Exportar
-              </button>
+              <UnifiedExcelButton
+                data={users.filter(u => selectedUsers.includes(u.id))}
+                dataType="usuarios"
+                size="sm"
+                customLabel="Exportar"
+                userRole="admin"
+                showFormatModal={true}
+                onExportPDF={async (data) => {
+                  // Aquí integrarías tu generador de PDF
+                  console.log('Exportando a PDF:', data)
+                  return { success: true, mensaje: 'PDF generado correctamente' }
+                }}
+                onExportSuccess={() => {
+                  showSuccess('Exportación exitosa', `${selectedUsers.length} usuario(s) exportados`)
+                  setSelectedUsers([])
+                }}
+              />
               <button
                 onClick={() => handleBulkAction('delete')}
                 className="px-2 sm:px-3 py-1 text-xs sm:text-sm bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors"

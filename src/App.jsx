@@ -33,6 +33,7 @@ const AdminPaymentConcepts = React.lazy(() => import('./views/admin/PaymentConce
 const AdminTutorAttendance = React.lazy(() => import('./views/admin/TutorAttendance'))
 const CoursesAndAssignments = React.lazy(() => import('./views/admin/CoursesAndAssignments'))
 const CourseManagement = React.lazy(() => import('./views/admin/CourseManagement'))
+const CoursesManagement = React.lazy(() => import('./views/admin/CoursesManagement'))
 const AdminConfiguration = React.lazy(() => import('./views/admin/Configuration'))
 const AttendanceControl = React.lazy(() => import('./views/admin/AttendanceControl'))
 const PaymentManagement = React.lazy(() => import('./views/admin/PaymentManagement'))
@@ -272,6 +273,11 @@ function App() {
             <Route path="/admin/sections" element={
               <PrivateRoute allowedRoles={['admin']}>
                 <Sections />
+              </PrivateRoute>
+            } />
+            <Route path="/admin/courses-management" element={
+              <PrivateRoute allowedRoles={['admin']}>
+                <CoursesManagement />
               </PrivateRoute>
             } />
             

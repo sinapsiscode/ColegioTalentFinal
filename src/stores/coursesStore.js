@@ -6,6 +6,7 @@ const db = getDatabase()
 const useCoursesStore = create((set, get) => ({
   // Estado
   courses: [],
+  sections: [],
   teacherAssignments: [],
   loading: false,
   error: null,
@@ -41,8 +42,12 @@ const useCoursesStore = create((set, get) => ({
         return { ...course, profesor: null }
       })
       
+      // Cargar secciones también
+      const sections = db.select('sections') || []
+      
       set({ 
         courses: enrichedCourses,
+        sections: sections,
         teacherAssignments: assignments,
         loading: false 
       })
@@ -294,6 +299,69 @@ const useCoursesStore = create((set, get) => ({
         return acc
       }, {})
     }
+  },
+
+  // Funciones de secciones
+  loadSections: async () => {
+    try {
+      const sections = db.select('sections') || []
+      set({ sections })
+    } catch (error) {
+      console.error('Error cargando secciones:', error)
+      set({ sections: [] })
+    }
+  },
+
+  createSection: (sectionData) => {
+    try {
+      const newSection = db.insert('sections', {
+        ...sectionData,
+        id: Date.now().toString(),
+        fechaCreacion: new Date().toISOString(),
+        activa: true
+      })
+      
+      get().loadSections()
+      return newSection
+    } catch (error) {
+      console.error('Error creando sección:', error)
+      throw error
+    }
+  },
+
+  updateSection: (sectionId, updateData) => {
+    try {
+      db.update('sections', s => s.id === sectionId, updateData)
+      get().loadSections()
+    } catch (error) {
+      console.error('Error actualizando sección:', error)
+      throw error
+    }
+  },
+
+  deleteSection: (sectionId) => {
+    try {
+      db.update('sections', s => s.id === sectionId, { activa: false })
+      get().loadSections()
+    } catch (error) {
+      console.error('Error eliminando sección:', error)
+      throw error
+    }
+  },
+
+  getCoursesByGrade: (grade) => {
+    const { courses } = get()
+    return (courses || []).filter(course => course?.grado === grade)
+  },
+
+  getSectionsByCourse: (courseId) => {
+    const { sections } = get()
+    return (sections || []).filter(section => section?.cursoId === courseId)
+  },
+
+  getTeacherAssignments: () => {
+    const { teacherAssignments } = get()
+    return teacherAssignments || []
   },
 
   // Seleccionar curso

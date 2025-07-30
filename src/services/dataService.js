@@ -257,8 +257,27 @@ class DataService {
 
   async getUserByEmail(email) {
     if (this.useMockData) {
-      const users = this.db.select('users', { email })
-      return users[0] || null
+      // Usar directamente mockData sin base de datos intermedia
+      const { usuariosMock } = await import('../data/mockData')
+      const user = usuariosMock[email]
+      
+      if (user) {
+        return {
+          id: email === 'admin@talentos.edu' ? 3001 : 
+              email === 'entrada@talentos.edu' ? 4001 :
+              email.includes('tutor') ? 2001 : 1001,
+          email,
+          nombre: user.nombre,
+          apellidos: '',
+          rol: user.rol,
+          telefono: user.telefono || '',
+          direccion: '',
+          avatar: user.avatar || '',
+          password_hash: 'hashed_123456',
+          estado: 'activo'
+        }
+      }
+      return null
     }
     return await apiService.users.getByEmail(email)
   }

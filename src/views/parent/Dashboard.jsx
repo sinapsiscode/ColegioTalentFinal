@@ -34,12 +34,11 @@ const Dashboard = () => {
   const { comunicadosNoLeidos } = useNotificationsStore()
   
   // Estado para valores anteriores (para mostrar tendencias)
-  // Comentado temporalmente - requiere implementar useRealTimeUpdates
-  // const [previousValues, setPreviousValues] = useState({
-  //   asistencia: 0,
-  //   mensajes: 0,
-  //   comunicados: 0
-  // })
+  const [previousValues, setPreviousValues] = useState({
+    asistencia: 0,
+    mensajes: 0,
+    comunicados: 0
+  })
   
   // Hook para actualizaciones en tiempo real
   // const { lastUpdate, isUpdating, forceUpdate } = useRealTimeUpdates(20000) // Actualizar cada 20 segundos

@@ -139,15 +139,15 @@ const QuickGradeInput = ({ estudiantes, onComplete }) => {
       animate={{ opacity: 1, y: 0 }}
       className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 mb-6"
     >
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
-          <FiBookOpen className="w-5 h-5 text-purple-500" />
-          <span>Ingreso Rápido de Calificaciones</span>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
+        <h3 className="text-base sm:text-lg font-semibold text-gray-900 flex items-center space-x-2">
+          <FiBookOpen className="w-4 h-4 sm:w-5 sm:h-5 text-purple-500 flex-shrink-0" />
+          <span className="truncate">Ingreso Rápido de Calificaciones</span>
         </h3>
         
         <button
           onClick={() => setIsExpanded(!isExpanded)}
-          className="text-sm text-purple-600 hover:text-purple-700 transition-colors duration-200"
+          className="text-sm text-purple-600 hover:text-purple-700 transition-colors duration-200 flex-shrink-0"
         >
           {isExpanded ? 'Ocultar' : 'Expandir'}
         </button>
@@ -162,7 +162,7 @@ const QuickGradeInput = ({ estudiantes, onComplete }) => {
             className="overflow-hidden"
           >
             {/* Selección de materia y evaluación */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4 sm:mb-6">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Materia
@@ -170,7 +170,7 @@ const QuickGradeInput = ({ estudiantes, onComplete }) => {
                 <select
                   value={selectedSubject}
                   onChange={(e) => setSelectedSubject(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                 >
                   <option value="">Seleccionar materia</option>
                   {materias.map(materia => (
@@ -186,7 +186,7 @@ const QuickGradeInput = ({ estudiantes, onComplete }) => {
                 <select
                   value={selectedEvaluation}
                   onChange={(e) => setSelectedEvaluation(e.target.value)}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
                 >
                   <option value="">Seleccionar tipo</option>
                   {tiposEvaluacion.map(tipo => (
@@ -199,21 +199,22 @@ const QuickGradeInput = ({ estudiantes, onComplete }) => {
             {/* Tabla de calificaciones */}
             {selectedSubject && selectedEvaluation && (
               <>
-                <div className="overflow-x-auto mb-4">
-                  <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gray-50">
-                      <tr>
-                        <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Estudiante
-                        </th>
-                        <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Calificación
-                        </th>
-                        <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
-                          Estado
-                        </th>
-                      </tr>
-                    </thead>
+                <div className="overflow-x-auto mb-4 -mx-4 sm:mx-0">
+                  <div className="inline-block min-w-full align-middle">
+                    <table className="min-w-full divide-y divide-gray-200">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-2 sm:px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Estudiante
+                          </th>
+                          <th className="px-2 sm:px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider">
+                            Nota
+                          </th>
+                          <th className="px-2 sm:px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
+                            Estado
+                          </th>
+                        </tr>
+                      </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                       {estudiantes.map(estudiante => {
                         const grade = grades[estudiante.id] || ''
@@ -222,34 +223,47 @@ const QuickGradeInput = ({ estudiantes, onComplete }) => {
                         
                         return (
                           <tr key={estudiante.id} className="hover:bg-gray-50">
-                            <td className="px-4 py-3 whitespace-nowrap">
+                            <td className="px-2 sm:px-4 py-3">
                               <div className="flex items-center">
-                                <div className="w-8 h-8 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-xs mr-3">
+                                <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-xs mr-2 sm:mr-3 flex-shrink-0">
                                   {estudiante.nombre.charAt(0).toUpperCase()}
                                 </div>
-                                <div>
-                                  <p className="text-sm font-medium text-gray-900">
+                                <div className="min-w-0 flex-1">
+                                  <p className="text-xs sm:text-sm font-medium text-gray-900 truncate">
                                     {estudiante.nombre} {estudiante.apellidos}
                                   </p>
-                                  <p className="text-xs text-gray-500">
-                                    ID: {estudiante.id.toString().padStart(3, '0')}
+                                  <p className="text-xs text-gray-500 sm:hidden">
+                                    {grade !== '' && (
+                                      <span className={`inline-flex items-center ${
+                                        isApproved ? 'text-green-600' : 'text-red-600'
+                                      }`}>
+                                        {isApproved ? (
+                                          <FiCheckCircle className="w-3 h-3 mr-1" />
+                                        ) : (
+                                          <FiAlertCircle className="w-3 h-3 mr-1" />
+                                        )}
+                                        {isApproved ? 'Aprobado' : 'Desaprobado'}
+                                      </span>
+                                    )}
                                   </p>
                                 </div>
                               </div>
                             </td>
-                            <td className="px-4 py-3">
-                              <input
-                                type="number"
-                                value={grade}
-                                onChange={(e) => handleGradeChange(estudiante.id, e.target.value)}
-                                min="0"
-                                max="20"
-                                step="0.5"
-                                placeholder="0-20"
-                                className="w-20 px-2 py-1 text-center border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
-                              />
+                            <td className="px-2 sm:px-4 py-3">
+                              <div className="flex justify-center">
+                                <input
+                                  type="number"
+                                  value={grade}
+                                  onChange={(e) => handleGradeChange(estudiante.id, e.target.value)}
+                                  min="0"
+                                  max="20"
+                                  step="0.5"
+                                  placeholder="0-20"
+                                  className="w-16 sm:w-20 px-1 sm:px-2 py-1 text-center text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-purple-500"
+                                />
+                              </div>
                             </td>
-                            <td className="px-4 py-3 text-center">
+                            <td className="px-2 sm:px-4 py-3 text-center hidden sm:table-cell">
                               {grade !== '' && (
                                 <span className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
                                   isApproved 
@@ -273,36 +287,37 @@ const QuickGradeInput = ({ estudiantes, onComplete }) => {
                           </tr>
                         )
                       })}
-                    </tbody>
-                  </table>
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
                 
                 {/* Estadísticas */}
                 {stats && (
-                  <div className="bg-purple-50 rounded-lg p-4 mb-4">
-                    <h4 className="text-sm font-medium text-purple-900 mb-2">
+                  <div className="bg-purple-50 rounded-lg p-3 sm:p-4 mb-4">
+                    <h4 className="text-sm font-medium text-purple-900 mb-3">
                       Resumen de Calificaciones
                     </h4>
-                    <div className="grid grid-cols-2 md:grid-cols-5 gap-3 text-center">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 text-center">
                       <div>
                         <p className="text-xs text-purple-600">Ingresadas</p>
-                        <p className="text-lg font-bold text-purple-900">{stats.total}</p>
+                        <p className="text-base sm:text-lg font-bold text-purple-900">{stats.total}</p>
                       </div>
                       <div>
                         <p className="text-xs text-purple-600">Promedio</p>
-                        <p className="text-lg font-bold text-purple-900">{stats.average}</p>
+                        <p className="text-base sm:text-lg font-bold text-purple-900">{stats.average}</p>
                       </div>
                       <div>
                         <p className="text-xs text-purple-600">Más alta</p>
-                        <p className="text-lg font-bold text-green-600">{stats.highest}</p>
+                        <p className="text-base sm:text-lg font-bold text-green-600">{stats.highest}</p>
                       </div>
                       <div>
                         <p className="text-xs text-purple-600">Más baja</p>
-                        <p className="text-lg font-bold text-red-600">{stats.lowest}</p>
+                        <p className="text-base sm:text-lg font-bold text-red-600">{stats.lowest}</p>
                       </div>
-                      <div>
+                      <div className="col-span-2 sm:col-span-1">
                         <p className="text-xs text-purple-600">Aprobados</p>
-                        <p className="text-lg font-bold text-green-600">
+                        <p className="text-base sm:text-lg font-bold text-green-600">
                           {stats.approved}/{stats.total}
                         </p>
                       </div>
@@ -311,7 +326,7 @@ const QuickGradeInput = ({ estudiantes, onComplete }) => {
                 )}
                 
                 {/* Botones de acción */}
-                <div className="flex items-center justify-end space-x-3">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-end gap-2 sm:gap-3">
                   <AnimatedButton
                     variant="outline"
                     icon={FiX}
@@ -322,6 +337,7 @@ const QuickGradeInput = ({ estudiantes, onComplete }) => {
                       setIsExpanded(false)
                     }}
                     disabled={saving}
+                    className="w-full sm:w-auto"
                   >
                     Cancelar
                   </AnimatedButton>
@@ -332,8 +348,10 @@ const QuickGradeInput = ({ estudiantes, onComplete }) => {
                     onClick={handleSaveGrades}
                     loading={saving}
                     disabled={saving || Object.keys(grades).length === 0}
+                    className="w-full sm:w-auto"
                   >
-                    Guardar Calificaciones
+                    <span className="hidden sm:inline">Guardar Calificaciones</span>
+                    <span className="sm:hidden">Guardar</span>
                   </AnimatedButton>
                 </div>
               </>
@@ -344,7 +362,7 @@ const QuickGradeInput = ({ estudiantes, onComplete }) => {
       
       {/* Indicador cuando está colapsado */}
       {!isExpanded && (
-        <div className="text-sm text-gray-600">
+        <div className="text-xs sm:text-sm text-gray-600">
           Haz clic en "Expandir" para ingresar calificaciones rápidamente
         </div>
       )}

@@ -32,11 +32,13 @@ const AdminPayments = React.lazy(() => import('./views/admin/Payments'))
 const AdminPaymentConcepts = React.lazy(() => import('./views/admin/PaymentConcepts'))
 const AdminTutorAttendance = React.lazy(() => import('./views/admin/TutorAttendance'))
 const CoursesAndAssignments = React.lazy(() => import('./views/admin/CoursesAndAssignments'))
+const CourseManagement = React.lazy(() => import('./views/admin/CourseManagement'))
 const AdminConfiguration = React.lazy(() => import('./views/admin/Configuration'))
 const AttendanceControl = React.lazy(() => import('./views/admin/AttendanceControl'))
 const PaymentManagement = React.lazy(() => import('./views/admin/PaymentManagement'))
 const AdminAttendanceDashboard = React.lazy(() => import('./views/admin/AttendanceDashboard'))
 const AdminAttendanceRegister = React.lazy(() => import('./views/admin/AttendanceRegister'))
+const Sections = React.lazy(() => import('./views/admin/Sections'))
 const AsistenciaDashboard = React.lazy(() => import('./views/asistencia/Dashboard'))
 const AsistenciaHistorial = React.lazy(() => import('./views/asistencia/Historial'))
 const MensajesDashboard = React.lazy(() => import('./views/mensajes/Dashboard'))
@@ -247,6 +249,11 @@ function App() {
                 <CoursesAndAssignments />
               </PrivateRoute>
             } />
+            <Route path="/admin/course-management" element={
+              <PrivateRoute allowedRoles={['admin']}>
+                <CourseManagement />
+              </PrivateRoute>
+            } />
             <Route path="/admin/configuration" element={
               <PrivateRoute allowedRoles={['admin']}>
                 <AdminConfiguration />
@@ -260,6 +267,11 @@ function App() {
             <Route path="/admin/attendance/register" element={
               <PrivateRoute allowedRoles={['admin']}>
                 <AdminAttendanceRegister />
+              </PrivateRoute>
+            } />
+            <Route path="/admin/sections" element={
+              <PrivateRoute allowedRoles={['admin']}>
+                <Sections />
               </PrivateRoute>
             } />
             

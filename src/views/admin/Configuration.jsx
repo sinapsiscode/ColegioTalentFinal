@@ -26,12 +26,9 @@ const Configuration = () => {
   // Tabs de configuración
   const configTabs = [
     { id: 'general', label: 'General', icon: FiHome },
-    { id: 'users', label: 'Usuarios', icon: FiUsers },
     { id: 'notifications', label: 'Notificaciones', icon: FiBell },
     { id: 'payments', label: 'Pagos', icon: FiDollarSign },
-    { id: 'attendance', label: 'Asistencia', icon: FiClock },
-    { id: 'security', label: 'Seguridad', icon: FiShield },
-    { id: 'system', label: 'Sistema', icon: FiDatabase }
+    { id: 'attendance', label: 'Asistencia', icon: FiClock }
   ]
 
   const handleSave = () => {
@@ -109,38 +106,6 @@ const Configuration = () => {
           </div>
         )
 
-      case 'users':
-        return (
-          <div className="space-y-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Configuración de Usuarios</h3>
-            
-            <div className="space-y-4">
-              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                <div>
-                  <h4 className="font-medium text-gray-900">Política de Contraseñas</h4>
-                  <p className="text-sm text-gray-600">Longitud mínima: 8 caracteres</p>
-                </div>
-                <input type="checkbox" defaultChecked className="toggle" />
-              </div>
-              
-              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                <div>
-                  <h4 className="font-medium text-gray-900">Autenticación de dos factores</h4>
-                  <p className="text-sm text-gray-600">Requiere código SMS para administradores</p>
-                </div>
-                <input type="checkbox" className="toggle" />
-              </div>
-              
-              <div className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-                <div>
-                  <h4 className="font-medium text-gray-900">Sesiones simultáneas</h4>
-                  <p className="text-sm text-gray-600">Permitir múltiples dispositivos</p>
-                </div>
-                <input type="checkbox" defaultChecked className="toggle" />
-              </div>
-            </div>
-          </div>
-        )
 
       case 'notifications':
         return (
@@ -158,10 +123,6 @@ const Configuration = () => {
                   <label className="flex items-center">
                     <input type="checkbox" defaultChecked className="mr-2" />
                     <span className="text-sm">Correo electrónico</span>
-                  </label>
-                  <label className="flex items-center">
-                    <input type="checkbox" className="mr-2" />
-                    <span className="text-sm">SMS (requiere configuración adicional)</span>
                   </label>
                 </div>
               </div>
@@ -308,82 +269,7 @@ const Configuration = () => {
           </div>
         )
 
-      case 'security':
-        return (
-          <div className="space-y-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Configuración de Seguridad</h3>
-            
-            <div className="space-y-4">
-              <div className="border border-gray-200 rounded-lg p-4">
-                <h4 className="font-medium text-gray-900 mb-3">Políticas de Acceso</h4>
-                <div className="space-y-3">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Intentos máximos de login
-                    </label>
-                    <input type="number" defaultValue="3" min="1" max="10" className="w-32 px-3 py-1 border rounded" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Tiempo de bloqueo (minutos)
-                    </label>
-                    <input type="number" defaultValue="15" min="5" max="60" className="w-32 px-3 py-1 border rounded" />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                      Duración de sesión (horas)
-                    </label>
-                    <input type="number" defaultValue="8" min="1" max="24" className="w-32 px-3 py-1 border rounded" />
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        )
 
-      case 'system':
-        return (
-          <div className="space-y-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Configuración del Sistema</h3>
-            
-            <div className="space-y-4">
-              <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                <h4 className="font-medium text-blue-900 mb-2">Información del Sistema</h4>
-                <div className="text-sm text-blue-700 space-y-1">
-                  <p>Versión: 1.0.0</p>
-                  <p>Última actualización: {new Date().toLocaleDateString('es-PE')}</p>
-                  <p>Modo: Desarrollo</p>
-                </div>
-              </div>
-              
-              <div className="space-y-3">
-                <button
-                  onClick={() => showInfo('Respaldo', 'Función disponible en versión con backend')}
-                  className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors flex items-center justify-between"
-                >
-                  <span className="font-medium">Crear respaldo de datos</span>
-                  <FiDatabase className="w-5 h-5 text-gray-400" />
-                </button>
-                
-                <button
-                  onClick={() => showInfo('Logs', 'Los logs del sistema estarán disponibles en producción')}
-                  className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors flex items-center justify-between"
-                >
-                  <span className="font-medium">Ver logs del sistema</span>
-                  <FiSettings className="w-5 h-5 text-gray-400" />
-                </button>
-                
-                <button
-                  onClick={() => showInfo('Caché', 'El caché se limpia automáticamente')}
-                  className="w-full text-left px-4 py-3 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors flex items-center justify-between"
-                >
-                  <span className="font-medium">Limpiar caché</span>
-                  <FiRefreshCw className="w-5 h-5 text-gray-400" />
-                </button>
-              </div>
-            </div>
-          </div>
-        )
 
       default:
         return null

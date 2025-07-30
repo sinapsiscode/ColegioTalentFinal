@@ -94,12 +94,13 @@ const Header = () => {
         return [
           { path: '/admin/dashboard', icon: FiHome, label: 'Dashboard', priority: 1 },
           { path: '/admin/users', icon: FiUsers, label: 'Usuarios', priority: 2 },
-          { path: '/admin/reports', icon: FiBarChart, label: 'Reportes', priority: 3 },
-          { path: '/asistencia', icon: FiClock, label: 'Control Asistencia', shortLabel: 'Asistencia', priority: 4 },
-          { path: '/admin/tutor-assignments', icon: FiUserCheck, label: 'Asignaciones', priority: 5 },
-          { path: '/admin/communiques', icon: FiFileText, label: 'Comunicados', priority: 6 },
-          { path: '/admin/payments', icon: FiDollarSign, label: 'Gestión Pagos', shortLabel: 'Pagos', priority: 7 },
-          { path: '/admin/configuration', icon: FiSettings, label: 'Configuración', shortLabel: 'Config', priority: 8 }
+          { path: '/admin/sections', icon: FiBook, label: 'Secciones', priority: 3 },
+          { path: '/admin/reports', icon: FiBarChart, label: 'Reportes', priority: 4 },
+          { path: '/asistencia', icon: FiClock, label: 'Control Asistencia', shortLabel: 'Asistencia', priority: 5 },
+          { path: '/admin/tutor-assignments', icon: FiUserCheck, label: 'Asignaciones', priority: 6 },
+          { path: '/admin/communiques', icon: FiFileText, label: 'Comunicados', priority: 7 },
+          { path: '/admin/payments', icon: FiDollarSign, label: 'Gestión Pagos', shortLabel: 'Pagos', priority: 8 },
+          { path: '/admin/configuration', icon: FiSettings, label: 'Configuración', shortLabel: 'Config', priority: 9 }
         ]
       case 'entrada':
         return [

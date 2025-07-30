@@ -85,7 +85,7 @@ const CourseModal = ({ isOpen, onClose, course = null }) => {
   }, [course, isOpen])
 
   // Filtrar solo profesores/tutores
-  const profesores = usuarios.filter(u => u.tipo === 'tutor' || u.tipo === 'profesor')
+  const profesores = usuarios.filter(u => u.rol === 'tutor' || u.rol === 'profesor')
 
   const handleInputChange = (field, value) => {
     setFormData(prev => ({
@@ -110,18 +110,7 @@ const CourseModal = ({ isOpen, onClose, course = null }) => {
     if (!formData.descripcion.trim()) newErrors.descripcion = 'La descripción es requerida'
     if (!formData.grado.trim()) newErrors.grado = 'El grado es requerido'
     if (!formData.materia.trim()) newErrors.materia = 'La materia es requerida'
-    if (!formData.aula.trim()) newErrors.aula = 'El aula es requerida'
-    if (!formData.horario.trim()) newErrors.horario = 'El horario es requerido'
-    if (!formData.fechaInicio) newErrors.fechaInicio = 'La fecha de inicio es requerida'
-    if (!formData.fechaFin) newErrors.fechaFin = 'La fecha de fin es requerida'
     
-    if (formData.fechaInicio && formData.fechaFin) {
-      if (new Date(formData.fechaInicio) >= new Date(formData.fechaFin)) {
-        newErrors.fechaFin = 'La fecha de fin debe ser posterior a la de inicio'
-      }
-    }
-    
-    if (formData.capacidad < 1) newErrors.capacidad = 'La capacidad debe ser mayor a 0'
     if (formData.horasSemanales < 1) newErrors.horasSemanales = 'Las horas deben ser mayor a 0'
     
     setErrors(newErrors)
@@ -158,19 +147,16 @@ const CourseModal = ({ isOpen, onClose, course = null }) => {
 
   if (!isOpen) return null
 
-  // Lista de grados disponibles
+  // Lista de grados disponibles (solo primaria, editable si se necesita expandir)
   const grados = [
     '1ro Primaria', '2do Primaria', '3ro Primaria',
-    '4to Primaria', '5to Primaria', '6to Primaria',
-    '1ro Secundaria', '2do Secundaria', '3ro Secundaria',
-    '4to Secundaria', '5to Secundaria'
+    '4to Primaria', '5to Primaria', '6to Primaria'
   ]
 
-  // Lista de materias
+  // Lista de materias para primaria (editable según necesidades del colegio)
   const materias = [
-    'Matemáticas', 'Comunicación', 'Ciencias', 'Historia',
-    'Geografía', 'Inglés', 'Arte', 'Educación Física',
-    'Computación', 'Religión'
+    'Matemáticas', 'Comunicación', 'Ciencias', 'Personal Social',
+    'Inglés', 'Arte', 'Educación Física', 'Computación', 'Religión'
   ]
 
   return (
@@ -234,7 +220,7 @@ const CourseModal = ({ isOpen, onClose, course = null }) => {
                   className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent ${
                     errors.nombre ? 'border-red-300' : 'border-gray-300'
                   }`}
-                  placeholder="Ej: Matemáticas 5° A"
+                  placeholder="Ej: Matemáticas 5° Primaria A"
                 />
                 {errors.nombre && <p className="text-red-500 text-xs mt-1">{errors.nombre}</p>}
               </div>
@@ -265,18 +251,21 @@ const CourseModal = ({ isOpen, onClose, course = null }) => {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Grado *</label>
-                <select
+                <input
+                  type="text"
                   value={formData.grado}
                   onChange={(e) => handleInputChange('grado', e.target.value)}
+                  list="grados-list"
                   className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent ${
                     errors.grado ? 'border-red-300' : 'border-gray-300'
                   }`}
-                >
-                  <option value="">Seleccionar grado</option>
+                  placeholder="Ej: 1ro Primaria"
+                />
+                <datalist id="grados-list">
                   {grados.map(grado => (
-                    <option key={grado} value={grado}>{grado}</option>
+                    <option key={grado} value={grado} />
                   ))}
-                </select>
+                </datalist>
                 {errors.grado && <p className="text-red-500 text-xs mt-1">{errors.grado}</p>}
               </div>
               
@@ -296,18 +285,21 @@ const CourseModal = ({ isOpen, onClose, course = null }) => {
               
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">Materia *</label>
-                <select
+                <input
+                  type="text"
                   value={formData.materia}
                   onChange={(e) => handleInputChange('materia', e.target.value)}
+                  list="materias-list"
                   className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent ${
                     errors.materia ? 'border-red-300' : 'border-gray-300'
                   }`}
-                >
-                  <option value="">Seleccionar materia</option>
+                  placeholder="Ej: Matemáticas"
+                />
+                <datalist id="materias-list">
                   {materias.map(materia => (
-                    <option key={materia} value={materia}>{materia}</option>
+                    <option key={materia} value={materia} />
                   ))}
-                </select>
+                </datalist>
                 {errors.materia && <p className="text-red-500 text-xs mt-1">{errors.materia}</p>}
               </div>
               
@@ -328,86 +320,6 @@ const CourseModal = ({ isOpen, onClose, course = null }) => {
             </div>
           </div>
 
-          {/* Logística */}
-          <div>
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center space-x-2">
-              <FiMapPin className="w-5 h-5 text-green-600" />
-              <span>Logística</span>
-            </h3>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Aula *</label>
-                <input
-                  type="text"
-                  value={formData.aula}
-                  onChange={(e) => handleInputChange('aula', e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent ${
-                    errors.aula ? 'border-red-300' : 'border-gray-300'
-                  }`}
-                  placeholder="Ej: 201"
-                />
-                {errors.aula && <p className="text-red-500 text-xs mt-1">{errors.aula}</p>}
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Capacidad *</label>
-                <input
-                  type="number"
-                  value={formData.capacidad}
-                  onChange={(e) => handleInputChange('capacidad', parseInt(e.target.value))}
-                  min="1"
-                  max="50"
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent ${
-                    errors.capacidad ? 'border-red-300' : 'border-gray-300'
-                  }`}
-                />
-                {errors.capacidad && <p className="text-red-500 text-xs mt-1">{errors.capacidad}</p>}
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Horario *</label>
-                <input
-                  type="text"
-                  value={formData.horario}
-                  onChange={(e) => handleInputChange('horario', e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent ${
-                    errors.horario ? 'border-red-300' : 'border-gray-300'
-                  }`}
-                  placeholder="Ej: Lun-Mie-Vie 8:00-10:00"
-                />
-                {errors.horario && <p className="text-red-500 text-xs mt-1">{errors.horario}</p>}
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Fecha de Inicio *</label>
-                <input
-                  type="date"
-                  value={formData.fechaInicio}
-                  onChange={(e) => handleInputChange('fechaInicio', e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent ${
-                    errors.fechaInicio ? 'border-red-300' : 'border-gray-300'
-                  }`}
-                />
-                {errors.fechaInicio && <p className="text-red-500 text-xs mt-1">{errors.fechaInicio}</p>}
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Fecha de Fin *</label>
-                <input
-                  type="date"
-                  value={formData.fechaFin}
-                  onChange={(e) => handleInputChange('fechaFin', e.target.value)}
-                  className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent ${
-                    errors.fechaFin ? 'border-red-300' : 'border-gray-300'
-                  }`}
-                />
-                {errors.fechaFin && <p className="text-red-500 text-xs mt-1">{errors.fechaFin}</p>}
-              </div>
-            </div>
-          </div>
 
           {/* Profesor asignado */}
           <div>
@@ -426,7 +338,8 @@ const CourseModal = ({ isOpen, onClose, course = null }) => {
                 <option value="">Sin profesor asignado</option>
                 {profesores.map(profesor => (
                   <option key={profesor.id} value={profesor.id}>
-                    {profesor.nombre} - {profesor.email}
+                    {profesor.nombre} {profesor.apellidos} - {profesor.email}
+                    {profesor.especialidad && ` (${profesor.especialidad})`}
                   </option>
                 ))}
               </select>

@@ -440,39 +440,39 @@ const UserManagement = () => {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mt-4 bg-gray-50 border border-gray-200 rounded-lg p-3 flex items-center justify-between"
+            className="mt-4 bg-gray-50 border border-gray-200 rounded-lg p-3 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-0"
           >
             <span className="text-sm text-gray-700">
               {selectedUsers.length} usuario{selectedUsers.length !== 1 ? 's' : ''} seleccionado{selectedUsers.length !== 1 ? 's' : ''}
             </span>
-            <div className="flex items-center space-x-2">
+            <div className="flex flex-wrap items-center gap-2">
               <button
                 onClick={() => handleBulkAction('activate')}
-                className="px-3 py-1 text-sm bg-green-100 text-green-700 rounded hover:bg-green-200 transition-colors"
+                className="px-2 sm:px-3 py-1 text-xs sm:text-sm bg-green-100 text-green-700 rounded hover:bg-green-200 transition-colors"
               >
                 Activar
               </button>
               <button
                 onClick={() => handleBulkAction('deactivate')}
-                className="px-3 py-1 text-sm bg-yellow-100 text-yellow-700 rounded hover:bg-yellow-200 transition-colors"
+                className="px-2 sm:px-3 py-1 text-xs sm:text-sm bg-yellow-100 text-yellow-700 rounded hover:bg-yellow-200 transition-colors"
               >
                 Desactivar
               </button>
               <button
                 onClick={() => handleBulkAction('export')}
-                className="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
+                className="px-2 sm:px-3 py-1 text-xs sm:text-sm bg-blue-100 text-blue-700 rounded hover:bg-blue-200 transition-colors"
               >
                 Exportar
               </button>
               <button
                 onClick={() => handleBulkAction('delete')}
-                className="px-3 py-1 text-sm bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors"
+                className="px-2 sm:px-3 py-1 text-xs sm:text-sm bg-red-100 text-red-700 rounded hover:bg-red-200 transition-colors"
               >
                 Eliminar
               </button>
               <button
                 onClick={() => setSelectedUsers([])}
-                className="ml-2 text-gray-500 hover:text-gray-700"
+                className="ml-1 sm:ml-2 text-gray-500 hover:text-gray-700"
               >
                 <FiX className="w-4 h-4" />
               </button>
@@ -483,11 +483,11 @@ const UserManagement = () => {
 
       {/* Table */}
       {viewMode === 'table' ? (
-        <div className="overflow-x-auto">
-          <table className="w-full">
+        <div className="overflow-hidden">
+          <table className="w-full table-fixed">
             <thead className="bg-gray-50">
               <tr>
-                <th className="px-4 py-3">
+                <th className="w-12 px-2 py-3">
                   <input
                     type="checkbox"
                     checked={selectedUsers.length === filteredUsers.length && filteredUsers.length > 0}
@@ -495,190 +495,152 @@ const UserManagement = () => {
                     className="rounded text-talentos-primary focus:ring-talentos-primary"
                   />
                 </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                <th className="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                   Usuario
                 </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Rol
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Contacto
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Estado
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Último Acceso
-              </th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Acciones
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
-            {filteredUsers.map((user, index) => (
-              <motion.tr
-                key={user.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.05 }}
-                whileHover={{ scale: 1.005 }}
-                onClick={() => handleEditUser(user)}
-                className="hover:bg-gray-50 cursor-pointer transition-all duration-200"
-              >
-                <td className="px-4 py-4" onClick={(e) => e.stopPropagation()}>
-                  <input
-                    type="checkbox"
-                    checked={selectedUsers.includes(user.id)}
-                    onChange={() => handleSelectUser(user.id)}
-                    className="rounded text-talentos-primary focus:ring-talentos-primary"
-                  />
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center">
-                    <div className="flex-shrink-0 h-10 w-10">
-                      <div className="h-10 w-10 rounded-full bg-talentos-light flex items-center justify-center">
-                        <FiUser className="w-5 h-5 text-talentos-primary" />
+                <th className="w-16 px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider hidden sm:table-cell">
+                  Rol
+                </th>
+                <th className="w-20 px-2 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Estado
+                </th>
+                <th className="w-20 px-2 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                  Acciones
+                </th>
+              </tr>
+            </thead>
+              <tbody className="bg-white divide-y divide-gray-200">
+                {filteredUsers.map((user, index) => (
+                  <motion.tr
+                    key={user.id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    whileHover={{ scale: 1.005 }}
+                    onClick={() => handleEditUser(user)}
+                    className="hover:bg-gray-50 cursor-pointer transition-all duration-200"
+                  >
+                    <td className="w-12 px-2 py-4" onClick={(e) => e.stopPropagation()}>
+                      <input
+                        type="checkbox"
+                        checked={selectedUsers.includes(user.id)}
+                        onChange={() => handleSelectUser(user.id)}
+                        className="rounded text-talentos-primary focus:ring-talentos-primary"
+                      />
+                    </td>
+                    <td className="px-3 py-4">
+                      <div className="flex items-center min-w-0">
+                        <div className="flex-shrink-0 h-8 w-8">
+                          <div className="h-8 w-8 rounded-full bg-talentos-light flex items-center justify-center">
+                            <FiUser className="w-4 h-4 text-talentos-primary" />
+                          </div>
+                        </div>
+                        <div className="ml-3 min-w-0 flex-1">
+                          <div className="text-sm font-medium text-gray-900 truncate">
+                            {user.nombre} {user.apellidos}
+                          </div>
+                          <div className="text-xs text-gray-500 truncate">
+                            {user.email}
+                          </div>
+                          {/* Mostrar información adicional en móviles */}
+                          <div className="sm:hidden mt-1 space-y-1">
+                            <div className="flex items-center justify-between">
+                              <span className={`inline-flex px-1 py-0.5 text-xs font-semibold rounded ${getRoleColor(user.rol)}`}>
+                                {getRoleLabel(user.rol)}
+                              </span>
+                              <div className="flex items-center space-x-1">
+                                <div className={`w-2 h-2 rounded-full ${user.estado === 'activo' ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                                <span className={`text-xs ${user.estado === 'activo' ? 'text-green-800' : 'text-red-800'}`}>
+                                  {user.estado === 'activo' ? 'Activo' : 'Inactivo'}
+                                </span>
+                              </div>
+                            </div>
+                            {user.telefono && (
+                              <div className="flex items-center space-x-1 text-xs text-gray-500">
+                                <FiPhone className="w-3 h-3" />
+                                <span>{user.telefono}</span>
+                              </div>
+                            )}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                    <div className="ml-4">
-                      <div className="text-sm font-medium text-gray-900">
-                        {user.nombre} {user.apellidos}
-                      </div>
-                      <div className="text-sm text-gray-500">
-                        {user.email}
-                      </div>
-                    </div>
-                  </div>
-                </td>
-                
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getRoleColor(user.rol)}`}>
-                    {getRoleLabel(user.rol)}
-                  </span>
-                </td>
-                
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  <div className="space-y-1">
-                    {user.telefono && (
-                      <div className="flex items-center space-x-1">
-                        <FiPhone className="w-3 h-3 text-gray-400" />
-                        <span>{user.telefono}</span>
-                      </div>
-                    )}
-                    {user.direccion && (
-                      <div className="flex items-center space-x-1">
-                        <FiMapPin className="w-3 h-3 text-gray-400" />
-                        <span className="truncate max-w-32">{user.direccion}</span>
-                      </div>
-                    )}
-                  </div>
-                </td>
-                
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center space-x-2">
-                    <div className={`w-2 h-2 rounded-full ${user.estado === 'activo' ? 'bg-green-500' : 'bg-red-500'}`}></div>
-                    <span className={`text-sm ${user.estado === 'activo' ? 'text-green-800' : 'text-red-800'}`}>
-                      {user.estado === 'activo' ? 'Activo' : 'Inactivo'}
-                    </span>
-                  </div>
-                </td>
-                
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                  {user.ultimoAcceso ? (
-                    <div className="flex items-center space-x-1">
-                      <FiCalendar className="w-3 h-3" />
-                      <span>{user.ultimoAcceso}</span>
-                    </div>
-                  ) : (
-                    <span className="text-gray-400">Nunca</span>
-                  )}
-                </td>
-                
-                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                  <div className="flex items-center justify-end space-x-2">
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleEditUser(user)
-                      }}
-                      className="p-1 text-gray-600 hover:text-blue-600 transition-colors"
-                      title="Editar usuario"
-                    >
-                      <FiEdit3 className="w-4 h-4" />
-                    </button>
+                    </td>
                     
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleResetPassword(user)
-                      }}
-                      className="p-1 text-gray-600 hover:text-yellow-600 transition-colors"
-                      title="Cambiar contraseña"
-                    >
-                      <FiKey className="w-4 h-4" />
-                    </button>
+                    <td className="w-16 px-2 py-4 hidden sm:table-cell">
+                      <span className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${getRoleColor(user.rol)}`}>
+                        {getRoleLabel(user.rol)}
+                      </span>
+                    </td>
                     
-                    {user.rol === 'padre' && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          handleAssignChildren(user)
-                        }}
-                        className="p-1 text-gray-600 hover:text-blue-600 transition-colors"
-                        title="Asignar hijos"
-                      >
-                        <FiUserPlus className="w-4 h-4" />
-                      </button>
-                    )}
+                    <td className="w-20 px-2 py-4 hidden sm:table-cell">
+                      <div className="flex items-center space-x-2">
+                        <div className={`w-2 h-2 rounded-full flex-shrink-0 ${user.estado === 'activo' ? 'bg-green-500' : 'bg-red-500'}`}></div>
+                        <span className={`text-xs ${user.estado === 'activo' ? 'text-green-800' : 'text-red-800'}`}>
+                          {user.estado === 'activo' ? 'Activo' : 'Inactivo'}
+                        </span>
+                      </div>
+                    </td>
                     
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleToggleStatus(user)
-                      }}
-                      className="p-1 text-gray-600 hover:text-green-600 transition-colors"
-                      title={user.estado === 'activo' ? 'Desactivar' : 'Activar'}
-                    >
-                      {user.estado === 'activo' ? (
-                        <FiToggleRight className="w-4 h-4" />
-                      ) : (
-                        <FiToggleLeft className="w-4 h-4" />
-                      )}
-                    </button>
-                    
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation()
-                        handleDeleteUser(user)
-                      }}
-                      className="p-1 text-gray-600 hover:text-red-600 transition-colors"
-                      title="Eliminar usuario"
-                    >
-                      <FiTrash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </td>
-              </motion.tr>
-            ))}
-          </tbody>
-        </table>
-        
-        {filteredUsers.length === 0 && (
-          <div className="text-center py-12">
-            <FiUsers className="w-12 h-12 text-gray-400 mx-auto mb-4" />
-            <h3 className="text-lg font-medium text-gray-900 mb-2">
-              No se encontraron usuarios
-            </h3>
-            <p className="text-gray-600">
-              {searchTerm || roleFilter !== 'all' || statusFilter !== 'all'
-                ? 'Intenta ajustar los filtros de búsqueda'
-                : 'Agrega el primer usuario al sistema'
-              }
-            </p>
-          </div>
-        )}
-      </div>
+                    <td className="w-20 px-2 py-4 text-right">
+                      <div className="flex items-center justify-end space-x-1">
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleEditUser(user)
+                          }}
+                          className="p-1.5 text-gray-600 hover:text-blue-600 transition-colors"
+                          title="Editar usuario"
+                        >
+                          <FiEdit3 className="w-4 h-4" />
+                        </button>
+                        
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleToggleStatus(user)
+                          }}
+                          className="p-1.5 text-gray-600 hover:text-green-600 transition-colors"
+                          title={user.estado === 'activo' ? 'Desactivar' : 'Activar'}
+                        >
+                          {user.estado === 'activo' ? (
+                            <FiToggleRight className="w-4 h-4" />
+                          ) : (
+                            <FiToggleLeft className="w-4 h-4" />
+                          )}
+                        </button>
+                        
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation()
+                            handleDeleteUser(user)
+                          }}
+                          className="p-1.5 text-gray-600 hover:text-red-600 transition-colors hidden sm:inline-block"
+                          title="Eliminar usuario"
+                        >
+                          <FiTrash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </motion.tr>
+                ))}
+              </tbody>
+          </table>
+          
+          {filteredUsers.length === 0 && (
+            <div className="text-center py-12">
+              <FiUsers className="w-12 h-12 text-gray-400 mx-auto mb-4" />
+              <h3 className="text-lg font-medium text-gray-900 mb-2">
+                No se encontraron usuarios
+              </h3>
+              <p className="text-gray-600">
+                {searchTerm || roleFilter !== 'all' || statusFilter !== 'all'
+                  ? 'Intenta ajustar los filtros de búsqueda'
+                  : 'Agrega el primer usuario al sistema'
+                }
+              </p>
+            </div>
+          )}
+        </div>
       ) : (
         // Card View
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mt-6">

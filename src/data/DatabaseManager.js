@@ -28,7 +28,8 @@ const DB_CONFIG = {
     'teacher_course_assignments',
     'notifications',
     'notification_preferences',
-    'notification_history'
+    'notification_history',
+    'sections'
   ],
   autoBackup: true,
   backupInterval: 5 * 60 * 1000, // 5 minutos
@@ -771,6 +772,48 @@ const INITIAL_DATA = {
       estado: 'fallido',
       error: 'Usuario sin token push'
     }
+  ],
+
+  sections: [
+    {
+      id: 1,
+      nombre: '5to A',
+      grado: '5to Primaria',
+      aula: '201',
+      capacidad: 30,
+      tutor: 'María García',
+      tutorId: 2001,
+      estudiantesCount: 2,
+      horario: 'Lun-Vie 8:00-14:00',
+      estado: 'activa',
+      fechaCreacion: '2024-01-15T00:00:00'
+    },
+    {
+      id: 2,
+      nombre: '3ro B',
+      grado: '3ro Primaria',
+      aula: '105',
+      capacidad: 28,
+      tutor: 'Carlos Mendoza',
+      tutorId: 2002,
+      estudiantesCount: 1,
+      horario: 'Lun-Vie 8:00-14:00',
+      estado: 'activa',
+      fechaCreacion: '2024-01-15T00:00:00'
+    },
+    {
+      id: 3,
+      nombre: '4to A',
+      grado: '4to Primaria',
+      aula: '301',
+      capacidad: 30,
+      tutor: 'Ana Vilchez',
+      tutorId: 2003,
+      estudiantesCount: 2,
+      horario: 'Lun-Vie 8:00-14:00',
+      estado: 'activa',
+      fechaCreacion: '2024-01-20T00:00:00'
+    }
   ]
 }
 
@@ -839,7 +882,8 @@ class DatabaseManager {
         messages: INITIAL_DATA.messages ? Math.max(...INITIAL_DATA.messages.map(m => m.id)) + 1 : 1,
         conversations: INITIAL_DATA.conversations ? Math.max(...INITIAL_DATA.conversations.map(c => c.id)) + 1 : 1,
         courses: INITIAL_DATA.courses ? Math.max(...INITIAL_DATA.courses.map(c => c.id)) + 1 : 1,
-        teacher_course_assignments: INITIAL_DATA.teacher_course_assignments ? Math.max(...INITIAL_DATA.teacher_course_assignments.map(a => a.id)) + 1 : 1
+        teacher_course_assignments: INITIAL_DATA.teacher_course_assignments ? Math.max(...INITIAL_DATA.teacher_course_assignments.map(a => a.id)) + 1 : 1,
+        sections: INITIAL_DATA.sections ? Math.max(...INITIAL_DATA.sections.map(s => s.id)) + 1 : 1
       }
     }
 

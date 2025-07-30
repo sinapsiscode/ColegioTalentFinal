@@ -111,9 +111,11 @@ class AdvancedExcelExporter {
     sheet.data.push(headers)
     
     // Agregar datos
-    data.forEach(row => {
-      sheet.data.push(row)
-    })
+    if (data && Array.isArray(data)) {
+      data.forEach(row => {
+        sheet.data.push(row)
+      })
+    }
     
     // Aplicar formato condicional si se especifica
     if (options.conditionalFormatting) {

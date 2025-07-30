@@ -75,9 +75,13 @@ const CoursesAndAssignments = () => {
       const allStudents = DatabaseQueries.getAllStudents()
       setEstudiantes(allStudents)
 
-      // Cargar asignaciones
-      const assignments = DatabaseQueries.getTeacherStudentAssignments()
-      setAsignaciones(assignments || [])
+      // Cargar asignaciones - obtener todas las asignaciones
+      const allAssignments = []
+      tutorUsers.forEach(tutor => {
+        const assignments = DatabaseQueries.getAssignmentsByTeacherId(tutor.id)
+        allAssignments.push(...assignments)
+      })
+      setAsignaciones(allAssignments)
 
       // Cargar cursos
       await loadCourses()
@@ -803,7 +807,7 @@ const AssignmentModal = ({ tutor, onClose, onSave, estudiantes, asignaciones, ge
       
       // Guardar en la base de datos
       newAssignments.forEach(assignment => {
-        DatabaseQueries.saveTeacherStudentAssignment(assignment)
+        DatabaseQueries.createTeacherAssignment(assignment)
       })
       
       showSuccess('¡Éxito!', `Se asignaron ${selectedStudents.length} estudiantes al tutor`)

@@ -390,19 +390,33 @@ export const comunicadosMock = [
 ]
 
 export const usuariosMock = {
-  'padre1@email.com': { 
+  'carlos.rodriguez@email.com': { 
     nombre: 'Carlos Rodríguez', 
     rol: 'padre', 
     hijos: [1, 2],
     telefono: '+51 987 654 321',
     avatar: '/images/avatar-padre1.jpg'
   },
-  'padre2@email.com': { 
+  'miguel.martinez@email.com': { 
     nombre: 'Miguel Martinez', 
     rol: 'padre', 
     hijos: [3],
     telefono: '+51 987 654 322',
     avatar: '/images/avatar-padre2.jpg'
+  },
+  'ana.silva@email.com': { 
+    nombre: 'Ana Silva', 
+    rol: 'padre', 
+    hijos: [4],
+    telefono: '+51 987 654 323',
+    avatar: '/images/avatar-padre3.jpg'
+  },
+  'maria.garcia@email.com': { 
+    nombre: 'María García', 
+    rol: 'padre', 
+    hijos: [5],
+    telefono: '+51 987 654 324',
+    avatar: '/images/avatar-padre4.jpg'
   },
   'tutor1@email.com': { 
     nombre: 'María García', 
@@ -413,14 +427,41 @@ export const usuariosMock = {
     telefono: '+51 987 654 340',
     avatar: '/images/avatar-tutor1.jpg'
   },
-  'tutor2@email.com': { 
-    nombre: 'José López', 
+  'profesor.carlos@talentos.edu.pe': { 
+    nombre: 'Carlos Mendoza', 
     rol: 'tutor', 
     alumnos: [6, 7, 8, 9, 10],
     especialidad: 'Comunicación y Literatura',
     grados: ['4to A', '4to B'],
-    telefono: '+51 987 654 341',
+    telefono: '+51 998 765 432',
     avatar: '/images/avatar-tutor2.jpg'
+  },
+  'profesor.ana@talentos.edu.pe': { 
+    nombre: 'Ana Vilchez', 
+    rol: 'tutor', 
+    alumnos: [11, 12, 13],
+    especialidad: 'Ciencias Naturales',
+    grados: ['4to A'],
+    telefono: '+51 976 543 210',
+    avatar: '/images/tutor-ana.jpg'
+  },
+  'profesor.roberto@talentos.edu.pe': { 
+    nombre: 'Roberto Quispe', 
+    rol: 'tutor', 
+    alumnos: [14, 15, 16],
+    especialidad: 'Educación Física',
+    grados: ['5to B'],
+    telefono: '+51 965 432 109',
+    avatar: '/images/tutor-roberto.jpg'
+  },
+  'profesora.lucia@talentos.edu.pe': { 
+    nombre: 'Lucía Torres', 
+    rol: 'tutor', 
+    alumnos: [17, 18, 19, 20],
+    especialidad: 'Arte y Música',
+    grados: ['1ro A', '2do A'],
+    telefono: '+51 954 321 098',
+    avatar: '/images/tutor-lucia.jpg'
   },
   'admin@talentos.edu': { 
     nombre: 'Dr. Juan Pérez', 
@@ -438,3 +479,38 @@ export const usuariosMock = {
     avatar: '/images/avatar-entrada.jpg'
   }
 }
+
+// Grados del colegio
+export const gradosMock = [
+  { id: 1, nombre: '1ro Primaria', nivel: 'Primaria', orden: 1 },
+  { id: 2, nombre: '2do Primaria', nivel: 'Primaria', orden: 2 },
+  { id: 3, nombre: '3ro Primaria', nivel: 'Primaria', orden: 3 },
+  { id: 4, nombre: '4to Primaria', nivel: 'Primaria', orden: 4 },
+  { id: 5, nombre: '5to Primaria', nivel: 'Primaria', orden: 5 },
+  { id: 6, nombre: '6to Primaria', nivel: 'Primaria', orden: 6 }
+]
+
+// Cursos disponibles
+export const cursosMock = [
+  { id: 1, nombre: 'Matemáticas', descripcion: 'Números, operaciones, geometría', color: '#3B82F6' },
+  { id: 2, nombre: 'Comunicación', descripcion: 'Lenguaje, lectura, escritura', color: '#10B981' },
+  { id: 3, nombre: 'Ciencia y Tecnología', descripcion: 'Ciencias naturales y experimentos', color: '#F59E0B' },
+  { id: 4, nombre: 'Personal Social', descripcion: 'Historia, geografía, civismo', color: '#EF4444' },
+  { id: 5, nombre: 'Arte y Cultura', descripcion: 'Dibujo, música, danza', color: '#8B5CF6' },
+  { id: 6, nombre: 'Educación Física', descripcion: 'Deportes y actividad física', color: '#06B6D4' },
+  { id: 7, nombre: 'Educación Religiosa', descripcion: 'Valores y espiritualidad', color: '#84CC16' },
+  { id: 8, nombre: 'Inglés', descripcion: 'Idioma extranjero', color: '#F97316' }
+]
+
+// Asignaciones de cursos a profesores por grado
+export const asignacionesMock = [
+  // Tutor 1 - María García (tutor1@email.com)
+  { id: 1, tutorEmail: 'tutor1@email.com', tutorNombre: 'María García', cursoId: 1, gradoId: 5, seccion: 'A' },
+  { id: 2, tutorEmail: 'tutor1@email.com', tutorNombre: 'María García', cursoId: 3, gradoId: 5, seccion: 'A' },
+  { id: 3, tutorEmail: 'tutor1@email.com', tutorNombre: 'María García', cursoId: 1, gradoId: 3, seccion: 'B' },
+  
+  // Tutor 2 - José López (tutor2@email.com)  
+  { id: 4, tutorEmail: 'tutor2@email.com', tutorNombre: 'José López', cursoId: 2, gradoId: 4, seccion: 'A' },
+  { id: 5, tutorEmail: 'tutor2@email.com', tutorNombre: 'José López', cursoId: 4, gradoId: 4, seccion: 'A' },
+  { id: 6, tutorEmail: 'tutor2@email.com', tutorNombre: 'José López', cursoId: 2, gradoId: 4, seccion: 'B' }
+]

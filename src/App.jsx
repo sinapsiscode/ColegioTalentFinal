@@ -23,6 +23,8 @@ const TutorCommuniques = React.lazy(() => import('./views/tutor/Communiques'))
 const TutorReports = React.lazy(() => import('./views/tutor/Reports'))
 const TutorGrades = React.lazy(() => import('./views/tutor/Grades'))
 const TutorCourses = React.lazy(() => import('./views/tutor/Courses'))
+const TutorSchedules = React.lazy(() => import('./views/tutor/Schedules'))
+const MySections = React.lazy(() => import('./views/tutor/MySections'))
 
 const AdminDashboard = React.lazy(() => import('./views/admin/Dashboard'))
 const AdminReports = React.lazy(() => import('./views/admin/Reports'))
@@ -40,6 +42,8 @@ const PaymentManagement = React.lazy(() => import('./views/admin/PaymentManageme
 const AdminAttendanceDashboard = React.lazy(() => import('./views/admin/AttendanceDashboard'))
 const AdminAttendanceRegister = React.lazy(() => import('./views/admin/AttendanceRegister'))
 const Sections = React.lazy(() => import('./views/admin/Sections'))
+const AdminSchedules = React.lazy(() => import('./views/admin/Schedules'))
+const AssignmentCenter = React.lazy(() => import('./views/admin/AssignmentCenter'))
 const AsistenciaDashboard = React.lazy(() => import('./views/asistencia/Dashboard'))
 const AsistenciaHistorial = React.lazy(() => import('./views/asistencia/Historial'))
 const MensajesDashboard = React.lazy(() => import('./views/mensajes/Dashboard'))
@@ -48,6 +52,7 @@ const ParentPayments = React.lazy(() => import('./views/parent/Payments'))
 const ParentNotifications = React.lazy(() => import('./views/parent/Notifications'))
 const StudentProfile = React.lazy(() => import('./views/parent/StudentProfile'))
 const NotificationCenter = React.lazy(() => import('./views/parent/NotificationCenter'))
+const ParentSchedules = React.lazy(() => import('./views/parent/Schedules'))
 
 const NotasDashboard = React.lazy(() => import('./views/notas/Dashboard'))
 const ReportesDashboard = React.lazy(() => import('./views/reportes/Dashboard'))
@@ -176,6 +181,11 @@ function App() {
                 <NotificationCenter />
               </PrivateRoute>
             } />
+            <Route path="/parent/schedules" element={
+              <PrivateRoute allowedRoles={['padre']}>
+                <ParentSchedules />
+              </PrivateRoute>
+            } />
             
             {/* Rutas para Tutores */}
             <Route path="/tutor/dashboard" element={
@@ -211,6 +221,16 @@ function App() {
             <Route path="/tutor/courses" element={
               <PrivateRoute allowedRoles={['tutor']}>
                 <TutorCourses />
+              </PrivateRoute>
+            } />
+            <Route path="/tutor/schedules" element={
+              <PrivateRoute allowedRoles={['tutor']}>
+                <TutorSchedules />
+              </PrivateRoute>
+            } />
+            <Route path="/tutor/sections" element={
+              <PrivateRoute allowedRoles={['tutor']}>
+                <MySections />
               </PrivateRoute>
             } />
             
@@ -278,6 +298,16 @@ function App() {
             <Route path="/admin/courses-management" element={
               <PrivateRoute allowedRoles={['admin']}>
                 <CoursesManagement />
+              </PrivateRoute>
+            } />
+            <Route path="/admin/schedules" element={
+              <PrivateRoute allowedRoles={['admin']}>
+                <AdminSchedules />
+              </PrivateRoute>
+            } />
+            <Route path="/admin/assignments" element={
+              <PrivateRoute allowedRoles={['admin']}>
+                <AssignmentCenter />
               </PrivateRoute>
             } />
             

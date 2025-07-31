@@ -32,6 +32,7 @@ import InteractiveChart from '../../components/common/InteractiveChart'
 import EnhancedUserDistributionChart from '../../components/charts/EnhancedUserDistributionChart'
 import InteractiveDashboard from '../../components/charts/InteractiveDashboard'
 import RealTimeStats from '../../components/admin/RealTimeStats'
+import DragDropAdminDashboard from '../../components/dashboard/DragDropAdminDashboard'
 import { showSuccess, showError, showInfo } from '../../utils/sweetAlert'
 import { useNavigate } from 'react-router-dom'
 
@@ -68,7 +69,7 @@ const Dashboard = () => {
   const [selectedPeriod, setSelectedPeriod] = useState('mes')
   const [showReports, setShowReports] = useState(false)
   const [estadisticasAsistencia, setEstadisticasAsistencia] = useState(null)
-  const [interactiveMode, setInteractiveMode] = useState(false)
+  const [dashboardMode, setDashboardMode] = useState('classic') // 'classic', 'interactive', 'dragdrop'
 
   // Cargar dashboard al montar
   useEffect(() => {
@@ -261,9 +262,6 @@ const Dashboard = () => {
               className="flex-1 sm:flex-none justify-center text-xs sm:text-sm"
             >
               <span className="hidden xs:inline">Actualizar</span>
-              <span className="xs:hidden">
-                <FiRefreshCw className="w-4 h-4" />
-              </span>
             </AnimatedButton>
             
             <AnimatedButton
@@ -274,25 +272,52 @@ const Dashboard = () => {
               className="flex-1 sm:flex-none justify-center text-xs sm:text-sm"
             >
               <span className="hidden sm:inline">Exportar</span>
-              <span className="sm:hidden">
-                <FiDownload className="w-4 h-4" />
-              </span>
             </AnimatedButton>
             
-            <AnimatedButton
-              variant={interactiveMode ? "secondary" : "outline"}
-              icon={interactiveMode ? FiEye : FiZap}
-              onClick={() => setInteractiveMode(!interactiveMode)}
-              size="sm"
-              className="flex-1 sm:flex-none justify-center text-xs sm:text-sm"
-            >
-              <span className="hidden sm:inline">
-                {interactiveMode ? 'Clásico' : 'Interactivo'}
-              </span>
-              <span className="sm:hidden">
-                {interactiveMode ? <FiEye className="w-4 h-4" /> : <FiZap className="w-4 h-4" />}
-              </span>
-            </AnimatedButton>
+            {/* Selector de modo de dashboard */}
+            <div className="flex items-center bg-gray-100 rounded-xl p-1">
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setDashboardMode('classic')}
+                className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 ${
+                  dashboardMode === 'classic'
+                    ? 'bg-white text-blue-600 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-800'
+                }`}
+              >
+                <span className="hidden sm:inline">Clásico</span>
+                <span className="sm:hidden">📊</span>
+              </motion.button>
+              
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setDashboardMode('interactive')}
+                className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 ${
+                  dashboardMode === 'interactive'
+                    ? 'bg-white text-purple-600 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-800'
+                }`}
+              >
+                <span className="hidden sm:inline">Interactivo</span>
+                <span className="sm:hidden">⚡</span>
+              </motion.button>
+              
+              <motion.button
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setDashboardMode('dragdrop')}
+                className={`px-2 sm:px-3 py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-all duration-200 ${
+                  dashboardMode === 'dragdrop'
+                    ? 'bg-white text-green-600 shadow-sm'
+                    : 'text-gray-600 hover:text-gray-800'
+                }`}
+              >
+                <span className="hidden sm:inline">Personalizable</span>
+                <span className="sm:hidden">🎛️</span>
+              </motion.button>
+            </div>
           </div>
         </div>
 
@@ -380,7 +405,22 @@ const Dashboard = () => {
         </motion.div>
 
         {/* Contenido condicional basado en el modo */}
-        {interactiveMode ? (
+        {dashboardMode === 'dragdrop' ? (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            {/* Dashboard Drag & Drop Personalizable */}
+            <DragDropAdminDashboard 
+              estadisticasGenerales={estadisticasGenerales}
+              estadisticasAsistencia={estadisticasAsistencia}
+              onLayoutChange={(newLayout) => {
+                console.log('Layout changed:', newLayout)
+              }}
+            />
+          </motion.div>
+        ) : dashboardMode === 'interactive' ? (
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}

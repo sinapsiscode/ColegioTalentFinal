@@ -13,6 +13,7 @@ import {
   FiBarChart,
   FiSettings,
   FiDollarSign,
+  FiBookOpen,
   FiList,
   FiClock,
   FiEdit,
@@ -22,7 +23,9 @@ import {
   FiBook,
   FiCamera,
   FiMoreHorizontal,
-  FiChevronDown
+  FiChevronDown,
+  FiCalendar,
+  FiUserPlus
 } from 'react-icons/fi'
 import useAuthStore from '../../stores/authStore'
 import useNotificationsStore from '../../stores/notificationsStore'
@@ -78,28 +81,33 @@ const Header = () => {
           { path: '/parent/messages', icon: FiMessageSquare, label: 'Mensajes', priority: 4 },
           { path: '/parent/communiques', icon: FiFileText, label: 'Comunicados', priority: 5 },
           { path: '/parent/grades', icon: FiBarChart, label: 'Notas', priority: 6 },
-          { path: '/parent/payments', icon: FiDollarSign, label: 'Pagos', priority: 7 }
+          { path: '/parent/schedules', icon: FiCalendar, label: 'Horarios', priority: 7 },
+          { path: '/parent/payments', icon: FiDollarSign, label: 'Pagos', priority: 8 }
         ]
       case 'tutor':
         return [
           { path: '/tutor/dashboard', icon: FiHome, label: 'Dashboard', priority: 1 },
           { path: '/tutor/courses', icon: FiBook, label: 'Mis Cursos', priority: 2 },
-          { path: '/tutor/students', icon: FiUsers, label: 'Alumnos', priority: 3 },
-          { path: '/tutor/grades', icon: FiBarChart, label: 'Calificaciones', priority: 4 },
-          { path: '/tutor/messages', icon: FiMessageSquare, label: 'Mensajes', priority: 5 },
-          { path: '/tutor/communiques', icon: FiFileText, label: 'Comunicados', priority: 6 },
-          { path: '/tutor/reports', icon: FiFileText, label: 'Reportes', priority: 7 }
+          { path: '/tutor/sections', icon: FiBookOpen, label: 'Mis Secciones', priority: 3 },
+          { path: '/tutor/students', icon: FiUsers, label: 'Alumnos', priority: 4 },
+          { path: '/tutor/schedules', icon: FiCalendar, label: 'Mi Horario', priority: 5 },
+          { path: '/tutor/grades', icon: FiBarChart, label: 'Calificaciones', priority: 6 },
+          { path: '/tutor/messages', icon: FiMessageSquare, label: 'Mensajes', priority: 7 },
+          { path: '/tutor/communiques', icon: FiFileText, label: 'Comunicados', priority: 8 },
+          { path: '/tutor/reports', icon: FiFileText, label: 'Reportes', priority: 9 }
         ]
       case 'admin':
         return [
           { path: '/admin/dashboard', icon: FiHome, label: 'Panel Principal', shortLabel: 'Dashboard', priority: 1 },
           { path: '/admin/users', icon: FiUsers, label: 'Gestión Usuarios', shortLabel: 'Usuarios', priority: 2 },
           { path: '/admin/courses-management', icon: FiBook, label: 'Cursos y Secciones', shortLabel: 'Cursos', priority: 3 },
-          { path: '/asistencia', icon: FiClock, label: 'Control Asistencia', shortLabel: 'Asistencia', priority: 4 },
-          { path: '/admin/payments', icon: FiDollarSign, label: 'Gestión Pagos', shortLabel: 'Pagos', priority: 5 },
-          { path: '/admin/communiques', icon: FiFileText, label: 'Comunicados', priority: 6 },
-          { path: '/admin/reports', icon: FiBarChart, label: 'Reportes', priority: 7 },
-          { path: '/admin/configuration', icon: FiSettings, label: 'Configuración', shortLabel: 'Config', priority: 8 }
+          { path: '/admin/assignments', icon: FiUserPlus, label: 'Centro de Asignaciones', shortLabel: 'Asignaciones', priority: 4 },
+          { path: '/admin/schedules', icon: FiCalendar, label: 'Gestión Horarios', shortLabel: 'Horarios', priority: 5 },
+          { path: '/asistencia', icon: FiClock, label: 'Control Asistencia', shortLabel: 'Asistencia', priority: 5 },
+          { path: '/admin/payments', icon: FiDollarSign, label: 'Gestión Pagos', shortLabel: 'Pagos', priority: 6 },
+          { path: '/admin/communiques', icon: FiFileText, label: 'Comunicados', priority: 7 },
+          { path: '/admin/reports', icon: FiBarChart, label: 'Reportes', priority: 8 },
+          { path: '/admin/configuration', icon: FiSettings, label: 'Configuración', shortLabel: 'Config', priority: 9 }
         ]
       case 'entrada':
         return [

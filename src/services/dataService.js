@@ -298,7 +298,7 @@ class DataService {
 
   async updateUser(id, userData) {
     if (this.useMockData) {
-      const updated = this.db.update('users', id, userData)
+      const updated = this.db.update('users', record => record.id === id, userData)
       return updated
     }
     return await apiService.users.update(id, userData)
@@ -306,7 +306,7 @@ class DataService {
 
   async deleteUser(id) {
     if (this.useMockData) {
-      this.db.delete('users', id)
+      this.db.delete('users', record => record.id === id)
       return { success: true }
     }
     return await apiService.users.delete(id)

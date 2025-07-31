@@ -57,7 +57,24 @@ const Sections = () => {
     try {
       const db = getDatabase()
       const sectionsData = db.select('sections') || []
-      setSections(sectionsData)
+      const usersData = db.select('users') || []
+      
+      // Enriquecer secciones con información del tutor
+      const enrichedSections = sectionsData.map(section => {
+        if (section.tutorId) {
+          const tutor = usersData.find(u => u.id === section.tutorId)
+          return {
+            ...section,
+            tutorNombre: tutor ? `${tutor.nombre} ${tutor.apellidos}` : 'Sin tutor'
+          }
+        }
+        return {
+          ...section,
+          tutorNombre: 'Sin tutor asignado'
+        }
+      })
+      
+      setSections(enrichedSections)
     } catch (error) {
       console.error('Error cargando secciones:', error)
       showError('Error', 'No se pudieron cargar las secciones')
@@ -74,7 +91,7 @@ const Sections = () => {
         section.nombre.toLowerCase().includes(searchTerm.toLowerCase()) ||
         section.grado.toLowerCase().includes(searchTerm.toLowerCase()) ||
         section.aula.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (section.tutor && section.tutor.toLowerCase().includes(searchTerm.toLowerCase()))
+        (section.tutorNombre && section.tutorNombre.toLowerCase().includes(searchTerm.toLowerCase()))
       )
     }
 
@@ -196,7 +213,7 @@ const Sections = () => {
     const totalStudents = sections.reduce((sum, section) => sum + (section.estudiantesCount || 0), 0)
     const avgCapacity = sections.length > 0 ? 
       (sections.reduce((sum, section) => sum + section.capacidad, 0) / sections.length).toFixed(1) : 0
-    const withTutor = sections.filter(s => s.tutor).length
+    const withTutor = sections.filter(s => s.tutorId && s.tutorNombre !== 'Sin tutor asignado').length
 
     return { totalSections, totalStudents, avgCapacity, withTutor }
   }
@@ -439,10 +456,10 @@ const Sections = () => {
                             <FiUsers className="w-3 h-3" />
                             <span>{section.estudiantesCount || 0}/{section.capacidad} estudiantes</span>
                           </div>
-                          {section.tutor && (
+                          {section.tutorNombre && section.tutorNombre !== 'Sin tutor asignado' && (
                             <div className="flex items-center justify-center space-x-1">
                               <FiUser className="w-3 h-3" />
-                              <span className="truncate">{section.tutor}</span>
+                              <span className="truncate">{section.tutorNombre}</span>
                             </div>
                           )}
                         </div>
@@ -562,8 +579,8 @@ const Sections = () => {
                             </div>
                           </td>
                           <td className="w-32 px-2 py-4 text-sm text-gray-900 hidden lg:table-cell">
-                            {section.tutor ? (
-                              <span className="truncate">{section.tutor}</span>
+                            {section.tutorNombre && section.tutorNombre !== 'Sin tutor asignado' ? (
+                              <span className="truncate">{section.tutorNombre}</span>
                             ) : (
                               <span className="text-gray-400">Sin asignar</span>
                             )}

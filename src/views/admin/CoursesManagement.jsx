@@ -358,28 +358,26 @@ const CoursesManagement = () => {
             <div className="p-4 sm:p-5 md:p-6 space-y-4">
               {/* Tabs */}
               <div className="flex justify-center sm:justify-start">
-                <div className="flex space-x-1 bg-gray-100 rounded-xl p-1">
+                <div className="flex bg-gray-100 rounded-xl p-1 w-full sm:w-auto">
                   <button
                     onClick={() => setActiveTab('courses')}
-                    className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 min-w-0 ${
+                    className={`flex-1 sm:flex-initial px-4 sm:px-6 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 ${
                       activeTab === 'courses'
                         ? 'bg-white text-blue-600 shadow-md border border-blue-100'
                         : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                     }`}
                   >
-                    <span className="hidden sm:inline">Cursos</span>
-                    <span className="sm:hidden">Cursos</span>
+                    Cursos
                   </button>
                   <button
                     onClick={() => setActiveTab('sections')}
-                    className={`px-3 sm:px-4 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 min-w-0 ${
+                    className={`flex-1 sm:flex-initial px-4 sm:px-6 py-2 rounded-lg text-xs sm:text-sm font-semibold transition-all duration-200 ${
                       activeTab === 'sections'
                         ? 'bg-white text-purple-600 shadow-md border border-purple-100'
                         : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                     }`}
                   >
-                    <span className="hidden sm:inline">Secciones</span>
-                    <span className="sm:hidden">Secciones</span>
+                    Secciones
                   </button>
                 </div>
               </div>
@@ -440,10 +438,10 @@ const CoursesManagement = () => {
                       }
                     }}
                     size="sm"
-                    className="flex-shrink-0 whitespace-nowrap min-w-0"
+                    className="w-full sm:w-auto whitespace-nowrap"
                   >
+                    <span className="sm:hidden">Nuevo</span>
                     <span className="hidden sm:inline">Agregar {activeTab === 'courses' ? 'Curso' : 'Sección'}</span>
-                    <span className="sm:hidden sr-only">Agregar</span>
                   </AnimatedButton>
                 </div>
               </div>

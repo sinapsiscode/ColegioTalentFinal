@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { motion } from 'framer-motion'
 import {
   FiX,
@@ -14,6 +14,7 @@ import AnimatedButton from '../common/AnimatedButton'
 import useCoursesStore from '../../stores/coursesStore'
 import useAdminUsersStore from '../../stores/adminUsersStore'
 import { showSuccess, showError } from '../../utils/sweetAlert'
+import getDatabase from '../../data/DatabaseManager'
 
 const CourseModal = ({ isOpen, onClose, course = null }) => {
   const { createCourse, updateCourse } = useCoursesStore()
@@ -21,7 +22,6 @@ const CourseModal = ({ isOpen, onClose, course = null }) => {
   
   const [formData, setFormData] = useState({
     codigo: '',
-    nombre: '',
     descripcion: '',
     grado: '',
     seccion: 'A',
@@ -37,28 +37,49 @@ const CourseModal = ({ isOpen, onClose, course = null }) => {
   
   const [errors, setErrors] = useState({})
   const [loading, setLoading] = useState(false)
+  const [existingSections, setExistingSections] = useState([])
 
-  // Cargar profesores al montar
+  // Cargar datos cuando se abre el modal
   useEffect(() => {
     if (isOpen) {
       cargarUsuarios()
+      loadExistingSections()
     }
   }, [isOpen, cargarUsuarios])
+
+  // Función para cargar secciones existentes
+  const loadExistingSections = () => {
+    try {
+      const db = getDatabase()
+      const courses = db.select('courses') || []
+      const sections = db.select('sections') || []
+      
+      // Obtener secciones únicas de cursos y secciones
+      const courseSections = courses.map(c => c.seccion).filter(Boolean)
+      const sectionNames = sections.map(s => s.nombre?.split(' ').pop()).filter(Boolean) // Obtener la letra de secciones como "1ro A" -> "A"
+      
+      // Combinar y eliminar duplicados
+      const allSections = [...new Set([...courseSections, ...sectionNames])]
+      setExistingSections(allSections.sort())
+    } catch (error) {
+      console.error('Error cargando secciones existentes:', error)
+      setExistingSections([])
+    }
+  }
 
   // Inicializar formulario
   useEffect(() => {
     if (course) {
       setFormData({
         codigo: course.codigo || '',
-        nombre: course.nombre || '',
         descripcion: course.descripcion || '',
         grado: course.grado || '',
         seccion: course.seccion || 'A',
         materia: course.materia || '',
-        horasSemanales: course.horasSemanales || 4,
+        horasSemanales: course.horasSemanales ?? 4,
         aula: course.aula || '',
         horario: course.horario || '',
-        capacidad: course.capacidad || 30,
+        capacidad: course.capacidad ?? 30,
         fechaInicio: course.fechaInicio || '',
         fechaFin: course.fechaFin || '',
         profesorId: course.profesor?.id || null
@@ -67,7 +88,6 @@ const CourseModal = ({ isOpen, onClose, course = null }) => {
       // Reset form para nuevo curso
       setFormData({
         codigo: '',
-        nombre: '',
         descripcion: '',
         grado: '',
         seccion: 'A',
@@ -87,10 +107,49 @@ const CourseModal = ({ isOpen, onClose, course = null }) => {
   // Filtrar solo profesores/tutores
   const profesores = usuarios.filter(u => u.rol === 'tutor' || u.rol === 'profesor')
 
+  // Lista de grados disponibles (solo primaria, editable si se necesita expandir)
+  const grados = [
+    '1ro Primaria', '2do Primaria', '3ro Primaria',
+    '4to Primaria', '5to Primaria', '6to Primaria'
+  ]
+
+  // Lista de materias para primaria (editable según necesidades del colegio)
+  const materias = [
+    'Matemáticas', 'Comunicación', 'Ciencias', 'Personal Social',
+    'Inglés', 'Arte', 'Educación Física', 'Computación', 'Religión'
+  ]
+
+  // Generar lista completa de secciones (predeterminadas + existentes)
+  const availableSections = useMemo(() => {
+    const defaultSections = ['A', 'B', 'C', 'D', 'E', 'F']
+    const allSections = [...new Set([...defaultSections, ...existingSections])]
+    return allSections.sort()
+  }, [existingSections])
+
+  // Auto-generar nombre del curso basado en materia, grado y sección
+  const generatedCourseName = useMemo(() => {
+    if (formData.materia && formData.grado && formData.seccion) {
+      return `${formData.materia} - ${formData.grado} ${formData.seccion}`
+    }
+    return ''
+  }, [formData.materia, formData.grado, formData.seccion])
+
   const handleInputChange = (field, value) => {
+    // Manejar campos numéricos especialmente
+    let processedValue = value
+    if (field === 'horasSemanales' || field === 'capacidad') {
+      // Convertir a número solo si hay valor, sino mantener como string vacío
+      if (value === '' || value === null || value === undefined) {
+        processedValue = ''
+      } else {
+        const numValue = parseInt(value)
+        processedValue = isNaN(numValue) ? '' : numValue
+      }
+    }
+
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      [field]: processedValue
     }))
     
     // Limpiar error del campo
@@ -105,13 +164,32 @@ const CourseModal = ({ isOpen, onClose, course = null }) => {
   const validateForm = () => {
     const newErrors = {}
     
+    // Validaciones de campos requeridos
     if (!formData.codigo.trim()) newErrors.codigo = 'El código es requerido'
-    if (!formData.nombre.trim()) newErrors.nombre = 'El nombre es requerido'
     if (!formData.descripcion.trim()) newErrors.descripcion = 'La descripción es requerida'
     if (!formData.grado.trim()) newErrors.grado = 'El grado es requerido'
+    if (!formData.seccion.trim()) newErrors.seccion = 'La sección es requerida'
     if (!formData.materia.trim()) newErrors.materia = 'La materia es requerida'
     
-    if (formData.horasSemanales < 1) newErrors.horasSemanales = 'Las horas deben ser mayor a 0'
+    // Validación de horas semanales
+    if (!formData.horasSemanales || formData.horasSemanales < 1) newErrors.horasSemanales = 'Las horas deben ser mayor a 0'
+    if (formData.horasSemanales > 20) newErrors.horasSemanales = 'Las horas no pueden ser más de 20 por semana'
+    
+    // Validación de capacidad
+    if (!formData.capacidad || formData.capacidad < 1) newErrors.capacidad = 'La capacidad debe ser mayor a 0'
+    if (formData.capacidad > 50) newErrors.capacidad = 'La capacidad no puede ser mayor a 50'
+    
+    // Validación del nombre generado
+    if (!generatedCourseName) {
+      if (!formData.materia.trim() || !formData.grado.trim() || !formData.seccion.trim()) {
+        newErrors.general = 'Complete materia, grado y sección para generar el nombre del curso'
+      }
+    }
+    
+    // Validación de código único (formato básico)
+    if (formData.codigo.trim() && formData.codigo.length < 3) {
+      newErrors.codigo = 'El código debe tener al menos 3 caracteres'
+    }
     
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -125,14 +203,20 @@ const CourseModal = ({ isOpen, onClose, course = null }) => {
     setLoading(true)
     
     try {
+      // Agregar el nombre generado automáticamente
+      const courseData = {
+        ...formData,
+        nombre: generatedCourseName
+      }
+      
       const result = course
-        ? await updateCourse(course.id, formData)
-        : await createCourse(formData)
+        ? await updateCourse(course.id, courseData)
+        : await createCourse(courseData)
       
       if (result.success) {
         showSuccess(
           course ? 'Curso actualizado' : 'Curso creado',
-          `El curso ${formData.nombre} ha sido ${course ? 'actualizado' : 'creado'} correctamente`
+          `El curso ${generatedCourseName} ha sido ${course ? 'actualizado' : 'creado'} correctamente`
         )
         onClose()
       } else {
@@ -146,18 +230,6 @@ const CourseModal = ({ isOpen, onClose, course = null }) => {
   }
 
   if (!isOpen) return null
-
-  // Lista de grados disponibles (solo primaria, editable si se necesita expandir)
-  const grados = [
-    '1ro Primaria', '2do Primaria', '3ro Primaria',
-    '4to Primaria', '5to Primaria', '6to Primaria'
-  ]
-
-  // Lista de materias para primaria (editable según necesidades del colegio)
-  const materias = [
-    'Matemáticas', 'Comunicación', 'Ciencias', 'Personal Social',
-    'Inglés', 'Arte', 'Educación Física', 'Computación', 'Religión'
-  ]
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-2 sm:p-4 z-50">
@@ -189,6 +261,13 @@ const CourseModal = ({ isOpen, onClose, course = null }) => {
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="p-4 sm:p-6 space-y-4 sm:space-y-6">
+          {/* Error general */}
+          {errors.general && (
+            <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+              <p className="text-red-800 text-sm font-medium">{errors.general}</p>
+            </div>
+          )}
+
           {/* Información básica */}
           <div>
             <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4 flex items-center space-x-2">
@@ -196,7 +275,7 @@ const CourseModal = ({ isOpen, onClose, course = null }) => {
               <span>Información del Curso</span>
             </h3>
             
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
+            <div className="grid grid-cols-1 gap-3 sm:gap-4">
               <div>
                 <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Código *</label>
                 <input
@@ -211,19 +290,18 @@ const CourseModal = ({ isOpen, onClose, course = null }) => {
                 {errors.codigo && <p className="text-red-500 text-xs mt-1">{errors.codigo}</p>}
               </div>
               
-              <div className="sm:col-span-2 lg:col-span-2">
-                <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Nombre del Curso *</label>
-                <input
-                  type="text"
-                  value={formData.nombre}
-                  onChange={(e) => handleInputChange('nombre', e.target.value)}
-                  className={`w-full px-2 sm:px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent ${
-                    errors.nombre ? 'border-red-300' : 'border-gray-300'
-                  }`}
-                  placeholder="Ej: Matemáticas 5° Primaria A"
-                />
-                {errors.nombre && <p className="text-red-500 text-xs mt-1">{errors.nombre}</p>}
-              </div>
+              {/* Vista previa del nombre generado */}
+              {generatedCourseName && (
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <label className="block text-xs sm:text-sm font-medium text-blue-800 mb-1">
+                    Nombre del Curso (generado automáticamente)
+                  </label>
+                  <p className="text-sm font-semibold text-blue-900">{generatedCourseName}</p>
+                  <p className="text-xs text-blue-600 mt-1">
+                    Se genera automáticamente basado en: Materia + Grado + Sección
+                  </p>
+                </div>
+              )}
             </div>
             
             <div className="mt-3 sm:mt-4">
@@ -271,16 +349,22 @@ const CourseModal = ({ isOpen, onClose, course = null }) => {
               
               <div>
                 <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Sección *</label>
-                <select
+                <input
+                  type="text"
                   value={formData.seccion}
                   onChange={(e) => handleInputChange('seccion', e.target.value)}
-                  className="w-full px-2 sm:px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent"
-                >
-                  <option value="A">A</option>
-                  <option value="B">B</option>
-                  <option value="C">C</option>
-                  <option value="D">D</option>
-                </select>
+                  list="secciones-list"
+                  className={`w-full px-2 sm:px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent ${
+                    errors.seccion ? 'border-red-300' : 'border-gray-300'
+                  }`}
+                  placeholder="A"
+                />
+                <datalist id="secciones-list">
+                  {availableSections.map(section => (
+                    <option key={section} value={section} />
+                  ))}
+                </datalist>
+                {errors.seccion && <p className="text-red-500 text-xs mt-1">{errors.seccion}</p>}
               </div>
               
               <div>
@@ -307,8 +391,8 @@ const CourseModal = ({ isOpen, onClose, course = null }) => {
                 <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1 sm:mb-2">Horas/Semana *</label>
                 <input
                   type="number"
-                  value={formData.horasSemanales}
-                  onChange={(e) => handleInputChange('horasSemanales', parseInt(e.target.value))}
+                  value={formData.horasSemanales === '' ? '' : formData.horasSemanales}
+                  onChange={(e) => handleInputChange('horasSemanales', e.target.value)}
                   min="1"
                   max="20"
                   className={`w-full px-2 sm:px-3 py-2 text-sm border rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent ${

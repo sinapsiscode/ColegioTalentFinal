@@ -6,24 +6,34 @@ import {
   FiBookOpen,
   FiUsers,
   FiMapPin,
-  FiCalendar
+  FiCalendar,
+  FiUser
 } from 'react-icons/fi'
 import AnimatedButton from '../common/AnimatedButton'
 import { showSuccess, showError } from '../../utils/sweetAlert'
+import useAdminUsersStore from '../../stores/adminUsersStore'
 
 const SectionModal = ({ isOpen, onClose, section = null, onSave }) => {
+  const { usuarios, cargarUsuarios } = useAdminUsersStore()
   const [formData, setFormData] = useState({
     nombre: '',
     grado: '',
     capacidad: 30,
     aula: '',
-    tutor: '',
+    tutorId: '',
     descripcion: '',
     año: new Date().getFullYear()
   })
   
   const [errors, setErrors] = useState({})
   const [loading, setLoading] = useState(false)
+
+  // Cargar usuarios cuando se abre el modal
+  useEffect(() => {
+    if (isOpen) {
+      cargarUsuarios()
+    }
+  }, [isOpen, cargarUsuarios])
 
   // Inicializar formulario
   useEffect(() => {
@@ -33,7 +43,7 @@ const SectionModal = ({ isOpen, onClose, section = null, onSave }) => {
         grado: section.grado || '',
         capacidad: section.capacidad || 30,
         aula: section.aula || '',
-        tutor: section.tutor || '',
+        tutorId: section.tutorId || '',
         descripcion: section.descripcion || '',
         año: section.año || new Date().getFullYear()
       })
@@ -44,7 +54,7 @@ const SectionModal = ({ isOpen, onClose, section = null, onSave }) => {
         grado: '',
         capacidad: 30,
         aula: '',
-        tutor: '',
+        tutorId: '',
         descripcion: '',
         año: new Date().getFullYear()
       })
@@ -257,16 +267,27 @@ const SectionModal = ({ isOpen, onClose, section = null, onSave }) => {
             </div>
             
             <div className="mt-4">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Tutor Asignado</label>
-              <input
-                type="text"
-                value={formData.tutor}
-                onChange={(e) => handleInputChange('tutor', e.target.value)}
+              <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">
+                <FiUser className="w-4 h-4 mr-1" />
+                Tutor de Aula
+              </label>
+              <select
+                value={formData.tutorId}
+                onChange={(e) => handleInputChange('tutorId', e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent"
-                placeholder="Nombre del tutor (opcional)"
-              />
+              >
+                <option value="">Sin tutor asignado</option>
+                {usuarios
+                  ?.filter(user => user.rol === 'tutor')
+                  .map(tutor => (
+                    <option key={tutor.id} value={tutor.id}>
+                      {tutor.nombre} {tutor.apellidos} - {tutor.email}
+                    </option>
+                  ))
+                }
+              </select>
               <p className="text-xs text-gray-500 mt-1">
-                Puedes asignar un tutor ahora o hacerlo más tarde
+                El tutor asignado será responsable de esta sección
               </p>
             </div>
           </div>

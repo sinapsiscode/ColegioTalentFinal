@@ -110,6 +110,40 @@ const CoursesManagement = () => {
     setAssignTeacherModalOpen(true)
   }
 
+  const handleToggleCourseStatus = async (courseId) => {
+    const result = await showConfirm(
+      '¿Cambiar estado del curso?',
+      'Esto afectará la disponibilidad del curso en el sistema.'
+    )
+    
+    if (result.isConfirmed) {
+      try {
+        const course = courses.find(c => c.id === courseId)
+        updateCourse(courseId, { activo: !course.activo })
+        showSuccess('Éxito', `Curso ${!course.activo ? 'activado' : 'desactivado'} correctamente`)
+      } catch (error) {
+        showError('Error', 'No se pudo cambiar el estado del curso')
+      }
+    }
+  }
+
+  const handleToggleSectionStatus = async (sectionId) => {
+    const result = await showConfirm(
+      '¿Cambiar estado de la sección?',
+      'Esto afectará la disponibilidad de la sección en el sistema.'
+    )
+    
+    if (result.isConfirmed) {
+      try {
+        const section = sections.find(s => s.id === sectionId)
+        updateSection(sectionId, { activa: !section.activa })
+        showSuccess('Éxito', `Sección ${!section.activa ? 'activada' : 'desactivada'} correctamente`)
+      } catch (error) {
+        showError('Error', 'No se pudo cambiar el estado de la sección')
+      }
+    }
+  }
+
   const filteredCourses = (courses || []).filter(course =>
     course?.nombre?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     course?.codigo?.toLowerCase().includes(searchTerm.toLowerCase())
@@ -167,22 +201,37 @@ const CoursesManagement = () => {
         </div>
       </div>
 
-      <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-        <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-          course.activo 
-            ? 'bg-green-100 text-green-700' 
-            : 'bg-red-100 text-red-700'
-        }`}>
-          {course.activo ? 'Activo' : 'Inactivo'}
-        </span>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pt-3 border-t border-gray-100 space-y-2 sm:space-y-0">
+        <div className="flex items-center flex-wrap gap-2">
+          <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+            course.activo 
+              ? 'bg-green-100 text-green-700' 
+              : 'bg-red-100 text-red-700'
+          }`}>
+            {course.activo ? 'Activo' : 'Inactivo'}
+          </span>
+          <button
+            onClick={() => handleToggleCourseStatus(course.id)}
+            className={`px-2 py-1 rounded text-xs font-medium transition-colors whitespace-nowrap ${
+              course.activo
+                ? 'bg-red-100 text-red-700 hover:bg-red-200'
+                : 'bg-green-100 text-green-700 hover:bg-green-200'
+            }`}
+            title={course.activo ? 'Desactivar curso' : 'Activar curso'}
+          >
+            <span className="sm:hidden">{course.activo ? 'Des.' : 'Act.'}</span>
+            <span className="hidden sm:inline">{course.activo ? 'Desactivar' : 'Activar'}</span>
+          </button>
+        </div>
         <button
           onClick={() => {
             setActiveTab('sections')
             setSearchTerm(course.nombre)
           }}
-          className="text-sm text-blue-600 hover:text-blue-800 flex items-center space-x-1"
+          className="text-sm text-blue-600 hover:text-blue-800 flex items-center justify-center sm:justify-start space-x-1 w-full sm:w-auto"
         >
-          <span>Ver secciones</span>
+          <span className="sm:hidden">Secciones</span>
+          <span className="hidden sm:inline">Ver secciones</span>
           <FiChevronRight className="w-3 h-3" />
         </button>
       </div>
@@ -245,8 +294,8 @@ const CoursesManagement = () => {
         </div>
       </div>
 
-      <div className="flex items-center justify-between pt-3 border-t border-gray-100">
-        <div className="flex items-center space-x-2">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between pt-3 border-t border-gray-100 space-y-2 sm:space-y-0">
+        <div className="flex items-center flex-wrap gap-2">
           <span className={`px-2 py-1 rounded-full text-xs font-medium ${
             section.activa 
               ? 'bg-green-100 text-green-700' 
@@ -254,15 +303,30 @@ const CoursesManagement = () => {
           }`}>
             {section.activa ? 'Activa' : 'Inactiva'}
           </span>
+          <button
+            onClick={() => handleToggleSectionStatus(section.id)}
+            className={`px-2 py-1 rounded text-xs font-medium transition-colors whitespace-nowrap ${
+              section.activa
+                ? 'bg-red-100 text-red-700 hover:bg-red-200'
+                : 'bg-green-100 text-green-700 hover:bg-green-200'
+            }`}
+            title={section.activa ? 'Desactivar sección' : 'Activar sección'}
+          >
+            <span className="sm:hidden">{section.activa ? 'Des.' : 'Act.'}</span>
+            <span className="hidden sm:inline">{section.activa ? 'Desactivar' : 'Activar'}</span>
+          </button>
           {section.estudiantes?.length >= section.capacidadMaxima && (
             <span className="px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-700">
               Llena
             </span>
           )}
         </div>
-        <span className="text-xs text-gray-500">
-          {Math.round((section.estudiantes?.length || 0) / section.capacidadMaxima * 100)}% ocupada
-        </span>
+        <div className="flex items-center justify-between sm:justify-end">
+          <span className="text-xs text-gray-500">
+            <span className="sm:hidden">{Math.round((section.estudiantes?.length || 0) / section.capacidadMaxima * 100)}%</span>
+            <span className="hidden sm:inline">{Math.round((section.estudiantes?.length || 0) / section.capacidadMaxima * 100)}% ocupada</span>
+          </span>
+        </div>
       </div>
     </motion.div>
   )

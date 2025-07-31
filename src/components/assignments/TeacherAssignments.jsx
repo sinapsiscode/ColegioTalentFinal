@@ -21,6 +21,7 @@ import LoadingSpinner from '../common/LoadingSpinner'
 import AnimatedButton from '../common/AnimatedButton'
 import SearchInput from '../common/SearchInput'
 import FilterDropdown from '../common/FilterDropdown'
+import AssignCoursesModal from '../admin/AssignCoursesModal'
 import { showSuccess, showError, showConfirm } from '../../utils/sweetAlert'
 import getDatabase from '../../data/DatabaseManager'
 import useAdminUsersStore from '../../stores/adminUsersStore'
@@ -32,6 +33,7 @@ const TeacherAssignments = () => {
   const [searchTerm, setSearchTerm] = useState('')
   const [statusFilter, setStatusFilter] = useState('all')
   const [selectedTeacher, setSelectedTeacher] = useState(null)
+  const [showAssignCoursesModal, setShowAssignCoursesModal] = useState(false)
   const [viewMode, setViewMode] = useState('list') // list, detail
   
   const { usuarios, cargarUsuarios } = useAdminUsersStore()
@@ -127,6 +129,17 @@ const TeacherAssignments = () => {
 
   const handleBackToList = () => {
     setViewMode('list')
+    setSelectedTeacher(null)
+  }
+
+  const handleAssignCourses = (teacher) => {
+    setSelectedTeacher(teacher)
+    setShowAssignCoursesModal(true)
+  }
+
+  const handleSaveAssignments = async () => {
+    await loadTeacherAssignments() // Recargar datos
+    setShowAssignCoursesModal(false)
     setSelectedTeacher(null)
   }
 
@@ -365,8 +378,9 @@ const TeacherAssignments = () => {
                             <FiEye className="w-4 h-4" />
                           </button>
                           <button
+                            onClick={() => handleAssignCourses(teacher)}
                             className="p-1.5 text-gray-600 hover:text-green-600 transition-colors"
-                            title="Gestionar asignaciones"
+                            title="Asignar cursos"
                           >
                             <FiEdit3 className="w-4 h-4" />
                           </button>
@@ -535,6 +549,7 @@ const TeacherAssignments = () => {
                     <AnimatedButton
                       variant="primary"
                       icon={FiPlus}
+                      onClick={() => handleAssignCourses(selectedTeacher)}
                     >
                       Asignar cursos y secciones
                     </AnimatedButton>
@@ -543,6 +558,18 @@ const TeacherAssignments = () => {
               </>
             )}
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Modal de asignación de cursos */}
+      <AnimatePresence>
+        {showAssignCoursesModal && selectedTeacher && (
+          <AssignCoursesModal
+            isOpen={showAssignCoursesModal}
+            onClose={() => setShowAssignCoursesModal(false)}
+            teacher={selectedTeacher}
+            onSave={handleSaveAssignments}
+          />
         )}
       </AnimatePresence>
     </div>

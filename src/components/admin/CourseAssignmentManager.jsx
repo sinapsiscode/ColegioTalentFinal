@@ -363,7 +363,7 @@ const CourseAssignmentManager = () => {
       <div className="flex space-x-1 mb-6 bg-gray-100 p-1 rounded-lg">
         <button
           onClick={() => setActiveTab('secciones')}
-          className={`flex-1 px-4 py-2 rounded-md font-medium transition-colors ${
+          className={`flex-1 px-5 py-3 text-base rounded-md font-medium transition-colors ${
             activeTab === 'secciones'
               ? 'bg-white text-blue-600 shadow-sm'
               : 'text-gray-600 hover:text-gray-900'
@@ -374,7 +374,7 @@ const CourseAssignmentManager = () => {
         </button>
         <button
           onClick={() => setActiveTab('cursos')}
-          className={`flex-1 px-4 py-2 rounded-md font-medium transition-colors ${
+          className={`flex-1 px-5 py-3 text-base rounded-md font-medium transition-colors ${
             activeTab === 'cursos'
               ? 'bg-white text-blue-600 shadow-sm'
               : 'text-gray-600 hover:text-gray-900'
@@ -385,7 +385,7 @@ const CourseAssignmentManager = () => {
         </button>
         <button
           onClick={() => setActiveTab('profesores')}
-          className={`flex-1 px-4 py-2 rounded-md font-medium transition-colors ${
+          className={`flex-1 px-5 py-3 text-base rounded-md font-medium transition-colors ${
             activeTab === 'profesores'
               ? 'bg-white text-blue-600 shadow-sm'
               : 'text-gray-600 hover:text-gray-900'
@@ -396,7 +396,7 @@ const CourseAssignmentManager = () => {
         </button>
         <button
           onClick={() => setActiveTab('asignaciones')}
-          className={`flex-1 px-4 py-2 rounded-md font-medium transition-colors ${
+          className={`flex-1 px-5 py-3 text-base rounded-md font-medium transition-colors ${
             activeTab === 'asignaciones'
               ? 'bg-white text-blue-600 shadow-sm'
               : 'text-gray-600 hover:text-gray-900'
@@ -414,7 +414,7 @@ const CourseAssignmentManager = () => {
             <h2 className="text-xl font-semibold">Secciones del Colegio</h2>
             <button
               onClick={() => setShowSeccionModal(true)}
-              className="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center"
+              className="bg-blue-600 text-white px-5 py-3 text-base rounded-lg hover:bg-blue-700 transition-colors flex items-center"
             >
               <FiPlus className="mr-2" />
               Nueva Sección
@@ -465,7 +465,7 @@ const CourseAssignmentManager = () => {
             <h2 className="text-xl font-semibold">Cursos de Primaria</h2>
             <button
               onClick={() => setShowCursoModal(true)}
-              className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center"
+              className="bg-green-600 text-white px-5 py-3 text-base rounded-lg hover:bg-green-700 transition-colors flex items-center"
             >
               <FiPlus className="mr-2" />
               Nuevo Curso
@@ -519,7 +519,7 @@ const CourseAssignmentManager = () => {
             <h2 className="text-xl font-semibold">Profesores</h2>
             <button
               onClick={() => setShowProfesorModal(true)}
-              className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition-colors flex items-center"
+              className="bg-purple-600 text-white px-5 py-3 text-base rounded-lg hover:bg-purple-700 transition-colors flex items-center"
             >
               <FiPlus className="mr-2" />
               Nuevo Profesor
@@ -531,13 +531,13 @@ const CourseAssignmentManager = () => {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                       Profesor
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                       Email
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                       Especialidad
                     </th>
                     <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -592,7 +592,7 @@ const CourseAssignmentManager = () => {
             <h2 className="text-xl font-semibold">Asignaciones Curso-Profesor</h2>
             <button
               onClick={() => setShowAsignacionModal(true)}
-              className="bg-orange-600 text-white px-4 py-2 rounded-lg hover:bg-orange-700 transition-colors flex items-center"
+              className="bg-orange-600 text-white px-5 py-3 text-base rounded-lg hover:bg-orange-700 transition-colors flex items-center"
             >
               <FiPlus className="mr-2" />
               Nueva Asignación
@@ -604,13 +604,13 @@ const CourseAssignmentManager = () => {
               <table className="min-w-full divide-y divide-gray-200">
                 <thead className="bg-gray-50">
                   <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                       Profesor
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                       Curso
                     </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                    <th className="px-6 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider">
                       Sección
                     </th>
                     <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
@@ -754,13 +754,13 @@ const CourseAssignmentManager = () => {
                     setShowSeccionModal(false)
                     resetFormSeccion()
                   }}
-                  className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
+                  className="px-5 py-3 text-base text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
+                  className="px-5 py-3 text-base bg-blue-600 text-white rounded-md hover:bg-blue-700 flex items-center"
                 >
                   <FiSave className="mr-2" />
                   {seccionEditando ? 'Actualizar' : 'Crear'}
@@ -850,13 +850,13 @@ const CourseAssignmentManager = () => {
                     setShowCursoModal(false)
                     resetFormCurso()
                   }}
-                  className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
+                  className="px-5 py-3 text-base text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
                 >
                   Cancelar
                 </button>
                 <button
                   type="submit"
-                  className="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center"
+                  className="px-5 py-3 text-base bg-green-600 text-white rounded-md hover:bg-green-700 flex items-center"
                 >
                   <FiSave className="mr-2" />
                   {cursoEditando ? 'Actualizar' : 'Crear'}
@@ -966,7 +966,7 @@ const CourseAssignmentManager = () => {
                     setShowProfesorModal(false)
                     resetFormProfesor()
                   }}
-                  className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
+                  className="px-5 py-3 text-base text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
                 >
                   Cancelar
                 </button>
@@ -1071,7 +1071,7 @@ const CourseAssignmentManager = () => {
                     setShowAsignacionModal(false)
                     resetFormAsignacion()
                   }}
-                  className="px-4 py-2 text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
+                  className="px-5 py-3 text-base text-gray-700 border border-gray-300 rounded-md hover:bg-gray-50"
                 >
                   Cancelar
                 </button>

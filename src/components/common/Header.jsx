@@ -229,7 +229,7 @@ const Header = () => {
               />
             </div>
             <div className="hidden xs:block">
-              <h1 className="text-sm xs:text-base sm:text-lg md:text-xl lg:text-xl xl:text-2xl 2xl:text-3xl font-bold text-talentos-primary whitespace-nowrap">
+              <h1 className="text-base xs:text-lg sm:text-xl md:text-2xl lg:text-2xl xl:text-3xl 2xl:text-4xl font-bold text-talentos-primary whitespace-nowrap">
                 <span className="hidden sm:inline">Talentos College</span>
                 <span className="sm:hidden">Talentos</span>
               </h1>
@@ -250,7 +250,7 @@ const Header = () => {
                     <motion.button
                       key={item.path || item.id}
                       onClick={() => navigate(item.path)}
-                      className={`group flex items-center gap-1 md:gap-1.5 px-2 md:px-2 lg:px-2.5 xl:px-3 py-2 md:py-2 lg:py-2.5 rounded-lg text-xs md:text-xs lg:text-sm xl:text-sm 2xl:text-base font-medium transition-all duration-200 relative ${
+                      className={`group flex items-center gap-1.5 md:gap-2 px-3 md:px-3.5 lg:px-4 xl:px-5 py-2.5 md:py-3 lg:py-3.5 rounded-lg text-sm md:text-base lg:text-base xl:text-lg 2xl:text-lg font-medium transition-all duration-200 relative ${
                         isActive
                           ? 'text-talentos-primary bg-white shadow-md border border-gray-100'
                           : 'text-gray-600 hover:text-talentos-primary hover:bg-white hover:shadow-sm hover:border hover:border-gray-100'
@@ -258,7 +258,7 @@ const Header = () => {
                       title={item.label}
                       {...navItemHover}
                     >
-                      <Icon className="w-3.5 h-3.5 md:w-4 md:h-4 lg:w-4 lg:h-4 xl:w-4.5 xl:h-4.5 flex-shrink-0" />
+                      <Icon className="w-4 h-4 md:w-4.5 md:h-4.5 lg:w-5 lg:h-5 xl:w-5.5 xl:h-5.5 flex-shrink-0" />
                       
                       <span className="font-medium whitespace-nowrap">
                         <span className="hidden lg:inline">
@@ -291,7 +291,7 @@ const Header = () => {
                     <div key={item.id} className="relative">
                       <motion.button
                         onClick={() => setDropdownOpen(isOpen ? null : item.id)}
-                        className={`group flex items-center gap-1 md:gap-1.5 px-2 md:px-2 lg:px-2.5 xl:px-3 py-2 md:py-2 lg:py-2.5 rounded-lg text-xs md:text-xs lg:text-sm xl:text-sm 2xl:text-base font-medium transition-all duration-200 relative ${
+                        className={`group flex items-center gap-1.5 md:gap-2 px-3 md:px-3.5 lg:px-4 xl:px-5 py-2.5 md:py-3 lg:py-3.5 rounded-lg text-sm md:text-base lg:text-base xl:text-lg 2xl:text-lg font-medium transition-all duration-200 relative ${
                           hasActiveChild || isOpen
                             ? 'text-talentos-primary bg-white shadow-md border border-gray-100'
                             : 'text-gray-600 hover:text-talentos-primary hover:bg-white hover:shadow-sm hover:border hover:border-gray-100'
@@ -299,7 +299,7 @@ const Header = () => {
                         title={item.label}
                         {...navItemHover}
                       >
-                        <Icon className="w-3.5 h-3.5 md:w-4 md:h-4 lg:w-4 lg:h-4 xl:w-4.5 xl:h-4.5 flex-shrink-0" />
+                        <Icon className="w-4 h-4 md:w-4.5 md:h-4.5 lg:w-5 lg:h-5 xl:w-5.5 xl:h-5.5 flex-shrink-0" />
                         
                         <span className="font-medium whitespace-nowrap">
                           <span className="hidden lg:inline">{item.label}</span>
@@ -348,7 +348,7 @@ const Header = () => {
                                       navigate(subItem.path)
                                       setDropdownOpen(null)
                                     }}
-                                    className={`w-full flex items-center space-x-3 px-4 py-2.5 text-sm transition-colors duration-200 ${
+                                    className={`w-full flex items-center space-x-3 px-4 py-3 text-base transition-colors duration-200 ${
                                       isSubActive
                                         ? 'text-talentos-primary bg-blue-50'
                                         : 'text-gray-700 hover:bg-gray-50'
@@ -427,8 +427,8 @@ const Header = () => {
             {/* Información del usuario con menú desplegable */}
             <div className="relative flex items-center space-x-1.5 xs:space-x-2 sm:space-x-2.5 md:space-x-3">
               <div className="hidden sm:block md:block text-right">
-                <p className="text-xs sm:text-sm md:text-sm lg:text-base xl:text-base font-medium text-gray-900 truncate max-w-24 xs:max-w-28 sm:max-w-32 md:max-w-36 lg:max-w-40 xl:max-w-48">{usuario?.nombre}</p>
-                <p className="text-[10px] xs:text-xs sm:text-xs md:text-xs lg:text-sm text-gray-500 capitalize">{rol}</p>
+                <p className="text-sm sm:text-base md:text-base lg:text-lg xl:text-lg font-medium text-gray-900 truncate max-w-24 xs:max-w-28 sm:max-w-32 md:max-w-36 lg:max-w-40 xl:max-w-48">{usuario?.nombre}</p>
+                <p className="text-xs xs:text-sm sm:text-sm md:text-sm lg:text-base text-gray-500 capitalize">{rol}</p>
               </div>
               <button
                 onClick={() => setProfileMenuOpen(!profileMenuOpen)}

@@ -173,15 +173,15 @@ const EnhancedUserDistributionChart = ({
       } ${className}`}
     >
       {/* Header mejorado */}
-      <div className="p-6 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
+      <div className="p-4 sm:p-6 border-b border-gray-100 bg-gradient-to-r from-gray-50 to-white">
         <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl text-white">
-              <FiUsers className="w-6 h-6" />
+          <div className="flex items-center space-x-2 sm:space-x-3">
+            <div className="p-2 sm:p-3 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl text-white">
+              <FiUsers className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
             <div>
-              <h3 className="text-xl font-bold text-gray-900">Distribución de Usuarios</h3>
-              <p className="text-sm text-gray-500 mt-0.5">Por tipo de rol en el sistema</p>
+              <h3 className="text-base sm:text-xl font-bold text-gray-900">Distribución de Usuarios</h3>
+              <p className="text-xs sm:text-sm text-gray-500 mt-0.5 hidden sm:block">Por tipo de rol en el sistema</p>
             </div>
           </div>
           
@@ -210,16 +210,17 @@ const EnhancedUserDistributionChart = ({
       </div>
 
       {/* Contenido principal */}
-      <div className="p-6" style={{ height: isExpanded ? 'calc(100vh - 200px)' : height }}>
-        <div className="flex flex-col lg:flex-row items-center justify-center h-full gap-8">
+      <div className="p-4 sm:p-6" style={{ height: isExpanded ? 'calc(100vh - 200px)' : 'auto' }}>
+        <div className="flex flex-col lg:flex-row items-center justify-center gap-4 sm:gap-8">
           
           {/* Gráfico SVG mejorado */}
-          <div className="relative">
+          <div className="relative w-full max-w-[250px] sm:max-w-[300px]">
             <svg 
-              width="300" 
-              height="300" 
+              width="100%" 
+              height="100%" 
               viewBox="0 0 300 300"
               className="transform hover:scale-105 transition-transform duration-300"
+              preserveAspectRatio="xMidYMid meet"
             >
               {/* Sombra del gráfico */}
               <defs>
@@ -360,15 +361,16 @@ const EnhancedUserDistributionChart = ({
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 1 }}
-              className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-medium flex items-center space-x-1"
+              className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-green-100 text-green-700 px-2 sm:px-3 py-1 rounded-full text-xs sm:text-sm font-medium flex items-center space-x-1"
             >
-              <FiTrendingUp className="w-4 h-4" />
-              <span>+12% este mes</span>
+              <FiTrendingUp className="w-3 h-3 sm:w-4 sm:h-4" />
+              <span className="hidden sm:inline">+12% este mes</span>
+              <span className="sm:hidden">+12%</span>
             </motion.div>
           </div>
 
           {/* Leyenda mejorada */}
-          <div className="space-y-4">
+          <div className="w-full sm:w-auto space-y-2 sm:space-y-4">
             {segments.map((segment, index) => {
               const isHovered = hoveredSegment === index
               const isSelected = selectedSegment === index
@@ -386,8 +388,8 @@ const EnhancedUserDistributionChart = ({
                     onUserTypeClick && onUserTypeClick(segment)
                   }}
                   className={`
-                    relative p-4 rounded-xl cursor-pointer transition-all duration-300
-                    ${isHovered || isSelected ? 'scale-105 shadow-lg' : 'hover:shadow-md'}
+                    relative p-3 sm:p-4 rounded-xl cursor-pointer transition-all duration-300
+                    ${isHovered || isSelected ? 'sm:scale-105 shadow-lg' : 'hover:shadow-md'}
                     ${isHovered || isSelected ? segment.colors.shadow : ''}
                   `}
                   style={{
@@ -400,19 +402,19 @@ const EnhancedUserDistributionChart = ({
                         className={`w-4 h-4 rounded-full bg-gradient-to-br ${segment.colors.gradient}`}
                       />
                       <div>
-                        <p className="font-semibold text-gray-900">{segment.label}</p>
-                        <p className="text-sm text-gray-500">{segment.value} usuarios</p>
+                        <p className="text-sm sm:text-base font-semibold text-gray-900">{segment.label}</p>
+                        <p className="text-xs sm:text-sm text-gray-500">{segment.value} usuarios</p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="text-2xl font-bold" style={{ color: segment.colors.primary }}>
+                      <p className="text-lg sm:text-2xl font-bold" style={{ color: segment.colors.primary }}>
                         {segment.percentage.toFixed(1)}%
                       </p>
                     </div>
                   </div>
 
                   {/* Barra de progreso */}
-                  <div className="mt-3 h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div className="mt-2 sm:mt-3 h-1.5 sm:h-2 bg-gray-200 rounded-full overflow-hidden">
                     <motion.div
                       initial={{ width: 0 }}
                       animate={{ width: `${segment.percentage}%` }}
@@ -429,12 +431,13 @@ const EnhancedUserDistributionChart = ({
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 1.2 }}
-              className="mt-6 p-4 bg-blue-50 rounded-lg flex items-start space-x-2"
+              className="mt-4 sm:mt-6 p-3 sm:p-4 bg-blue-50 rounded-lg flex items-start space-x-2"
             >
-              <FiInfo className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-              <div className="text-sm text-blue-700">
+              <FiInfo className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 flex-shrink-0 mt-0.5" />
+              <div className="text-xs sm:text-sm text-blue-700">
                 <p className="font-medium">Tip:</p>
-                <p>Haz clic en cualquier segmento para ver más detalles sobre ese tipo de usuario.</p>
+                <p className="hidden sm:block">Haz clic en cualquier segmento para ver más detalles sobre ese tipo de usuario.</p>
+                <p className="sm:hidden">Toca para ver detalles</p>
               </div>
             </motion.div>
           </div>

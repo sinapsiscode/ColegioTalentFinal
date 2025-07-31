@@ -89,16 +89,16 @@ const RecentCommuniques = ({ comunicados, loading = false, onCommuniqueClick }) 
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900 flex items-center space-x-2">
-          <FiMessageSquare className="w-5 h-5 text-talentos-primary" />
-          <span>Comunicados Recientes</span>
+    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-3 sm:p-4">
+      <div className="flex items-center justify-between mb-3 sm:mb-4">
+        <h3 className="text-base sm:text-lg font-semibold text-gray-900 flex items-center space-x-2">
+          <FiMessageSquare className="w-4 h-4 sm:w-5 sm:h-5 text-talentos-primary" />
+          <span className="text-sm sm:text-base">Comunicados Recientes</span>
         </h3>
-        <span className="text-xs text-gray-500">{comunicados.length} comunicados</span>
+        <span className="text-xs text-gray-500 hidden sm:inline">{comunicados.length} comunicados</span>
       </div>
 
-      <div className="space-y-3 max-h-96 overflow-y-auto">
+      <div className="space-y-2 sm:space-y-3 max-h-96 overflow-y-auto">
         {comunicados.map((comunicado, index) => (
           <motion.div
             key={comunicado.id}
@@ -111,64 +111,67 @@ const RecentCommuniques = ({ comunicados, loading = false, onCommuniqueClick }) 
                 onCommuniqueClick(comunicado)
               }
             }}
-            className="border-b border-gray-200 pb-3 last:border-b-0 hover:bg-gray-50 rounded-lg p-3 transition-colors duration-200 cursor-pointer"
+            className="border-b border-gray-200 pb-2 sm:pb-3 last:border-b-0 hover:bg-gray-50 rounded-lg px-2 py-3 sm:p-3 transition-colors duration-200 cursor-pointer"
           >
             {/* Header */}
             <div className="flex items-start justify-between mb-2">
-              <div className="flex-1">
-                <h4 className="text-sm font-medium text-gray-900 line-clamp-1 mb-1">
+              <div className="flex-1 min-w-0">
+                <h4 className="text-xs sm:text-sm font-medium text-gray-900 line-clamp-2 mb-1 pr-2">
                   {comunicado.titulo}
                 </h4>
                 
                 {/* Metadatos */}
-                <div className="flex flex-wrap items-center gap-2">
-                  <div className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(comunicado.estado)}`}>
+                <div className="flex flex-wrap items-center gap-1.5 sm:gap-2 mt-1">
+                  <div className={`flex items-center space-x-1 px-2 py-0.5 sm:py-1 rounded-full text-xs font-medium ${getStatusColor(comunicado.estado)}`}>
                     {getStatusIcon(comunicado.estado)}
                     <span className="capitalize">{comunicado.estado}</span>
                   </div>
                   
-                  <div className={`flex items-center space-x-1 px-2 py-1 rounded-full text-xs font-medium border ${getPriorityColor(comunicado.prioridad)}`}>
+                  <div className={`flex items-center space-x-1 px-2 py-0.5 sm:py-1 rounded-full text-xs font-medium border ${getPriorityColor(comunicado.prioridad)}`}>
                     {getPriorityIcon(comunicado.prioridad)}
                     <span className="capitalize">{comunicado.prioridad}</span>
                   </div>
                 </div>
               </div>
               
-              <span className="text-xs text-gray-500 whitespace-nowrap ml-2">
+              <span className="text-xs text-gray-500 whitespace-nowrap ml-2 flex-shrink-0">
                 {formatTimeAgo(comunicado.fecha)}
               </span>
             </div>
 
-            {/* Autor */}
-            <div className="flex items-center space-x-1 mb-2">
+            {/* Autor - Solo en desktop */}
+            <div className="hidden sm:flex items-center space-x-1 mb-2">
               <FiUser className="w-3 h-3 text-gray-500" />
               <span className="text-xs text-gray-600">{comunicado.autor}</span>
             </div>
 
             {/* Estadísticas */}
-            <div className="flex items-center space-x-4 text-xs text-gray-600">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-4 text-xs text-gray-600">
               <div className="flex items-center space-x-1">
                 <FiUser className="w-3 h-3" />
-                <span>{comunicado.destinatarios} destinatarios</span>
+                <span className="hidden sm:inline">{comunicado.destinatarios} destinatarios</span>
+                <span className="sm:hidden">{comunicado.destinatarios}</span>
               </div>
               
               {comunicado.estado === 'enviado' && (
                 <>
                   <div className="flex items-center space-x-1">
                     <FiEye className="w-3 h-3" />
-                    <span>{comunicado.vistas} vistas</span>
+                    <span className="hidden sm:inline">{comunicado.vistas} vistas</span>
+                    <span className="sm:hidden">{comunicado.vistas}</span>
                   </div>
                   
                   <div className="flex items-center space-x-1">
                     <FiMessageCircle className="w-3 h-3" />
-                    <span>{comunicado.respuestas} respuestas</span>
+                    <span className="hidden sm:inline">{comunicado.respuestas} respuestas</span>
+                    <span className="sm:hidden">{comunicado.respuestas}</span>
                   </div>
                 </>
               )}
             </div>
 
-            {/* Fecha completa */}
-            <div className="mt-2">
+            {/* Fecha completa - Solo desktop */}
+            <div className="mt-2 hidden sm:block">
               <p className="text-xs text-gray-500">
                 {format(new Date(comunicado.fecha), 'dd MMM yyyy, HH:mm', { locale: es })}
               </p>

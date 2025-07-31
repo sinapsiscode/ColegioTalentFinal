@@ -38,6 +38,8 @@ import useGradesStore from '../../stores/gradesStore'
 import { DatabaseQueries } from '../../data/databaseSchema'
 import { generateReportPDF } from '../../utils/pdfGenerator'
 import { showSuccess, showError } from '../../utils/sweetAlert'
+import { useSearch } from '../../hooks/useSearch'
+import { useLoadingState } from '../../hooks/useLoadingState'
 import { exportForParents, exportForAdmins } from '../../utils/exportUtilsSimple'
 import { compareIds } from '../../utils/searchHelpers'
 
@@ -46,7 +48,6 @@ const Students = () => {
   
   const navigate = useNavigate()
   const [viewMode, setViewMode] = useState('grid') // 'grid' o 'list'
-  const [searchTerm, setSearchTerm] = useState('')
   const [selectedFilter, setSelectedFilter] = useState('todos')
   const [showExportMenu, setShowExportMenu] = useState(false)
   
@@ -57,14 +58,27 @@ const Students = () => {
   const cargarCalificaciones = useGradesStore(state => state.cargarCalificaciones)
   const obtenerEstadisticasAsistencia = useAttendanceStore(state => state.obtenerEstadisticasAsistencia)
 
-  // Estado local para los hijos del padre
-  const [misHijos, setMisHijos] = useState([])
-  const [loading, setLoading] = useState(true)
+  // Usar custom hook para estado de carga
+  const { 
+    data: misHijos, 
+    loading, 
+    setData: setMisHijos,
+    startLoading,
+    stopLoading 
+  } = useLoadingState([])
+  
+  // Usar custom hook para búsqueda
+  const {
+    searchTerm,
+    setSearchTerm,
+    filteredItems: hijosFiltrados,
+    isSearching
+  } = useSearch(misHijos, ['nombre', 'apellido', 'codigo', 'grado'])
 
   // Función para cargar hijos (reutilizable)
   const cargarMisHijos = async (showLoadingIndicator = true) => {
     if (usuario && usuario.id) {
-      if (showLoadingIndicator) setLoading(true)
+      if (showLoadingIndicator) startLoading()
       try {
         console.log(`🔍 DEBUGGING: Usuario actual ID: ${usuario.id}, Nombre: ${usuario.nombre}`)
         
@@ -97,7 +111,7 @@ const Students = () => {
         console.error('Error cargando hijos:', error)
         showError('Error', 'No se pudieron cargar los datos de sus hijos')
       } finally {
-        if (showLoadingIndicator) setLoading(false)
+        if (showLoadingIndicator) stopLoading()
       }
     }
   }

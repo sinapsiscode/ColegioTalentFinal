@@ -88,3 +88,36 @@ window.testDatabase.showDatabaseInfo()
 - Las vistas de padres filtran datos basándose en hijos asignados (característica crítica de seguridad)
 - Servicio de API mock listo para integración con backend
 - Respaldos automáticos cada 5 minutos (máximo 10 respaldos)
+
+## Constantes Centralizadas
+
+### Archivo: `src/utils/constants.js`
+Contiene todas las constantes del sistema organizadas por categorías:
+
+- **USER_ROLES**: Roles de usuario del sistema
+- **LIMITS**: Límites del sistema (capacidades, tamaños, timeouts)
+- **MESSAGES**: Mensajes de usuario (éxito, error, confirmación, carga)
+- **DEFAULTS**: Valores por defecto (contraseña, paginación, moneda)
+- **Z_INDEX**: Valores z-index para capas CSS
+- **ANIMATIONS**: Configuración de animaciones
+- **SIMULATION**: Rangos para datos simulados
+- **EXCEL_SETTINGS**: Configuración de exportación Excel
+- **DATA_GENERATION**: Configuración de generación de datos
+
+### Refactoring Realizado (última actualización)
+- 21 valores hardcodeados reemplazados en 17 archivos
+- Contraseña '123456' centralizada en DEFAULTS.PASSWORD
+- Capacidades de sección (30/50) en LIMITS
+- Tamaños de archivo (5MB) en LIMITS.MAX_FILE_SIZE_MB
+- Paginación (10 items) en DEFAULTS.ITEMS_PER_PAGE
+- Mensajes de éxito/error centralizados en MESSAGES
+
+### Uso de Constantes
+```javascript
+import { LIMITS, DEFAULTS, MESSAGES } from '../utils/constants'
+
+// Ejemplos:
+if (file.size > LIMITS.MAX_FILE_SIZE_MB * 1024 * 1024) { ... }
+const [itemsPerPage] = useState(DEFAULTS.ITEMS_PER_PAGE)
+showSuccess(MESSAGES.TITLES.SUCCESS, MESSAGES.SUCCESS.CREATE)
+```

@@ -6,14 +6,15 @@ import { config, log } from '../config'
 import DatabaseManager from '../data/DatabaseManager'
 import { alumnosMock, usuariosMock, comunicadosMock, notasMock } from '../data/mockData'
 import apiService from './apiService'
+import { DATA_GENERATION } from '../utils/constants'
 
-// Generar datos de asistencia para los últimos 30 días
+// Generar datos de asistencia para los últimos días configurados
 const generateAsistencia = () => {
   const asistencia = []
   const today = new Date()
   
   alumnosMock.forEach(alumno => {
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < DATA_GENERATION.ATTENDANCE_HISTORY_DAYS; i++) {
       const fecha = new Date(today)
       fecha.setDate(fecha.getDate() - i)
       

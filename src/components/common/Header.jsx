@@ -37,6 +37,7 @@ import HelpModal from '../profile/HelpModal'
 import NotificationCenter from './NotificationCenter'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { navItemHover, notificationSlide, badgePulse } from '../../utils/animations'
+import { Z_INDEX, ANIMATIONS } from '../../utils/constants'
 
 const Header = () => {
   const [menuOpen, setMenuOpen] = useState(false)
@@ -326,7 +327,7 @@ const Header = () => {
                           <>
                             {/* Backdrop para cerrar */}
                             <div 
-                              className="fixed inset-0 z-30" 
+                              className="fixed inset-0 z-30"
                               onClick={() => setDropdownOpen(null)}
                             />
                             
@@ -442,7 +443,7 @@ const Header = () => {
                   <>
                     {/* Backdrop */}
                     <div 
-                      className="fixed inset-0 z-30" 
+                      className="fixed inset-0 z-30"
                       onClick={() => setProfileMenuOpen(false)}
                     />
                     
@@ -523,7 +524,7 @@ const Header = () => {
               initial={{ x: '-100%' }}
               animate={{ x: 0 }}
               exit={{ x: '-100%' }}
-              transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+              transition={{ type: 'spring', stiffness: ANIMATIONS.SPRING_STIFFNESS, damping: ANIMATIONS.SPRING_DAMPING }}
               className="fixed left-0 top-0 bottom-0 w-64 xs:w-72 sm:w-80 bg-white shadow-xl z-50 overflow-y-auto"
             >
               {/* Header del menú */}

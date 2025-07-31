@@ -35,6 +35,7 @@ import RealTimeStats from '../../components/admin/RealTimeStats'
 import DragDropAdminDashboard from '../../components/dashboard/DragDropAdminDashboard'
 import { showSuccess, showError, showInfo } from '../../utils/sweetAlert'
 import { useNavigate } from 'react-router-dom'
+import { EXCEL_SETTINGS } from '../../utils/constants'
 
 const Dashboard = () => {
   const navigate = useNavigate()
@@ -201,8 +202,8 @@ const Dashboard = () => {
         
         // Ajustar ancho de columnas
         ws['!cols'] = [
-          { wch: 30 }, // Columna A
-          { wch: 20 }  // Columna B
+          { wch: EXCEL_SETTINGS.COLUMN_WIDTH.WIDE }, // Columna A
+          { wch: EXCEL_SETTINGS.COLUMN_WIDTH.DEFAULT }  // Columna B
         ]
       })
       

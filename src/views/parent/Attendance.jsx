@@ -30,6 +30,7 @@ import LoadingSpinner from '../../components/common/LoadingSpinner'
 import { showSuccess, showError } from '../../utils/sweetAlert'
 import { generateAttendanceReportPDF } from '../../utils/pdfGenerator'
 import { compareIds } from '../../utils/searchHelpers'
+import { DEFAULTS } from '../../utils/constants'
 
 const Attendance = () => {
   const { studentId } = useParams()
@@ -49,7 +50,7 @@ const Attendance = () => {
   const [statusFilter, setStatusFilter] = useState('all')
   const [searchTerm, setSearchTerm] = useState('')
   const [currentPage, setCurrentPage] = useState(1)
-  const [itemsPerPage] = useState(10)
+  const [itemsPerPage] = useState(DEFAULTS.ITEMS_PER_PAGE)
   const [viewMode, setViewMode] = useState('list') // list, calendar
 
   // Obtener hijos del padre usando la función del store (arquitectura profesional)

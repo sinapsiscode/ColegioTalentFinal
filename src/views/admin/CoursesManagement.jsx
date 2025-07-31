@@ -23,6 +23,7 @@ import SectionModal from '../../components/admin/SectionModal'
 import AssignTeacherModal from '../../components/admin/AssignTeacherModal'
 import useCoursesStore from '../../stores/coursesStore'
 import { showSuccess, showError, showConfirm } from '../../utils/sweetAlert'
+import { MESSAGES } from '../../utils/constants'
 
 const CoursesManagement = () => {
   const [activeTab, setActiveTab] = useState('courses')
@@ -68,9 +69,9 @@ const CoursesManagement = () => {
     try {
       createCourse(courseData)
       setCourseModalOpen(false)
-      showSuccess('Éxito', 'Curso creado correctamente')
+      showSuccess(MESSAGES.TITLES.SUCCESS, 'Curso ' + MESSAGES.SUCCESS.CREATE.toLowerCase())
     } catch (error) {
-      showError('Error', 'No se pudo crear el curso')
+      showError(MESSAGES.TITLES.ERROR, 'Curso - ' + MESSAGES.ERROR.CREATE)
     }
   }
 
@@ -88,9 +89,9 @@ const CoursesManagement = () => {
     if (result.isConfirmed) {
       try {
         deleteCourse(courseId)
-        showSuccess('Éxito', 'Curso eliminado correctamente')
+        showSuccess(MESSAGES.TITLES.SUCCESS, 'Curso ' + MESSAGES.SUCCESS.DELETE.toLowerCase())
       } catch (error) {
-        showError('Error', 'No se pudo eliminar el curso')
+        showError(MESSAGES.TITLES.ERROR, 'Curso - ' + MESSAGES.ERROR.DELETE)
       }
     }
   }

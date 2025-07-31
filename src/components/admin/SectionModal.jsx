@@ -12,13 +12,14 @@ import {
 import AnimatedButton from '../common/AnimatedButton'
 import { showSuccess, showError } from '../../utils/sweetAlert'
 import useAdminUsersStore from '../../stores/adminUsersStore'
+import { LIMITS } from '../../utils/constants'
 
 const SectionModal = ({ isOpen, onClose, section = null, onSave }) => {
   const { usuarios, cargarUsuarios } = useAdminUsersStore()
   const [formData, setFormData] = useState({
     nombre: '',
     grado: '',
-    capacidad: 30,
+    capacidad: LIMITS.DEFAULT_SECTION_CAPACITY,
     aula: '',
     tutorId: '',
     descripcion: '',
@@ -41,7 +42,7 @@ const SectionModal = ({ isOpen, onClose, section = null, onSave }) => {
       setFormData({
         nombre: section.nombre || '',
         grado: section.grado || '',
-        capacidad: section.capacidad || 30,
+        capacidad: section.capacidad || LIMITS.DEFAULT_SECTION_CAPACITY,
         aula: section.aula || '',
         tutorId: section.tutorId || '',
         descripcion: section.descripcion || '',
@@ -52,7 +53,7 @@ const SectionModal = ({ isOpen, onClose, section = null, onSave }) => {
       setFormData({
         nombre: '',
         grado: '',
-        capacidad: 30,
+        capacidad: LIMITS.DEFAULT_SECTION_CAPACITY,
         aula: '',
         tutorId: '',
         descripcion: '',
@@ -85,7 +86,7 @@ const SectionModal = ({ isOpen, onClose, section = null, onSave }) => {
     if (!formData.aula.trim()) newErrors.aula = 'El aula es requerida'
     
     if (formData.capacidad < 1) newErrors.capacidad = 'La capacidad debe ser mayor a 0'
-    if (formData.capacidad > 50) newErrors.capacidad = 'La capacidad no puede ser mayor a 50'
+    if (formData.capacidad > LIMITS.MAX_SECTION_CAPACITY) newErrors.capacidad = `La capacidad no puede ser mayor a ${LIMITS.MAX_SECTION_CAPACITY}`
     
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -245,7 +246,7 @@ const SectionModal = ({ isOpen, onClose, section = null, onSave }) => {
                   value={formData.capacidad}
                   onChange={(e) => handleInputChange('capacidad', parseInt(e.target.value))}
                   min="1"
-                  max="50"
+                  max={LIMITS.MAX_SECTION_CAPACITY}
                   className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent ${
                     errors.capacidad ? 'border-red-300' : 'border-gray-300'
                   }`}

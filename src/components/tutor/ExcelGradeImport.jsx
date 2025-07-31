@@ -18,6 +18,7 @@ import LoadingSpinner from '../common/LoadingSpinner'
 import { showSuccess, showError, showConfirm } from '../../utils/sweetAlert'
 import useGradesStore from '../../stores/gradesStore'
 import useAuthStore from '../../stores/authStore'
+import { LIMITS } from '../../utils/constants'
 
 const ExcelGradeImport = ({ estudiantes, onImportComplete }) => {
   const { usuario } = useAuthStore()
@@ -381,7 +382,7 @@ const ExcelGradeImport = ({ estudiantes, onImportComplete }) => {
                           : 'Click para seleccionar archivo Excel'
                         }
                       </p>
-                      <p className="text-xs text-gray-500">XLSX, XLS (máx. 5MB)</p>
+                      <p className="text-xs text-gray-500">XLSX, XLS (máx. {LIMITS.MAX_FILE_SIZE_MB}MB)</p>
                     </div>
                   )}
                 </div>

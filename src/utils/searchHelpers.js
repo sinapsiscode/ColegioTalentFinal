@@ -1,4 +1,5 @@
 import { useState, useMemo, useEffect } from 'react'
+import { DEFAULTS } from './constants'
 
 export const searchItems = (items, searchTerm, searchFields) => {
   if (!searchTerm.trim()) return items
@@ -75,7 +76,7 @@ export const useSearch = (initialItems, searchFields, initialFilters = {}) => {
   const [sortBy, setSortBy] = useState('')
   const [sortOrder, setSortOrder] = useState('asc')
   const [currentPage, setCurrentPage] = useState(1)
-  const [itemsPerPage] = useState(10)
+  const [itemsPerPage] = useState(DEFAULTS.ITEMS_PER_PAGE)
   
   const filteredItems = useMemo(() => {
     let result = [...initialItems]

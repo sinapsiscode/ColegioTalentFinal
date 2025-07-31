@@ -15,6 +15,7 @@ import useCoursesStore from '../../stores/coursesStore'
 import useAdminUsersStore from '../../stores/adminUsersStore'
 import { showSuccess, showError } from '../../utils/sweetAlert'
 import getDatabase from '../../data/DatabaseManager'
+import { LIMITS } from '../../utils/constants'
 
 const CourseModal = ({ isOpen, onClose, course = null }) => {
   const { createCourse, updateCourse } = useCoursesStore()
@@ -29,7 +30,7 @@ const CourseModal = ({ isOpen, onClose, course = null }) => {
     horasSemanales: 4,
     aula: '',
     horario: '',
-    capacidad: 30,
+    capacidad: LIMITS.DEFAULT_SECTION_CAPACITY,
     fechaInicio: '',
     fechaFin: '',
     profesorId: null
@@ -79,7 +80,7 @@ const CourseModal = ({ isOpen, onClose, course = null }) => {
         horasSemanales: course.horasSemanales ?? 4,
         aula: course.aula || '',
         horario: course.horario || '',
-        capacidad: course.capacidad ?? 30,
+        capacidad: course.capacidad ?? LIMITS.DEFAULT_SECTION_CAPACITY,
         fechaInicio: course.fechaInicio || '',
         fechaFin: course.fechaFin || '',
         profesorId: course.profesor?.id || null
@@ -95,7 +96,7 @@ const CourseModal = ({ isOpen, onClose, course = null }) => {
         horasSemanales: 4,
         aula: '',
         horario: '',
-        capacidad: 30,
+        capacidad: LIMITS.DEFAULT_SECTION_CAPACITY,
         fechaInicio: '',
         fechaFin: '',
         profesorId: null
@@ -177,7 +178,7 @@ const CourseModal = ({ isOpen, onClose, course = null }) => {
     
     // Validación de capacidad
     if (!formData.capacidad || formData.capacidad < 1) newErrors.capacidad = 'La capacidad debe ser mayor a 0'
-    if (formData.capacidad > 50) newErrors.capacidad = 'La capacidad no puede ser mayor a 50'
+    if (formData.capacidad > LIMITS.MAX_SECTION_CAPACITY) newErrors.capacidad = `La capacidad no puede ser mayor a ${LIMITS.MAX_SECTION_CAPACITY}`
     
     // Validación del nombre generado
     if (!generatedCourseName) {

@@ -13,6 +13,7 @@ import {
   FiClock
 } from 'react-icons/fi'
 import CountUpNumber from '../common/CountUpNumber'
+import { SIMULATION } from '../../utils/constants'
 
 const RealTimeStats = ({ estadisticasAsistencia, onRefresh }) => {
   const [isLive, setIsLive] = useState(true)
@@ -66,7 +67,7 @@ const RealTimeStats = ({ estadisticasAsistencia, onRefresh }) => {
     {
       id: 'actividad',
       title: 'Actividad del Sistema',
-      value: Math.floor(Math.random() * 30) + 70,
+      value: Math.floor(Math.random() * SIMULATION.ACTIVITY_RANGE) + SIMULATION.ACTIVITY_BASE,
       change: Math.floor(Math.random() * 8) - 4,
       icon: FiActivity,
       color: 'purple',

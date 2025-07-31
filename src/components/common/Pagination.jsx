@@ -1,12 +1,13 @@
 import React from 'react'
 import { FiChevronLeft, FiChevronRight } from 'react-icons/fi'
 import { motion } from 'framer-motion'
+import { DEFAULTS } from '../../utils/constants'
 
 const Pagination = ({
   currentPage,
   totalPages,
   onPageChange,
-  itemsPerPage = 10,
+  itemsPerPage = DEFAULTS.ITEMS_PER_PAGE,
   totalItems = 0,
   className = ""
 }) => {

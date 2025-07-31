@@ -21,6 +21,7 @@ import usePaymentsStore from '../../stores/paymentsStore'
 import useAuthStore from '../../stores/authStore'
 import PaymentSimulationModal from './PaymentSimulationModal'
 import Swal from 'sweetalert2'
+import { LIMITS, MESSAGES } from '../../utils/constants'
 
 const PaymentModal = ({ isOpen, onClose, payment, onPaymentSuccess }) => {
   const { usuario } = useAuthStore()
@@ -57,13 +58,13 @@ const PaymentModal = ({ isOpen, onClose, payment, onPaymentSuccess }) => {
       // Validar tipo de archivo
       const allowedTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf']
       if (!allowedTypes.includes(file.type)) {
-        Swal.fire('Error', 'Solo se permiten archivos JPG, PNG o PDF', 'error')
+        Swal.fire(MESSAGES.TITLES.ERROR, 'Solo se permiten archivos JPG, PNG o PDF', 'error')
         return
       }
       
-      // Validar tamaño (5MB máximo)
-      if (file.size > 5 * 1024 * 1024) {
-        Swal.fire('Error', 'El archivo no puede ser mayor a 5MB', 'error')
+      // Validar tamaño (máximo configurado)
+      if (file.size > LIMITS.MAX_FILE_SIZE_MB * 1024 * 1024) {
+        Swal.fire(MESSAGES.TITLES.ERROR, MESSAGES.ERROR.FILE_TOO_LARGE, 'error')
         return
       }
       
@@ -370,7 +371,7 @@ const PaymentModal = ({ isOpen, onClose, payment, onPaymentSuccess }) => {
                       </label>
                     </p>
                     <p className="text-sm text-gray-600 mt-2">
-                      JPG, PNG o PDF (máximo 5MB)
+                      JPG, PNG o PDF (máximo {LIMITS.MAX_FILE_SIZE_MB}MB)
                     </p>
                   </div>
                 </div>

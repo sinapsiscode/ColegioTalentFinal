@@ -12,6 +12,7 @@ import {
   FiX
 } from 'react-icons/fi'
 import { showSuccess, showError, showConfirm } from '../../utils/sweetAlert'
+import { Button, Card, Modal, Input, Table } from '../ui'
 
 const CourseAssignmentManager = () => {
   const [activeTab, setActiveTab] = useState('secciones')
@@ -412,13 +413,13 @@ const CourseAssignmentManager = () => {
         <div>
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">Secciones del Colegio</h2>
-            <button
+            <Button
               onClick={() => setShowSeccionModal(true)}
-              className="bg-blue-600 text-white px-5 py-3 text-base rounded-lg hover:bg-blue-700 transition-colors flex items-center"
+              variant="primary"
+              icon={FiPlus}
             >
-              <FiPlus className="mr-2" />
               Nueva Sección
-            </button>
+            </Button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -463,13 +464,13 @@ const CourseAssignmentManager = () => {
         <div>
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">Cursos de Primaria</h2>
-            <button
+            <Button
               onClick={() => setShowCursoModal(true)}
-              className="bg-green-600 text-white px-5 py-3 text-base rounded-lg hover:bg-green-700 transition-colors flex items-center"
+              variant="success"
+              icon={FiPlus}
             >
-              <FiPlus className="mr-2" />
               Nuevo Curso
-            </button>
+            </Button>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -517,13 +518,14 @@ const CourseAssignmentManager = () => {
         <div>
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">Profesores</h2>
-            <button
+            <Button
               onClick={() => setShowProfesorModal(true)}
-              className="bg-purple-600 text-white px-5 py-3 text-base rounded-lg hover:bg-purple-700 transition-colors flex items-center"
+              style={{ backgroundColor: '#8B5CF6' }}
+              className="hover:bg-purple-700"
+              icon={FiPlus}
             >
-              <FiPlus className="mr-2" />
               Nuevo Profesor
-            </button>
+            </Button>
           </div>
 
           <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
@@ -590,13 +592,13 @@ const CourseAssignmentManager = () => {
         <div>
           <div className="flex justify-between items-center mb-4">
             <h2 className="text-xl font-semibold">Asignaciones Curso-Profesor</h2>
-            <button
+            <Button
               onClick={() => setShowAsignacionModal(true)}
-              className="bg-orange-600 text-white px-5 py-3 text-base rounded-lg hover:bg-orange-700 transition-colors flex items-center"
+              variant="warning"
+              icon={FiPlus}
             >
-              <FiPlus className="mr-2" />
               Nueva Asignación
-            </button>
+            </Button>
           </div>
 
           <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">

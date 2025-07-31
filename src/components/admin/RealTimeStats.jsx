@@ -5,8 +5,8 @@ import {
   FiUsers,
   FiTrendingUp,
   FiTrendingDown,
-  FiWifi,
-  FiWifiOff,
+  FiRadio,
+  FiCloud,
   FiRefreshCw,
   FiZap,
   FiEye,
@@ -49,7 +49,7 @@ const RealTimeStats = ({ estadisticasAsistencia, onRefresh }) => {
       title: 'Conexiones Activas',
       value: 45,
       change: Math.floor(Math.random() * 10) - 5,
-      icon: FiWifi,
+      icon: FiRadio,
       color: 'emerald',
       unit: '',
       description: 'Usuarios conectados ahora'
@@ -127,7 +127,7 @@ const RealTimeStats = ({ estadisticasAsistencia, onRefresh }) => {
                 : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
             }`}
           >
-            {isLive ? <FiWifi className="w-4 h-4" /> : <FiWifiOff className="w-4 h-4" />}
+            {isLive ? <FiRadio className="w-4 h-4" /> : <FiCloud className="w-4 h-4" />}
             <span className="hidden sm:inline">{isLive ? 'En Vivo' : 'Pausado'}</span>
           </motion.button>
 

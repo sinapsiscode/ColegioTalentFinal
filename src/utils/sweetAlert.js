@@ -1,5 +1,6 @@
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
+import { errorToastManager } from '../components/error/ErrorToast'
 
 const MySwal = withReactContent(Swal)
 
@@ -31,13 +32,37 @@ export const showSuccess = (title, text, options = {}) => {
   })
 }
 
+// Función específica para mostrar errores con toast
+export const showErrorToast = (error, options = {}) => {
+  const errorObj = typeof error === 'string' ? { message: error } : error
+  return errorToastManager.addToast(errorObj, {
+    onRetry: options.onRetry,
+    position: options.position || 'top-right',
+    duration: options.duration || 5000,
+    autoClose: options.autoClose !== false
+  })
+}
+
 export const showError = (title, text, options = {}) => {
+  const { useToast = false, ...swalOptions } = options
+  
+  // Si se especifica usar toast, usar el sistema de toasts
+  if (useToast) {
+    const errorObj = typeof title === 'string' ? { message: title } : title
+    return errorToastManager.addToast(errorObj, {
+      onRetry: options.onRetry,
+      position: options.position || 'top-right',
+      duration: options.duration || 5000
+    })
+  }
+  
+  // Usar SweetAlert2 tradicional
   return MySwal.fire({
     ...defaultConfig,
     title,
     text,
     icon: 'error',
-    ...options
+    ...swalOptions
   })
 }
 

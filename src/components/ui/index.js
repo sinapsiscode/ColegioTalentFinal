@@ -4,6 +4,4 @@ export { default as Card } from './Card'
 export { default as Modal } from './Modal'
 export { default as Input } from './Input'
 export { default as Table } from './Table'
-
-// Re-exportar el ExportButton existente para consistencia
-export { default as ExportButton } from './ExportButton'
+export { default as ExportButton, ExportDropdown } from './ExportButton'

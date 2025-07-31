@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Download, FileSpreadsheet, Loader } from 'lucide-react'
+import { FiDownload, FiFileText, FiLoader } from 'react-icons/fi'
 
 const ExportButton = ({ 
   onExport, 
@@ -48,12 +48,12 @@ const ExportButton = ({
     >
       {(loading || isExporting) ? (
         <>
-          <Loader className="w-4 h-4 mr-2 animate-spin" />
+          <FiLoader className="w-4 h-4 mr-2 animate-spin" />
           Exportando...
         </>
       ) : (
         <>
-          <FileSpreadsheet className="w-4 h-4 mr-2" />
+          <FiFileText className="w-4 h-4 mr-2" />
           {label}
         </>
       )}
@@ -97,12 +97,12 @@ export const ExportDropdown = ({
       >
         {(loading || isExporting) ? (
           <>
-            <Loader className="w-4 h-4 mr-2 animate-spin" />
+            <FiLoader className="w-4 h-4 mr-2 animate-spin" />
             Exportando...
           </>
         ) : (
           <>
-            <Download className="w-4 h-4 mr-2" />
+            <FiDownload className="w-4 h-4 mr-2" />
             Exportar
             <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -124,7 +124,7 @@ export const ExportDropdown = ({
                 flex items-center transition-colors
               "
             >
-              <FileSpreadsheet className="w-4 h-4 mr-3 text-green-600" />
+              <FiFileText className="w-4 h-4 mr-3 text-green-600" />
               Exportar a Excel
             </button>
           )}

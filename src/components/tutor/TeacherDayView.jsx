@@ -8,8 +8,8 @@ import {
   FiAlertTriangle,
   FiMic,
   FiCamera,
-  FiWifi,
-  FiWifiOff,
+  FiRadio,
+  FiCloud,
   FiBell,
   FiChevronRight,
   FiPause,
@@ -149,12 +149,12 @@ const TeacherDayView = ({ clasesHoy, estudiantesPresentes, onStartClass, onEndCl
             <div className="flex items-center space-x-2 text-sm">
               {isOffline ? (
                 <>
-                  <FiWifiOff className="w-4 h-4" />
+                  <FiCloud className="w-4 h-4" />
                   <span>Modo Offline</span>
                 </>
               ) : (
                 <>
-                  <FiWifi className="w-4 h-4" />
+                  <FiRadio className="w-4 h-4" />
                   <span>En línea</span>
                 </>
               )}

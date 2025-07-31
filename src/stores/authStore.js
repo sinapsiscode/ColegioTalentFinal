@@ -1,6 +1,7 @@
 import { create } from 'zustand'
 import dataService from '../services/dataService'
 import { config, log } from '../config'
+import { DEFAULTS } from '../utils/constants'
 
 const useAuthStore = create((set, get) => ({
   usuario: null,
@@ -31,7 +32,7 @@ const useAuthStore = create((set, get) => ({
         log.debug('- Usuario encontrado:', usuarioEncontrado ? { id: usuarioEncontrado.id, nombre: usuarioEncontrado.nombre, rol: usuarioEncontrado.rol } : 'NO ENCONTRADO')
         
         // Verificar contraseña (puede ser la universal o específica del usuario)
-        const passwordValida = password === '123456' || 
+        const passwordValida = password === DEFAULTS.PASSWORD || 
           (usuarioEncontrado?.password_hash && password === usuarioEncontrado.password_hash.replace('hashed_', ''))
         
         if (usuarioEncontrado && passwordValida) {

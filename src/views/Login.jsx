@@ -6,6 +6,7 @@ import useAuthStore from '../stores/authStore'
 import Swal from 'sweetalert2'
 import withReactContent from 'sweetalert2-react-content'
 import { testLogin } from '../utils/testLogin'
+import { DEFAULTS } from '../utils/constants'
 
 const MySwal = withReactContent(Swal)
 
@@ -92,7 +93,7 @@ const Login = () => {
   const loginRapido = (usuario) => {
     setFormData({
       usuario: usuario.email,
-      password: '123456',
+      password: DEFAULTS.PASSWORD,
       rol: usuario.rol
     })
   }
@@ -234,7 +235,7 @@ const Login = () => {
                     // Solo llenar el formulario
                     setFormData({
                       usuario: usuario.email,
-                      password: '123456',
+                      password: DEFAULTS.PASSWORD,
                       rol: usuario.rol
                     })
                   }}

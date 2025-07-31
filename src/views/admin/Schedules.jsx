@@ -111,16 +111,16 @@ const Schedules = () => {
       <Header />
       
       <PageTransition>
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <main className="px-4 py-8 mx-auto max-w-7xl sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+          <div className="flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">
+              <h1 className="flex items-center gap-3 text-3xl font-bold text-gray-900">
                 <FiCalendar className="w-8 h-8 text-talentos-primary" />
                 Gestión de Horarios
               </h1>
-              <p className="text-gray-600 mt-2">
+              <p className="mt-2 text-gray-600">
                 Administra los horarios de clases y asignaciones
               </p>
             </div>
@@ -146,15 +146,15 @@ const Schedules = () => {
         </div>
 
         {/* Estadísticas rápidas */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 gap-4 mb-6 sm:grid-cols-2 lg:grid-cols-4">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl p-4 text-white"
+            className="p-4 text-white bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl"
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-blue-100 text-sm">Total Clases</p>
+                <p className="text-sm text-blue-100">Total Clases</p>
                 <p className="text-2xl font-bold">{summary.totalClasses}</p>
               </div>
               <FiClock className="w-8 h-8 text-blue-200" />
@@ -165,11 +165,11 @@ const Schedules = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-gradient-to-r from-green-500 to-green-600 rounded-xl p-4 text-white"
+            className="p-4 text-white bg-gradient-to-r from-green-500 to-green-600 rounded-xl"
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-green-100 text-sm">Profesores</p>
+                <p className="text-sm text-green-100">Profesores</p>
                 <p className="text-2xl font-bold">{Object.keys(summary.teacherLoad).length}</p>
               </div>
               <FiUser className="w-8 h-8 text-green-200" />
@@ -180,11 +180,11 @@ const Schedules = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl p-4 text-white"
+            className="p-4 text-white bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl"
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-purple-100 text-sm">Aulas en Uso</p>
+                <p className="text-sm text-purple-100">Aulas en Uso</p>
                 <p className="text-2xl font-bold">{Object.keys(summary.classroomUsage).length}</p>
               </div>
               <FiMapPin className="w-8 h-8 text-purple-200" />
@@ -195,11 +195,11 @@ const Schedules = () => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl p-4 text-white"
+            className="p-4 text-white bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl"
           >
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-orange-100 text-sm">Cursos Activos</p>
+                <p className="text-sm text-orange-100">Cursos Activos</p>
                 <p className="text-2xl font-bold">{courses.length}</p>
               </div>
               <FiBook className="w-8 h-8 text-orange-200" />
@@ -208,20 +208,20 @@ const Schedules = () => {
         </div>
 
         {/* Controles y filtros */}
-        <div className="bg-white rounded-xl shadow-sm border border-gray-200 mb-6">
+        <div className="mb-6 bg-white border border-gray-200 shadow-sm rounded-xl">
           <div className="p-4 sm:p-6">
-            <div className="flex flex-col lg:flex-row gap-4">
+            <div className="flex flex-col gap-4 lg:flex-row">
               {/* Filtros */}
-              <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              <div className="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 {/* Filtro por profesor */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block mb-1 text-sm font-medium text-gray-700">
                     Profesor
                   </label>
                   <select
                     value={filters.teacherId}
                     onChange={(e) => setFilter('teacherId', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent text-sm"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent"
                   >
                     <option value="">Todos los profesores</option>
                     {teachers.map(teacher => (
@@ -234,13 +234,13 @@ const Schedules = () => {
 
                 {/* Filtro por curso */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block mb-1 text-sm font-medium text-gray-700">
                     Curso
                   </label>
                   <select
                     value={filters.courseId}
                     onChange={(e) => setFilter('courseId', e.target.value)}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent text-sm"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent"
                   >
                     <option value="">Todos los cursos</option>
                     {courses.map(course => (
@@ -253,7 +253,7 @@ const Schedules = () => {
 
                 {/* Filtro por aula */}
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                  <label className="block mb-1 text-sm font-medium text-gray-700">
                     Aula
                   </label>
                   <input
@@ -261,7 +261,7 @@ const Schedules = () => {
                     value={filters.classroom}
                     onChange={(e) => setFilter('classroom', e.target.value)}
                     placeholder="Buscar aula..."
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent text-sm"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-talentos-primary focus:border-transparent"
                   />
                 </div>
 
@@ -281,7 +281,7 @@ const Schedules = () => {
               {/* Controles de vista */}
               <div className="flex items-center gap-3">
                 {/* Tipo de vista */}
-                <div className="flex bg-gray-100 rounded-lg p-1">
+                <div className="flex p-1 bg-gray-100 rounded-lg">
                   <button
                     onClick={() => setViewType('section')}
                     className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
@@ -318,14 +318,14 @@ const Schedules = () => {
                 <div className="flex gap-2">
                   <button
                     onClick={handleExport}
-                    className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                    className="p-2 text-gray-600 transition-colors rounded-lg hover:text-gray-900 hover:bg-gray-100"
                     title="Exportar"
                   >
                     <FiDownload className="w-5 h-5" />
                   </button>
                   <button
                     onClick={handlePrint}
-                    className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                    className="p-2 text-gray-600 transition-colors rounded-lg hover:text-gray-900 hover:bg-gray-100"
                     title="Imprimir"
                   >
                     <FiPrinter className="w-5 h-5" />

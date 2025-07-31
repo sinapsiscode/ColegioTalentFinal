@@ -71,6 +71,9 @@ const Header = () => {
   const paymentNotificationsCount = rol === 'padre' ? 
     getPagosVencidos(usuario?.email || '').length + getProximosVencimientos(usuario?.email || '', 7).length : 0
   
+  // Estado para dropdowns
+  const [dropdownOpen, setDropdownOpen] = useState(null)
+
   const getNavigationItems = () => {
     switch (rol) {
       case 'padre':
@@ -98,16 +101,50 @@ const Header = () => {
         ]
       case 'admin':
         return [
-          { path: '/admin/dashboard', icon: FiHome, label: 'Panel Principal', shortLabel: 'Dashboard', priority: 1 },
-          { path: '/admin/users', icon: FiUsers, label: 'Gestión Usuarios', shortLabel: 'Usuarios', priority: 2 },
-          { path: '/admin/courses-management', icon: FiBook, label: 'Cursos y Secciones', shortLabel: 'Cursos', priority: 3 },
-          { path: '/admin/assignments', icon: FiUserPlus, label: 'Centro de Asignaciones', shortLabel: 'Asignaciones', priority: 4 },
-          { path: '/admin/schedules', icon: FiCalendar, label: 'Gestión Horarios', shortLabel: 'Horarios', priority: 5 },
-          { path: '/asistencia', icon: FiClock, label: 'Control Asistencia', shortLabel: 'Asistencia', priority: 5 },
-          { path: '/admin/payments', icon: FiDollarSign, label: 'Gestión Pagos', shortLabel: 'Pagos', priority: 6 },
-          { path: '/admin/communiques', icon: FiFileText, label: 'Comunicados', priority: 7 },
-          { path: '/admin/reports', icon: FiBarChart, label: 'Reportes', priority: 8 },
-          { path: '/admin/configuration', icon: FiSettings, label: 'Configuración', shortLabel: 'Config', priority: 9 }
+          { 
+            type: 'single',
+            path: '/admin/dashboard', 
+            icon: FiHome, 
+            label: 'Dashboard'
+          },
+          {
+            type: 'dropdown',
+            id: 'gestion',
+            icon: FiUsers,
+            label: 'Gestión',
+            items: [
+              { path: '/admin/users', icon: FiUsers, label: 'Usuarios' },
+              { path: '/admin/courses-management', icon: FiBook, label: 'Cursos y Secciones' },
+              { path: '/admin/assignments', icon: FiUserPlus, label: 'Asignaciones' }
+            ]
+          },
+          {
+            type: 'dropdown',
+            id: 'operaciones',
+            icon: FiCalendar,
+            label: 'Operaciones',
+            items: [
+              { path: '/admin/schedules', icon: FiCalendar, label: 'Horarios' },
+              { path: '/asistencia', icon: FiClock, label: 'Asistencia' },
+              { path: '/admin/communiques', icon: FiFileText, label: 'Comunicados' }
+            ]
+          },
+          {
+            type: 'dropdown',
+            id: 'administracion',
+            icon: FiDollarSign,
+            label: 'Administración',
+            items: [
+              { path: '/admin/payments', icon: FiDollarSign, label: 'Pagos' },
+              { path: '/admin/reports', icon: FiBarChart, label: 'Reportes' }
+            ]
+          },
+          { 
+            type: 'single',
+            path: '/admin/configuration', 
+            icon: FiSettings, 
+            label: 'Config'
+          }
         ]
       case 'entrada':
         return [
@@ -198,56 +235,139 @@ const Header = () => {
             </div>
           </div>
           
-          {/* Navegación - RESPONSIVE SIN SCROLL */}
+          {/* Navegación - CON DROPDOWNS PARA ADMIN */}
           <nav className="hidden md:flex items-center justify-center flex-1 px-1 lg:px-2 xl:px-3">
             <div className="flex items-center space-x-0.5 md:space-x-0.5 lg:space-x-1 xl:space-x-1.5 bg-gray-50 rounded-2xl p-1 md:p-1 lg:p-1.5">
-              {/* Mostrar items principales basado en el tamaño de pantalla */}
-              {navigationItems.slice(0, getVisibleItemsCount()).map((item) => {
+              {navigationItems.map((item, index) => {
                 const Icon = item.icon
-                const isActive = location.pathname === item.path
                 
-                return (
-                  <motion.button
-                    key={item.path}
-                    onClick={() => navigate(item.path)}
-                    className={`group flex items-center gap-1 md:gap-1.5 px-2 md:px-2 lg:px-2.5 xl:px-3 py-2 md:py-2 lg:py-2.5 rounded-lg text-xs md:text-xs lg:text-sm xl:text-sm 2xl:text-base font-medium transition-all duration-200 relative ${
-                      isActive
-                        ? 'text-talentos-primary bg-white shadow-md border border-gray-100'
-                        : 'text-gray-600 hover:text-talentos-primary hover:bg-white hover:shadow-sm hover:border hover:border-gray-100'
-                    }`}
-                    title={item.label}
-                    {...navItemHover}
-                  >
-                    <Icon className="w-3.5 h-3.5 md:w-4 md:h-4 lg:w-4 lg:h-4 xl:w-4.5 xl:h-4.5 flex-shrink-0" />
-                    
-                    {/* Sistema de texto adaptativo mejorado */}
-                    <span className="font-medium whitespace-nowrap">
-                      {/* Solo iconos en tablets medianos */}
-                      <span className="hidden md:inline lg:hidden">
-                        {/* Solo icono, sin texto */}
+                // Elemento simple (sin dropdown)
+                if (item.type === 'single' || !item.type) {
+                  const isActive = location.pathname === item.path
+                  
+                  return (
+                    <motion.button
+                      key={item.path || item.id}
+                      onClick={() => navigate(item.path)}
+                      className={`group flex items-center gap-1 md:gap-1.5 px-2 md:px-2 lg:px-2.5 xl:px-3 py-2 md:py-2 lg:py-2.5 rounded-lg text-xs md:text-xs lg:text-sm xl:text-sm 2xl:text-base font-medium transition-all duration-200 relative ${
+                        isActive
+                          ? 'text-talentos-primary bg-white shadow-md border border-gray-100'
+                          : 'text-gray-600 hover:text-talentos-primary hover:bg-white hover:shadow-sm hover:border hover:border-gray-100'
+                      }`}
+                      title={item.label}
+                      {...navItemHover}
+                    >
+                      <Icon className="w-3.5 h-3.5 md:w-4 md:h-4 lg:w-4 lg:h-4 xl:w-4.5 xl:h-4.5 flex-shrink-0" />
+                      
+                      <span className="font-medium whitespace-nowrap">
+                        <span className="hidden lg:inline">
+                          {item.shortLabel || item.label}
+                        </span>
                       </span>
-                      {/* Texto corto o completo según el espacio */}
-                      <span className="hidden lg:inline">
-                        {item.shortLabel || item.label}
-                      </span>
-                    </span>
-                    
-                    {/* Tooltip para tablets */}
-                    <div className="md:block lg:hidden absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
-                      {item.label}
+                      
+                      {/* Tooltip para tablets */}
+                      <div className="md:block lg:hidden absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+                        {item.label}
+                      </div>
+                      
+                      {/* Indicador activo */}
+                      {isActive && (
+                        <motion.div
+                          className="absolute -bottom-0.5 left-1/2 transform -translate-x-1/2 w-3/5 h-0.5 bg-talentos-primary rounded-full"
+                          layoutId="activeIndicator"
+                        />
+                      )}
+                    </motion.button>
+                  )
+                }
+                
+                // Elemento con dropdown
+                if (item.type === 'dropdown') {
+                  const isOpen = dropdownOpen === item.id
+                  const hasActiveChild = item.items?.some(child => location.pathname === child.path)
+                  
+                  return (
+                    <div key={item.id} className="relative">
+                      <motion.button
+                        onClick={() => setDropdownOpen(isOpen ? null : item.id)}
+                        className={`group flex items-center gap-1 md:gap-1.5 px-2 md:px-2 lg:px-2.5 xl:px-3 py-2 md:py-2 lg:py-2.5 rounded-lg text-xs md:text-xs lg:text-sm xl:text-sm 2xl:text-base font-medium transition-all duration-200 relative ${
+                          hasActiveChild || isOpen
+                            ? 'text-talentos-primary bg-white shadow-md border border-gray-100'
+                            : 'text-gray-600 hover:text-talentos-primary hover:bg-white hover:shadow-sm hover:border hover:border-gray-100'
+                        }`}
+                        title={item.label}
+                        {...navItemHover}
+                      >
+                        <Icon className="w-3.5 h-3.5 md:w-4 md:h-4 lg:w-4 lg:h-4 xl:w-4.5 xl:h-4.5 flex-shrink-0" />
+                        
+                        <span className="font-medium whitespace-nowrap">
+                          <span className="hidden lg:inline">{item.label}</span>
+                        </span>
+                        
+                        <FiChevronDown className={`w-3 h-3 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+                        
+                        {/* Tooltip para tablets */}
+                        <div className="md:block lg:hidden absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-2 py-1 bg-gray-900 text-white text-xs rounded opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-50">
+                          {item.label}
+                        </div>
+                        
+                        {/* Indicador activo */}
+                        {hasActiveChild && (
+                          <motion.div
+                            className="absolute -bottom-0.5 left-1/2 transform -translate-x-1/2 w-3/5 h-0.5 bg-talentos-primary rounded-full"
+                            layoutId="activeIndicator"
+                          />
+                        )}
+                      </motion.button>
+                      
+                      {/* Dropdown Menu */}
+                      <AnimatePresence>
+                        {isOpen && (
+                          <>
+                            {/* Backdrop para cerrar */}
+                            <div 
+                              className="fixed inset-0 z-30" 
+                              onClick={() => setDropdownOpen(null)}
+                            />
+                            
+                            <motion.div
+                              initial={{ opacity: 0, scale: 0.95, y: -10 }}
+                              animate={{ opacity: 1, scale: 1, y: 0 }}
+                              exit={{ opacity: 0, scale: 0.95, y: -10 }}
+                              className="absolute top-full left-1/2 transform -translate-x-1/2 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-200 py-2 z-40"
+                            >
+                              {item.items?.map((subItem) => {
+                                const SubIcon = subItem.icon
+                                const isSubActive = location.pathname === subItem.path
+                                
+                                return (
+                                  <button
+                                    key={subItem.path}
+                                    onClick={() => {
+                                      navigate(subItem.path)
+                                      setDropdownOpen(null)
+                                    }}
+                                    className={`w-full flex items-center space-x-3 px-4 py-2.5 text-sm transition-colors duration-200 ${
+                                      isSubActive
+                                        ? 'text-talentos-primary bg-blue-50'
+                                        : 'text-gray-700 hover:bg-gray-50'
+                                    }`}
+                                  >
+                                    <SubIcon className="w-4 h-4" />
+                                    <span>{subItem.label}</span>
+                                  </button>
+                                )
+                              })}
+                            </motion.div>
+                          </>
+                        )}
+                      </AnimatePresence>
                     </div>
-                    
-                    {/* Indicador activo */}
-                    {isActive && (
-                      <motion.div
-                        className="absolute -bottom-0.5 left-1/2 transform -translate-x-1/2 w-3/5 h-0.5 bg-talentos-primary rounded-full"
-                        layoutId="activeIndicator"
-                      />
-                    )}
-                  </motion.button>
-                )
+                  )
+                }
+                
+                return null
               })}
-              
             </div>
           </nav>
           
@@ -429,29 +549,97 @@ const Header = () => {
                 </div>
               </div>
               
-              {/* Items del menú */}
+              {/* Items del menú - Con acordeones para admin */}
               <div className="px-2 pt-4 pb-3 space-y-1">
-                {navigationItems.map((item) => {
+                {navigationItems.map((item, index) => {
                   const Icon = item.icon
-                  const isActive = location.pathname === item.path
                   
-                  return (
-                    <button
-                      key={item.path}
-                      onClick={() => {
-                        navigate(item.path)
-                        setMenuOpen(false)
-                      }}
-                      className={`flex items-center space-x-3 w-full px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
-                        isActive
-                          ? 'text-white bg-talentos-primary shadow-md'
-                          : 'text-gray-700 hover:text-talentos-primary hover:bg-gray-50'
-                      }`}
-                    >
-                      <Icon className="w-5 h-5" />
-                      <span>{item.label}</span>
-                    </button>
-                  )
+                  // Elemento simple (sin dropdown)
+                  if (item.type === 'single' || !item.type) {
+                    const isActive = location.pathname === item.path
+                    
+                    return (
+                      <button
+                        key={item.path || item.id}
+                        onClick={() => {
+                          navigate(item.path)
+                          setMenuOpen(false)
+                        }}
+                        className={`flex items-center space-x-3 w-full px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
+                          isActive
+                            ? 'text-white bg-talentos-primary shadow-md'
+                            : 'text-gray-700 hover:text-talentos-primary hover:bg-gray-50'
+                        }`}
+                      >
+                        <Icon className="w-5 h-5" />
+                        <span>{item.label}</span>
+                      </button>
+                    )
+                  }
+                  
+                  // Elemento con dropdown (acordeón en móvil)
+                  if (item.type === 'dropdown') {
+                    const isOpen = dropdownOpen === item.id
+                    const hasActiveChild = item.items?.some(child => location.pathname === child.path)
+                    
+                    return (
+                      <div key={item.id} className="space-y-1">
+                        <button
+                          onClick={() => setDropdownOpen(isOpen ? null : item.id)}
+                          className={`flex items-center justify-between w-full px-4 py-3 rounded-lg text-sm font-medium transition-all duration-200 ${
+                            hasActiveChild
+                              ? 'text-talentos-primary bg-blue-50'
+                              : 'text-gray-700 hover:text-gray-900 hover:bg-gray-50'
+                          }`}
+                        >
+                          <div className="flex items-center space-x-3">
+                            <Icon className="w-5 h-5" />
+                            <span>{item.label}</span>
+                          </div>
+                          <FiChevronDown className={`w-4 h-4 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+                        </button>
+                        
+                        {/* Sub-items acordeón */}
+                        <AnimatePresence>
+                          {isOpen && (
+                            <motion.div
+                              initial={{ height: 0, opacity: 0 }}
+                              animate={{ height: 'auto', opacity: 1 }}
+                              exit={{ height: 0, opacity: 0 }}
+                              transition={{ duration: 0.2 }}
+                              className="pl-4 space-y-1 overflow-hidden"
+                            >
+                              {item.items?.map((subItem) => {
+                                const SubIcon = subItem.icon
+                                const isSubActive = location.pathname === subItem.path
+                                
+                                return (
+                                  <button
+                                    key={subItem.path}
+                                    onClick={() => {
+                                      navigate(subItem.path)
+                                      setMenuOpen(false)
+                                      setDropdownOpen(null)
+                                    }}
+                                    className={`flex items-center space-x-3 w-full px-4 py-2.5 rounded-lg text-sm transition-all duration-200 ${
+                                      isSubActive
+                                        ? 'text-white bg-talentos-primary'
+                                        : 'text-gray-600 hover:text-talentos-primary hover:bg-gray-50'
+                                    }`}
+                                  >
+                                    <SubIcon className="w-4 h-4" />
+                                    <span>{subItem.label}</span>
+                                  </button>
+                                )
+                              })}
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </div>
+                    )
+                  }
+                  
+                  return null
                 })}
               </div>
               

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
-import { FiDownload, FiCalendar, FiDollarSign, FiBarChart3, FiPieChart, FiTrendingUp } from 'react-icons/fi'
+import { FiDownload, FiCalendar, FiDollarSign, FiBarChart2, FiPieChart, FiTrendingUp } from 'react-icons/fi'
 import usePaymentsStore from '../../stores/paymentsStore'
 import AnimatedCard from '../common/AnimatedCard'
 import AnimatedButton from '../common/AnimatedButton'
@@ -154,7 +154,7 @@ const PaymentReports = () => {
               <p className="text-yellow-600 text-xs sm:text-sm font-medium">Pagos Pendientes</p>
               <p className="text-lg sm:text-2xl font-bold text-yellow-800">{estadisticas.pendientes}</p>
             </div>
-            <FiBarChart3 className="text-yellow-500 text-2xl sm:text-3xl" />
+            <FiBarChart2 className="text-yellow-500 text-2xl sm:text-3xl" />
           </div>
         </AnimatedCard>
 
@@ -224,7 +224,7 @@ const PaymentReports = () => {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
           <div className="text-center">
             <div className="bg-blue-100 rounded-full w-12 h-12 sm:w-16 sm:h-16 flex items-center justify-center mx-auto mb-2 sm:mb-3">
-              <FiBarChart3 className="text-blue-600 text-xl sm:text-2xl" />
+              <FiBarChart2 className="text-blue-600 text-xl sm:text-2xl" />
             </div>
             <h4 className="text-sm sm:text-base font-semibold text-gray-800">Total de Transacciones</h4>
             <p className="text-lg sm:text-2xl font-bold text-blue-600">{estadisticas.total}</p>

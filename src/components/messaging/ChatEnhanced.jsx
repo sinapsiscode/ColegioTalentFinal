@@ -12,7 +12,6 @@ import {
   FiVolume2,
   FiEdit3,
   FiCheck,
-  FiCheckCheck,
   FiClock
 } from 'react-icons/fi'
 import useMessagesStore from '../../stores/messagesStore'
@@ -237,7 +236,7 @@ const ChatEnhanced = ({ conversacionId, onClose }) => {
                           ) : msg.error ? (
                             <span className="text-red-300">!</span>
                           ) : msg.leido ? (
-                            <FiCheckCheck className="w-3 h-3" />
+                            <FiCheck className="w-3 h-3" />
                           ) : (
                             <FiCheck className="w-3 h-3" />
                           )}

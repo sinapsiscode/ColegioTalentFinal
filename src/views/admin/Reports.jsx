@@ -436,7 +436,7 @@ const Reports = () => {
               </motion.div>
             ))}
           </div>
-        )}}
+        )}
       </main>
 
       {/* Modal de generador de reportes */}

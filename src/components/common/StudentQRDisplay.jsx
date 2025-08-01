@@ -1,5 +1,5 @@
 import React from 'react'
-import QRCode from 'qrcode.react'
+import { QRCodeSVG } from 'qrcode.react'
 import { motion } from 'framer-motion'
 import { 
   FiDownload, 
@@ -214,7 +214,7 @@ const StudentQRDisplay = ({ student, onClose }) => {
           {/* QR Code */}
           <div className="bg-gray-50 rounded-lg p-6 mb-6 flex justify-center">
             <div className="bg-white p-4 rounded-lg shadow-sm">
-              <QRCode
+              <QRCodeSVG
                 id="student-qr-code"
                 value={qrData}
                 size={200}
